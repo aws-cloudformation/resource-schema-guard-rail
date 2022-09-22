@@ -1,0 +1,116 @@
+
+
+rule check_if_taggable_is_used {
+    taggable !exists
+    <<
+    {
+        "result": "WARNING",
+        "check_id": "TAG_1",
+        "message": "`taggable` is deprecated, please used `tagging` property"
+    }
+    >>
+}
+
+rule ensure_tagging_is_specified {
+    tagging exists
+    <<
+    {
+        "result": "WARNING",
+        "check_id": "TAG_2",
+        "message": "`tagging` MUST be specified"
+    }
+    >>
+}
+
+rule ensure_taggable_and_tagging_do_not_coexist when taggable exists {
+    tagging !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TAG_3",
+        "message": "`taggable` and `tagging` MUST NOT coexist"
+    }
+    >>
+}
+
+rule ensure_property_tags_exists_v1 when taggable exists {
+    when taggable == true {
+        properties.Tags exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_4.1",
+            "message": "Resource MUST implement Tags property if `taggable` is true"
+        }
+        >>
+    }
+}
+
+rule ensure_property_tags_exists_v2 when tagging exists {
+    tagging is_struct
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TAG_5",
+        "message": "`tagging` MUST BE a struct"
+    }
+    >>
+
+    tagging.taggable exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TAG_6",
+        "message": "`taggable` MUST BE specified when `tagging` is provided"
+    }
+    >>
+
+    when tagging.taggable == true {
+
+        tagOnCreate exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_7",
+            "message": "Resource MUST provide `tagOnCreate` {true|false} if `tagging.taggable` is true"
+        }
+        >>
+
+        tagUpdatable exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_8",
+            "message": "Resource MUST provide `tagUpdatable` {true|false} if `tagging.taggable` is true"
+        }
+        >>
+
+        cloudFormationSystemTags exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_9",
+            "message": "Resource MUST provide `cloudFormationSystemTags` {true|false} if `tagging.taggable` is true"
+        }
+        >>
+
+        tagProperty exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_10",
+            "message": "Resource MUST provide `tagProperty` {/properties/Tags} if `tagging.taggable` is true"
+        }
+        >>
+
+        properties.Tags exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG_4.2",
+            "message": "Resource MUST implement Tags property if `tagging.taggable` is true"
+        }
+        >>
+    }
+}
+

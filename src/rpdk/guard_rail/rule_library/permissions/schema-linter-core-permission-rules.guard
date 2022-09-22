@@ -1,0 +1,113 @@
+let wildcard_notation = /^[a-z0-9-]{0,20}:([a-zA-Z0-9]+)?\*$/
+
+
+
+rule ensure_resource_create_handler_exists_and_have_permissions {
+    handlers.create exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER_1",
+        "message": "Resource MUST implement create handler"
+    }
+    >>
+
+    handlers.create.permissions.* {
+        this != %wildcard_notation
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER_2",
+            "message": "Resource MUST NOT specify wildcard permissions for create handler"
+        }
+        >>
+    }
+}
+
+rule ensure_resource_read_handler_exists_and_have_permissions {
+    handlers.read exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER_3",
+        "message": "Resource MUST implement read handler"
+    }
+    >>
+
+    handlers.read.permissions.* {
+        this != %wildcard_notation
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER_4",
+            "message": "Resource MUST NOT specify wildcard permissions for read handler"
+        }
+        >>
+    }
+}
+
+rule ensure_resource_update_handler_exists_and_have_permissions {
+    handlers.update exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER_5",
+        "message": "Resource MUST implement update handler"
+    }
+    >>
+
+    handlers.update.permissions.* {
+        this != %wildcard_notation
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER_6",
+            "message": "Resource MUST NOT specify wildcard permissions for update handler"
+        }
+        >>
+    }
+}
+
+rule ensure_resource_delete_handler_exists_and_have_permissions {
+    handlers.delete exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER_7",
+        "message": "Resource MUST implement delete handler"
+    }
+    >>
+
+    handlers.delete.permissions.* {
+        this != %wildcard_notation
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER_8",
+            "message": "Resource MUST NOT specify wildcard permissions for delete handler"
+        }
+        >>
+    }
+}
+
+rule ensure_resource_list_handler_exists_and_have_permissions {
+    handlers.list exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER_9",
+        "message": "Resource MUST implement list handler"
+    }
+    >>
+
+    handlers.list.permissions.* {
+        this != %wildcard_notation
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER_10",
+            "message": "Resource MUST NOT specify wildcard permissions for list handler"
+        }
+        >>
+    }
+}

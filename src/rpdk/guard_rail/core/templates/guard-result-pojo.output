@@ -1,0 +1,28 @@
+[SKIPPED]:
+{% for skipped in skipped_rules %}
+{{skipped.upper()}}
+{%- endfor %}
+
+{{passed_header}}
+{% for passed in passed_rules %}
+{{passed.upper()}}
+{%- endfor %}
+
+{{warning_header}}
+{% for rule, checks in warning_rules.items() %}
+{{rule.upper()}}:
+    {%- for check in checks %}
+    check-id: {{check.check_id}}
+    message: {{check.message}}
+    {%- endfor -%}
+{% endfor %}
+
+
+{{failed_header}}
+{% for rule, checks in failed_rules.items() %}
+{{rule.upper()}}:
+    {%- for check in checks %}
+    check-id: {{check.check_id}}
+    message: {{check.message}}
+    {%- endfor -%}
+{% endfor %}
