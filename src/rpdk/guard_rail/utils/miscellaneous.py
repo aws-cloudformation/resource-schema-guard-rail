@@ -1,3 +1,4 @@
+"""Module to contain different types of methods."""
 from importlib.util import find_spec
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from jinja2 import (
 
 
 def jinja_loader(module_name):
+    """Renders template to provide formatted output."""
     options = {}
     spec = find_spec(module_name)
 

@@ -1,3 +1,4 @@
+"""Module with common variable and methods."""
 import re
 
 from .logger import LOG, logdebug
@@ -15,12 +16,12 @@ GUARD_PATH_EXTRACT_PATTERN = r"(?![file:\/])(.+)\/([^\/]+)(\.guard)$"
 
 
 @logdebug
-def is_guard_rule(file_input: str) -> bool:
+def is_guard_rule(file_input: str) -> bool:  # pylint: disable=C0116
     return bool(re.search(GUARD_EXTENSION, file_input))
 
 
 @logdebug
-def read_file(file_path: str):
+def read_file(file_path: str):  # pylint: disable=C0116
     try:
         with open(file_path, "r", encoding="utf8") as file:
             return file.read()

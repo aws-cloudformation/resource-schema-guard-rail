@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=C0114, C0116
 import os.path
 
 from setuptools import setup
@@ -12,10 +13,16 @@ def read(*parts):
 
 
 requirements = [
-    "cfn-guard-rs>=0.1.2",
+    "cfn-guard-rs==0.1.2",
     "colorama>=0.4.1",
     "Jinja2==2.11.3",
     "markupsafe==2.0.1",
+    "pylint>=2.15.10",
+    "pytest-cov>=4.0.0",
+    "pytest-random-order>=1.1.0",
+    "pytest>=7.2.0",
+    "coverage>=4.5.4",
+    "deepdiff==5.8.0",
 ]
 
 setup(

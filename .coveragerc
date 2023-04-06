@@ -1,0 +1,7 @@
+[run]
+branch = True
+
+[report]
+exclude_lines =
+    def __init__
+    raise NotImplementedError

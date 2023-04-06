@@ -1,8 +1,29 @@
+"""Module that holds custom data types.
+
+Provides custom data types:
+- Stateful
+- Stateless
+- GuardRuleSet
+- GuardRuleSetResult
+
+Typical usage example:
+
+    from guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
+
+    payload: Stateless = Stateless(schemas=list_of_schemas, rules=list_of_rules)
+    # or
+    payload: Statefull = Statefull(
+            previous_schema=previous_schema,
+            current_schema=current_schema,
+            rules=list_of_rules,
+        )
+"""
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
+from colorama import Fore, init
+
 from ..utils.miscellaneous import jinja_loader
-from colorama import init, Fore
 
 init()
 
@@ -48,12 +69,28 @@ class GuardRuleResult:
 
 @dataclass
 class GuardRuleSetResult:
+    """Represents a result of the compliance run.
+
+    Contains passed, failed, skipped and warning rules
+
+    Attributes:
+        compliant: rules, that schema(s) passed
+        non_compliant: rules, that schema(s) failed
+        warning: rules, that schema(s) failed but it's not a hard requirement
+        skipped: rules, that are not applicable to the schema(s)
+    """
+
     compliant: List[str] = field(default_factory=list)
     non_compliant: Dict[str, List[GuardRuleResult]] = field(default_factory=dict)
     warning: Dict[str, List[GuardRuleResult]] = field(default_factory=dict)
     skipped: List[str] = field(default_factory=list)
 
     def merge(self, guard_ruleset_result: Any):
+        """Merges the result into a nice mutual set.
+
+        Args:
+            guard_ruleset_result (Any): result in a raw form
+        """
         if not isinstance(guard_ruleset_result, GuardRuleSetResult):
             raise TypeError("cannot merge with non GuardRuleSetResult type")
 

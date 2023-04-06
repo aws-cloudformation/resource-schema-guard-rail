@@ -1,21 +1,66 @@
+"""Module to perform policy execution context.
+
+Main function is __exec_rules__, which is a factory function. It uses closure
+to run multiple schemas over multiple sets of rules. There is an abstraction function
+on top of lower level (__exec_rules__) - exec_compliance. This function invokes factory function
+in stateless and statefull mode
+
+Typical usage example:
+
+    from guard_rail.core.runner import exec_compliance
+    payload: Stateless|Statefull = ...
+    exec_compliance(payload)
+"""
 import importlib.resources as pkg_resources
 from ast import literal_eval
 from functools import singledispatch
-from typing import Dict
+from typing import Any, Dict, Mapping
 
 import cfn_guard_rs
 
-from ..rule_library import combiners, core, permissions, tags
+from ..rule_library import combiners, core, permissions, tags, statefull
 from ..utils.common import is_guard_rule
 from ..utils.logger import LOG, logdebug
 from .data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
+from .stateful import schema_diff as sdf
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
 
+
 @logdebug
 def prepare_ruleset():
+    """Fetches module level schema rules.
+
+    Iterates over provided modules (core, combiners, permissions, tags)
+    and checks if content is a guard rule-set, ten adds it to the list
+    `to-run`
+
+    Returns:
+        Set[str]: set of rules in a string form
+    """
     static_rule_modules = [core, combiners, permissions, tags]
+    rule_set = set()
+    for module in static_rule_modules:
+        for content in pkg_resources.contents(module):
+            if not is_guard_rule(content):
+                continue
+            rule_set.add(pkg_resources.read_text(module, content))
+    return rule_set
+
+
+@logdebug
+def prepare_ruleset_statefull():
+    """Fetches module level schema rules.
+
+    Iterates over provided modules (core, combiners, permissions, tags)
+    and checks if content is a guard rule-set, ten adds it to the list
+    `to-run`
+
+    Returns:
+        Set[str]: set of rules in a string form
+    """
+    static_rule_modules = [statefull]
     rule_set = set()
     for module in static_rule_modules:
         for content in pkg_resources.contents(module):
@@ -42,29 +87,32 @@ def __exec_rules__(schema: Dict):
         guard_result = cfn_guard_rs.run_checks(schema, rules)
 
         def __render_output(evaluation_result: object):
+            
+            def __add_item__(rule_name: str, mapping: Mapping, result: Any):
+                if rule_name in mapping:
+                    mapping[rule_name].append(result)
+                    return
+                mapping[rule_name] = [result]
             non_compliant = {}
             warning = {}
             for rule_name, checks in guard_result.not_compliant.items():
-
-                non_compliant[rule_name] = []
-                warning[rule_name] = []
-
                 for check in checks:
                     try:
+                        print(check)
                         _message_dict = literal_eval(check.message.strip())
                         rule_result = GuardRuleResult(
                             check_id=_message_dict["check_id"],
                             message=_message_dict["message"],
                         )
+
+
                         if _message_dict.get("result", NON_COMPLIANT) == WARNING:
-                            warning[rule_name].append(rule_result)
-                            del non_compliant[rule_name]
+                            __add_item__(rule_name, warning, rule_result)
                         else:
-                            non_compliant[rule_name].append(rule_result)
-                            del warning[rule_name]
+                            __add_item__(rule_name, non_compliant, rule_result)
                     except SyntaxError as ex:
                         LOG.info("%s %s", str(ex), check.message)
-                        non_compliant[rule_name].append(GuardRuleResult())
+                        __add_item__(rule_name, non_compliant, GuardRuleResult())
 
             return GuardRuleSetResult(
                 compliant=evaluation_result.compliant,
@@ -132,4 +180,19 @@ def _(payload):
     Returns:
         GuardRuleSetResult: Rule Result
     """
-    raise NotImplementedError("Statefull evaluation is not supported yet")
+    # raise NotImplementedError("Statefull evaluation is not supported yet")
+    compliance_output = []
+    ruleset = prepare_ruleset_statefull() | set(payload.rules)
+
+    def __execute__(schema_exec, ruleset):
+        output = None
+        for rules in ruleset:
+            output = schema_exec(rules)
+        return output
+    
+    schema_to_execute = __exec_rules__(schema=sdf)
+    output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+    compliance_output.append(output)
+
+    return compliance_output
+    

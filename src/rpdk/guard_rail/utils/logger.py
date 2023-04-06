@@ -1,3 +1,4 @@
+"""Module to perform logging."""
 import logging
 from functools import wraps
 
@@ -20,6 +21,8 @@ LOG = logging.getLogger(__name__)
 
 
 def logdebug(func: object):
+    """Logging annotation to each function inside the package"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         log_msg = func.__name__
