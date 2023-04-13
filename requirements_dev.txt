@@ -4,6 +4,7 @@ coverage>=4.5.4
 Jinja2==2.11.3
 markupsafe==2.0.1
 pip==21.1
+pre-commit>=2.21.0
 pylint>=2.15.10
 pytest-cov>=4.0.0
 pytest-random-order>=1.1.0
