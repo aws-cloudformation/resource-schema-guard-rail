@@ -113,4 +113,3 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         >>
     }
 }
-

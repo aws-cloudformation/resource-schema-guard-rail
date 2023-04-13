@@ -49,7 +49,7 @@ def main(args_in=None):
     argument_validation(args)
     collected_schemas = collect_schemas(schemas=args.schemas)
     collected_rules = collect_rules(rules=args.rules)
-    
+
     print(collected_schemas)
     print(collected_rules)
 

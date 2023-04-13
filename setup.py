@@ -1,42 +1,50 @@
-#!/usr/bin/env python
-# pylint: disable=C0114, C0116
-import os.path
+"""Setup file"""
+import io
 
-from setuptools import setup
+import setuptools
 
-HERE = os.path.abspath(os.path.dirname(__file__))
-
-
-def read(*parts):
-    with open(os.path.join(HERE, *parts), "r", encoding="utf-8") as file:
-        return file.read()
+with open("README.md", encoding="utf-8") as fp:
+    long_description = fp.read()
 
 
-requirements = [
-    "cfn-guard-rs==0.1.2",
-    "colorama>=0.4.1",
-    "Jinja2==2.11.3",
-    "markupsafe==2.0.1",
-    "pylint>=2.15.10",
-    "pytest-cov>=4.0.0",
-    "pytest-random-order>=1.1.0",
-    "pytest>=7.2.0",
-    "coverage>=4.5.4",
-    "deepdiff==5.8.0",
-]
+def read(*filenames, **kwargs):
+    """function to read files like requirements.txt"""
+    encoding = kwargs.get("encoding", "utf-8")
+    # io.open defaults to \n as universal line ending no matter on what system
+    sep = kwargs.get("sep", "\n")
+    buf = []
+    for filename in filenames:
+        with io.open(filename, encoding=encoding) as f:
+            buf.append(f.read())
+    return sep.join(buf)
 
-setup(
+
+def read_requirements(req):
+    """function to read requirements"""
+    content = read(req)
+    requirements = []
+    for line in content.split("\n"):
+        line = line.strip()
+        if line.startswith("#"):
+            continue
+        if line.startswith("-r"):
+            requirements.extend(read_requirements(line[3:]))
+        else:
+            requirements.append(line)
+    return requirements
+
+
+setuptools.setup(
     name="resource-schema-guard-rail",
     version="0.0.5",
-    author="Anton Mokhovikov",
-    author_email="ammokhov@amazon.com",
     description="Schema Guard Rail",
-    long_description=read("README.md"),
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ammokhov/resource-schema-guard-rail/",
+    author="Amazon Web Services",
+    author_email="aws-cloudformation-developers@amazon.com",
     packages=["rpdk.guard_rail"],
     package_dir={"": "src"},
-    install_requires=requirements,
+    install_requires=read_requirements("requirements_dev.txt"),
     python_requires=">=3.7",
     entry_points={
         "console_scripts": [
@@ -44,7 +52,6 @@ setup(
             "guard-rail = cli:main",
         ]
     },
-    license="Apache License 2.0",
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
