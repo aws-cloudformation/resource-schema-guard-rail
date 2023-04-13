@@ -106,7 +106,12 @@ class GuardRuleSetResult:
         }
 
     def __str__(self):
-        if not self.compliant and not self.non_compliant and self.skipped:
+        if (
+            not self.compliant
+            and not self.non_compliant
+            and not self.skipped
+            and not self.warning
+        ):
             return "Couldn't retrieve the result"
 
         environment = jinja_loader(__name__)

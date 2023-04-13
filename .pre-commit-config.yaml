@@ -45,3 +45,19 @@ repos:
     pass_filenames: false
     always_run: true
     verbose: true
+- repo: local
+  hooks:
+  - id: unit-tests
+    name: unit-tests
+    description: Run pytest in the local virtualenv
+    entry: >
+      pytest
+      tests/unit
+      --cov src
+      --cov-report term-missing
+      --cov-fail-under 80
+      --random-order-bucket parent
+      -vv
+    language: system
+    pass_filenames: false
+    always_run: true
