@@ -18,11 +18,10 @@ from typing import Any, Dict, Mapping
 
 import cfn_guard_rs
 
-from ..rule_library import combiners, core, permissions, tags, statefull
+from ..rule_library import combiners, core, permissions, tags
 from ..utils.common import is_guard_rule
 from ..utils.logger import LOG, logdebug
 from .data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
-from .stateful import schema_diff as sdf
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
@@ -50,27 +49,6 @@ def prepare_ruleset():
 
 
 @logdebug
-def prepare_ruleset_statefull():
-    """Fetches module level schema rules.
-
-    Iterates over provided modules (core, combiners, permissions, tags)
-    and checks if content is a guard rule-set, ten adds it to the list
-    `to-run`
-
-    Returns:
-        Set[str]: set of rules in a string form
-    """
-    static_rule_modules = [statefull]
-    rule_set = set()
-    for module in static_rule_modules:
-        for content in pkg_resources.contents(module):
-            if not is_guard_rule(content):
-                continue
-            rule_set.add(pkg_resources.read_text(module, content))
-    return rule_set
-
-
-@logdebug
 def __exec_rules__(schema: Dict):
     """Closure factory function for schema compliace execution -
     Read rule compliance status and output guard rule set result
@@ -87,12 +65,12 @@ def __exec_rules__(schema: Dict):
         guard_result = cfn_guard_rs.run_checks(schema, rules)
 
         def __render_output(evaluation_result: object):
-            
             def __add_item__(rule_name: str, mapping: Mapping, result: Any):
                 if rule_name in mapping:
                     mapping[rule_name].append(result)
                     return
                 mapping[rule_name] = [result]
+
             non_compliant = {}
             warning = {}
             for rule_name, checks in guard_result.not_compliant.items():
@@ -104,7 +82,6 @@ def __exec_rules__(schema: Dict):
                             check_id=_message_dict["check_id"],
                             message=_message_dict["message"],
                         )
-
 
                         if _message_dict.get("result", NON_COMPLIANT) == WARNING:
                             __add_item__(rule_name, warning, rule_result)
@@ -180,19 +157,4 @@ def _(payload):
     Returns:
         GuardRuleSetResult: Rule Result
     """
-    # raise NotImplementedError("Statefull evaluation is not supported yet")
-    compliance_output = []
-    ruleset = prepare_ruleset_statefull() | set(payload.rules)
-
-    def __execute__(schema_exec, ruleset):
-        output = None
-        for rules in ruleset:
-            output = schema_exec(rules)
-        return output
-    
-    schema_to_execute = __exec_rules__(schema=sdf)
-    output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
-    compliance_output.append(output)
-
-    return compliance_output
-    
+    raise NotImplementedError("Statefull evaluation is not supported yet")

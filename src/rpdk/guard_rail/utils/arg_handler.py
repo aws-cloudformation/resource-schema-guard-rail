@@ -110,6 +110,7 @@ def setup_args():  # pylint: disable=C0116
 def schema_input_path_validation(input_path: str):  # pylint: disable=C0116
     pass
 
+
 @logdebug
 @apply_rule(
     lambda input_path: re.search(FILE_PATTERN, input_path),
@@ -138,27 +139,28 @@ def collect_schemas(schemas: Sequence[str] = None):
         try:
             return json.loads(schema_raw)
         except json.JSONDecodeError as ex:
-            raise ValueError(f"Could not deserialize schema directly - invalid Schema Body {ex}. Trying access it as a file") from ex
+            raise ValueError(
+                f"Could not deserialize schema directly - invalid Schema Body {ex}. Trying access it as a file"
+            ) from ex
 
     if schemas:
         for schema_item in schemas:
-            
+
             LOG.info(schema_item)
             schema_deser = None
             try:
                 schema_deser = __to_json(schema_item)
             except ValueError as e:
                 LOG.info(e)
-            
-            
+
             if schema_deser is None:
                 schema_input_path_validation(schema_item)
                 path = "/" + re.search(JSON_PATH_EXTRACT_PATTERN, schema_item).group(0)
                 file_obj = read_file(path)
                 schema_deser = __to_json(file_obj)
-            
+
             _schemas.append(schema_deser)
-            
+
     return _schemas
 
 
