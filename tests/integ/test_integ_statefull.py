@@ -1,6 +1,9 @@
 """
 Integ test for statefull schema validation
 """
+import os
+from pathlib import Path
+
 import pytest
 
 from cli import main
@@ -12,11 +15,19 @@ from cli import main
         (
             [
                 "--schema",
-                "file://Users/sgathili/workplace/guard_rail/resource-schema-guard-rail/tests/integ/data/sample-schema.json",
+                "file:/"
+                + str(
+                    Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                        "data/sample-schema.json"
+                    )
+                ),
                 "--schema",
-                "file://Users/sgathili/workplace/guard_rail/resource-schema-guard-rail/tests/integ/data/sample-schema.json",
-                "--rule",
-                "file://Users/sgathili/workplace/guard_rail/resource-schema-guard-rail/tests/integ/data/sample-rule.guard",
+                "file:/"
+                + str(
+                    Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                        "data/sample-schema.json"
+                    )
+                ),
                 "--statefull",
             ]
         ),
