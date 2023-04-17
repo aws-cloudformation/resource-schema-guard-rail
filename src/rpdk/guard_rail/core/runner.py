@@ -17,11 +17,15 @@ from functools import singledispatch
 from typing import Any, Dict, Mapping
 
 import cfn_guard_rs
-
-from ..rule_library import combiners, core, permissions, tags
-from ..utils.common import is_guard_rule
-from ..utils.logger import LOG, logdebug
-from .data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
+from src.rpdk.guard_rail.core.data_types import (
+    GuardRuleResult,
+    GuardRuleSetResult,
+    Statefull,
+    Stateless,
+)
+from src.rpdk.guard_rail.rule_library import combiners, core, permissions, tags
+from src.rpdk.guard_rail.utils.common import is_guard_rule
+from src.rpdk.guard_rail.utils.logger import LOG, logdebug
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
