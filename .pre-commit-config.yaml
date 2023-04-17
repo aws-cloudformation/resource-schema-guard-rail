@@ -61,3 +61,16 @@ repos:
     language: system
     pass_filenames: false
     always_run: true
+- repo: local
+  hooks:
+  - id: integ-tests
+    name: integ-tests
+    description: Run pytest in the local virtualenv
+    entry: >
+      pytest
+      tests/integ
+      --random-order-bucket parent
+      -vv
+    language: system
+    pass_filenames: false
+    always_run: true
