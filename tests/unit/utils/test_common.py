@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from rpdk.guard_rail.utils.common import is_guard_rule, read_file
+from src.rpdk.guard_rail.utils.common import is_guard_rule, read_file
 
 
 @pytest.mark.parametrize(

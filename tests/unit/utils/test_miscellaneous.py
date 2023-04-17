@@ -7,10 +7,10 @@ from unittest import mock
 
 from jinja2 import FileSystemLoader, PackageLoader
 
-from rpdk.guard_rail.utils.miscellaneous import jinja_loader
+from src.rpdk.guard_rail.utils.miscellaneous import jinja_loader
 
 
-@mock.patch("rpdk.guard_rail.utils.miscellaneous.find_spec")
+@mock.patch("src.rpdk.guard_rail.utils.miscellaneous.find_spec")
 def test_jinja_loader_none_spec(mock_find_spec):
     """Test jinja loader"""
     mock_find_spec.return_value = None
@@ -18,7 +18,7 @@ def test_jinja_loader_none_spec(mock_find_spec):
     assert env.loader.loaders[0].package_path == PackageLoader(__name__).package_path
 
 
-@mock.patch("rpdk.guard_rail.utils.miscellaneous.FileSystemLoader")
+@mock.patch("src.rpdk.guard_rail.utils.miscellaneous.FileSystemLoader")
 def test_jinja_loader(mock_file_systeam_loader):
     """Test jinja loader"""
     spec_path = Path(find_spec(__name__).origin).resolve(strict=True)

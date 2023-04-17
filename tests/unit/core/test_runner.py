@@ -3,8 +3,8 @@ Unit test for data_types.py
 """
 import pytest
 
-from rpdk.guard_rail.core.data_types import Statefull, Stateless
-from rpdk.guard_rail.core.runner import exec_compliance, prepare_ruleset
+from src.rpdk.guard_rail.core.data_types import Statefull, Stateless
+from src.rpdk.guard_rail.core.runner import exec_compliance, prepare_ruleset
 
 
 def test_prepare_ruleset():
