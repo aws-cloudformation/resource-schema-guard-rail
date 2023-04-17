@@ -35,13 +35,18 @@ repos:
     additional_dependencies: ['click==8.0.4']
 
 - repo: https://github.com/pycqa/pylint
-  rev: v2.15.2
+  rev: v2.15.10
   hooks:
   - id: pylint
     name: pylint
     description: Run pylint in the local virtualenv
     entry: pylint "setup.py" "src/" "tests/"
-    language: system
+    args:
+      [
+        "-rn", # Only display messages
+        "--rcfile=.pylintrc", # Link to config file
+      ]
+    additional_dependencies: [ 'astroid==2.13.2' ]
     pass_filenames: false
     always_run: true
     verbose: true
