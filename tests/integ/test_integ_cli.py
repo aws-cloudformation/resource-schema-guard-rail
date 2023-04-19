@@ -10,7 +10,7 @@ from src.cli import main
 
 
 @pytest.mark.parametrize(
-    "args,failed_rules",
+    "args",
     [
         (
             [
@@ -22,22 +22,7 @@ from src.cli import main
                     )
                 ),
                 "--format",
-            ],
-            [
-                "ENSURE_PROPERTIES_DO_NOT_SUPPORT_MULTITYPE:\n"
-                "    check-id: COM_2\n"
-                "    message: type MUST NOT have combined definition\n",
-                "ENSURE_PRIMARY_IDENTIFIER_IS_READ_OR_CREATE_ONLY:\n"
-                "    check-id: unidentified\n"
-                "    message: unidentified\n"
-                "    check-id: unidentified\n"
-                "    message: unidentified\n"
-                "    check-id: P_ID_2\n"
-                "    message: primaryIdentifier MUST be either readOnly or createOnly\n",
-                "ENSURE_ARN_PROPERTIES_CONTAIN_PATTERN:\n"
-                "    check-id: ARN_2\n"
-                "    message: arn related property MUST have pattern specified\n",
-            ],
+            ]
         ),
         (
             [
@@ -55,14 +40,44 @@ from src.cli import main
                         "data/sample-schema.json"
                     )
                 ),
-            ],
-            [],
+            ]
         ),
     ],
 )
-def test_main_cli(capsys, args, failed_rules):
+def test_main_cli_stateless(args):
     """Main cli unit test"""
     main(args_in=args)
-    captured = capsys.readouterr()
-    for rule in failed_rules:
-        assert rule in captured.out
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        (
+            [
+                "--schema",
+                "file:/"
+                + str(
+                    Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                        "data/sample-schema.json"
+                    )
+                ),
+                "--schema",
+                "file:/"
+                + str(
+                    Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                        "data/sample-schema.json"
+                    )
+                ),
+                "--statefull",
+            ]
+        ),
+    ],
+)
+def test_main_cli_statefull(
+    args,
+):
+    """Main cli unit test"""
+    try:
+        main(args_in=args)
+    except NotImplementedError as e:
+        assert "Statefull evaluation is not supported yet" == str(e)

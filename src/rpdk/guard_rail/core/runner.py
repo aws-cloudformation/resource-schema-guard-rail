@@ -81,16 +81,17 @@ def __exec_rules__(schema: Dict):
                 for check in checks:
                     try:
                         print(check)
-                        _message_dict = literal_eval(check.message.strip())
-                        rule_result = GuardRuleResult(
-                            check_id=_message_dict["check_id"],
-                            message=_message_dict["message"],
-                        )
+                        if check.message:
+                            _message_dict = literal_eval(check.message.strip())
+                            rule_result = GuardRuleResult(
+                                check_id=_message_dict["check_id"],
+                                message=_message_dict["message"],
+                            )
 
-                        if _message_dict.get("result", NON_COMPLIANT) == WARNING:
-                            __add_item__(rule_name, warning, rule_result)
-                        else:
-                            __add_item__(rule_name, non_compliant, rule_result)
+                            if _message_dict.get("result", NON_COMPLIANT) == WARNING:
+                                __add_item__(rule_name, warning, rule_result)
+                            else:
+                                __add_item__(rule_name, non_compliant, rule_result)
                     except SyntaxError as ex:
                         LOG.info("%s %s", str(ex), check.message)
                         __add_item__(rule_name, non_compliant, GuardRuleResult())
