@@ -68,9 +68,6 @@ def test_exec_compliance_stateless(
     """Test exec_compliance for stateless"""
     payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
     compliance_result = exec_compliance(payload)[0]
-    print("------")
-    print(compliance_result.warning)
-    print("------")
 
     # Assert for non-compliant rules
     for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
