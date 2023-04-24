@@ -55,7 +55,7 @@ repos:
       tests/unit
       --cov src
       --cov-report term-missing
-      --cov-fail-under 80
+      --cov-fail-under 97
       --random-order-bucket parent
       -vv
     language: system
