@@ -1,0 +1,259 @@
+{
+    "definitions": {
+        "NewPropertyRef": {
+            "$ref": "#/definitions/NewPropertyRef2"
+        },
+        "NewPropertyRef2": {
+            "$ref": "#/definitions/NewProperty"
+        },
+        "ConfigurationItem": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "Configurations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ConfigurationItem"
+                    }
+                }
+            }
+        },
+        "NewProperty": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 129
+                }
+            }
+        },
+        "Tag": {
+            "type": "object",
+            "anyOf":[
+                {
+                    "properties": {
+                        "Key": {
+                            "type": "string",
+                            "pattern": "*"
+                        },
+                        "Value": {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 256
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Key"
+                    ]
+                },
+                {
+                    "properties": {
+                        "Key": {
+                            "type": "string",
+                            "pattern": "*"
+                        },
+                        "Value2": {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 256
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Key",
+                        "Value2"
+                    ]
+                },
+                {
+                    "type" : "object",
+                    "description" : "This resource type use map for Tags, suggest to use List of Tag",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                        ".*": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "properties": {
+        "NewProperty": {
+            "$ref": "#/definitions/NewPropertyRef"
+        },
+        
+        "Configurations": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ConfigurationItem"
+            }
+        },
+        
+        "Description": {
+            "type": "string",
+            "pattern": ""
+        },
+        "Enabled": {
+            "type": "boolean"
+        },
+        "EnableKeyRotation": {
+            "type": "boolean"
+        },
+        "KeyPolicy": {
+            "type": "object"
+        },
+        "KeyUsage": {
+            "type": "string",
+            "default": "ENCRYPT_DECRYPT",
+            "enum": [
+                "ENCRYPT_DECRYPT",
+                "SIGN_VERIFY",
+                "GENERATE_VERIFY_MAC"
+            ]
+        },
+        "KeySpec": {
+            "type": "string",
+            "default": "SYMMETRIC_DEFAULT",
+            "enum": [
+                "SYMMETRIC_DEFAULT",
+                "RSA_2048",
+                "RSA_3072",
+                "RSA_4096",
+                "ECC_NIST_P256",
+                "ECC_NIST_P384",
+                "ECC_NIST_P521",
+                "ECC_SECG_P256K1",
+                "HMAC_224",
+                "HMAC_256",
+                "HMAC_384",
+                "HMAC_512",
+                "SM2"
+            ]
+        },
+        "MultiRegion": {
+            "type": "boolean",
+            "default": false
+        },
+        "PendingWindowInDays": {
+            "type": "integer",
+            "minimum": 7,
+            "maximum": 30
+        },
+        "Tags2": {
+            "type": "array",
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/Tag"
+            }
+        },
+        "Tags3": {
+            "type": "array",
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Tag"
+                    }
+                ]
+            }
+        },
+        "Tags4": {
+            "type": "array",
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "allOf": [
+                    {
+                        "$ref": "#/definitions/Tag"
+                    }
+                ]
+            }
+        },
+        "Tags5": {
+            "type": "array",
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/Tag"
+                    }
+                ]
+            }
+        },
+        "Arn": {
+            "type": "string"
+        },
+        "KeyId": {
+            "type": "number"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "KeyPolicy",
+        "PendingWindowInDays"
+    ],
+    "readOnlyProperties": [
+    ],
+    "createOnlyProperties": [
+        "/properties/KeyId"
+    ],
+    "primaryIdentifier": [
+        "/properties/KeyId",
+        "/properties/NewProperty/Name"
+    ],
+    "writeOnlyProperties": [
+        "/properties/PendingWindowInDays",
+        "/properties/KeyPolicy"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "kms:CreateKey",
+                "kms:CreateKeyNew", 
+                "kms:EnableKeyRotation",
+                "kms:DisableKey",
+                "kms:TagResource"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListResourceTags"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:DisableKey",
+                "kms:DisableKeyRotation",
+                "kms:EnableKey",
+                "kms:EnableKeyRotation",
+                "kms:PutKeyPolicy",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:UpdateKeyDescription"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:ScheduleKeyDeletion"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "kms:ListKeys",
+                "kms:DescribeKey"
+            ]
+        }
+    }
+}
