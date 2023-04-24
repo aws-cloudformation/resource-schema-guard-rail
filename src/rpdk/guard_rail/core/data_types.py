@@ -22,8 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from colorama import Fore, init
-
-from ..utils.miscellaneous import jinja_loader
+from src.rpdk.guard_rail.utils.miscellaneous import jinja_loader
 
 init()
 

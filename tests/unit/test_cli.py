@@ -6,8 +6,8 @@ from unittest import mock
 
 import pytest
 
-from cli import main
-from rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
+from src.cli import main
+from src.rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
 
 
 @pytest.fixture(scope="module")
@@ -29,10 +29,10 @@ def compliance_result():
     yield result
 
 
-@mock.patch("cli.exec_compliance")
-@mock.patch("cli.argument_validation")
-@mock.patch("cli.collect_rules")
-@mock.patch("cli.collect_schemas")
+@mock.patch("src.cli.exec_compliance")
+@mock.patch("src.cli.argument_validation")
+@mock.patch("src.cli.collect_rules")
+@mock.patch("src.cli.collect_schemas")
 @pytest.mark.parametrize(
     "args",
     [

@@ -3,7 +3,7 @@ Unit test for data_types.py
 """
 from typing import Dict, List
 
-from rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
+from src.rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
 
 
 def test_merge():

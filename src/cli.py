@@ -17,9 +17,9 @@ Arguments:
 from functools import singledispatch
 from typing import List
 
-from rpdk.guard_rail.core.data_types import GuardRuleSetResult, Statefull, Stateless
-from rpdk.guard_rail.core.runner import exec_compliance
-from rpdk.guard_rail.utils.arg_handler import (
+from src.rpdk.guard_rail.core.data_types import GuardRuleSetResult, Statefull, Stateless
+from src.rpdk.guard_rail.core.runner import exec_compliance
+from src.rpdk.guard_rail.utils.arg_handler import (
     argument_validation,
     collect_rules,
     collect_schemas,

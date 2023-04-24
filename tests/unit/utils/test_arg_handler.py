@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from rpdk.guard_rail.utils.arg_handler import (
+from src.rpdk.guard_rail.utils.arg_handler import (
     argument_validation,
     collect_rules,
     collect_schemas,
