@@ -41,12 +41,30 @@
         "KeyUsage": {
             "type": "string",
             "default": "ENCRYPT_DECRYPT",
-            "enum": ["ENCRYPT_DECRYPT", "SIGN_VERIFY", "GENERATE_VERIFY_MAC"]
+            "enum": [
+                "ENCRYPT_DECRYPT",
+                "SIGN_VERIFY",
+                "GENERATE_VERIFY_MAC"
+            ]
         },
         "KeySpec": {
             "type": "string",
             "default": "SYMMETRIC_DEFAULT",
-            "enum": ["SYMMETRIC_DEFAULT", "RSA_2048", "RSA_3072", "RSA_4096", "ECC_NIST_P256", "ECC_NIST_P384", "ECC_NIST_P521", "ECC_SECG_P256K1", "HMAC_224", "HMAC_256", "HMAC_384", "HMAC_512", "SM2"]
+            "enum": [
+                "SYMMETRIC_DEFAULT",
+                "RSA_2048",
+                "RSA_3072",
+                "RSA_4096",
+                "ECC_NIST_P256",
+                "ECC_NIST_P384",
+                "ECC_NIST_P521",
+                "ECC_SECG_P256K1",
+                "HMAC_224",
+                "HMAC_256",
+                "HMAC_384",
+                "HMAC_512",
+                "SM2"
+            ]
         },
         "MultiRegion": {
             "type": "boolean",
@@ -63,45 +81,53 @@
             "insertionOrder": false,
             "items": {
                 "type": "object",
-                "anyOf": [{
-                    "properties": {
-                        "Key": {
-                            "type": "string",
-                            "pattern": "*"
+                "anyOf": [
+                    {
+                        "properties": {
+                            "Key": {
+                                "type": "string",
+                                "pattern": "*"
+                            },
+                            "Value": {
+                                "type": "string",
+                                "minLength": 0,
+                                "maxLength": 256
+                            }
                         },
-                        "Value": {
-                            "type": "string",
-                            "minLength": 0,
-                            "maxLength": 256
-                        }
+                        "additionalProperties": false,
+                        "required": [
+                            "Key"
+                        ]
                     },
-                    "additionalProperties": false,
-                    "required": ["Key"]
-                }, {
-                    "properties": {
-                        "Key": {
-                            "type": "string",
-                            "pattern": "*"
+                    {
+                        "properties": {
+                            "Key": {
+                                "type": "string",
+                                "pattern": "*"
+                            },
+                            "Value2": {
+                                "type": "string",
+                                "minLength": 0,
+                                "maxLength": 256
+                            }
                         },
-                        "Value2": {
-                            "type": "string",
-                            "minLength": 0,
-                            "maxLength": 256
-                        }
+                        "additionalProperties": false,
+                        "required": [
+                            "Key",
+                            "Value2"
+                        ]
                     },
-                    "additionalProperties": false,
-                    "required": ["Key", "Value2"]
-                },
-                {
-                    "type": "object",
-                    "description": "This resource type use map for Tags, suggest to use List of Tag",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                        ".*": {
-                            "type": "string"
+                    {
+                        "type": "object",
+                        "description": "This resource type use map for Tags, suggest to use List of Tag",
+                        "additionalProperties": false,
+                        "patternProperties": {
+                            ".*": {
+                                "type": "string"
+                            }
                         }
                     }
-                }]
+                ]
             }
         },
         "Tags3": {
@@ -109,48 +135,58 @@
             "uniqueItems": true,
             "insertionOrder": false,
             "items": {
-                "anyOf": [{
-                    "type": "object",
-                    "anyOf": [{
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key"]
-                    }, {
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value2": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key", "Value2"]
-                    },
+                "anyOf": [
                     {
                         "type": "object",
-                        "description": "This resource type use map for Tags, suggest to use List of Tag",
-                        "additionalProperties": false,
-                        "patternProperties": {
-                            ".*": {
-                                "type": "string"
+                        "anyOf": [
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value2": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key",
+                                    "Value2"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "description": "This resource type use map for Tags, suggest to use List of Tag",
+                                "additionalProperties": false,
+                                "patternProperties": {
+                                    ".*": {
+                                        "type": "string"
+                                    }
+                                }
                             }
-                        }
-                    }]
-                }]
+                        ]
+                    }
+                ]
             }
         },
         "Tags4": {
@@ -158,48 +194,58 @@
             "uniqueItems": true,
             "insertionOrder": false,
             "items": {
-                "allOf": [{
-                    "type": "object",
-                    "anyOf": [{
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key"]
-                    }, {
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value2": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key", "Value2"]
-                    },
+                "allOf": [
                     {
                         "type": "object",
-                        "description": "This resource type use map for Tags, suggest to use List of Tag",
-                        "additionalProperties": false,
-                        "patternProperties": {
-                            ".*": {
-                                "type": "string"
+                        "anyOf": [
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value2": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key",
+                                    "Value2"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "description": "This resource type use map for Tags, suggest to use List of Tag",
+                                "additionalProperties": false,
+                                "patternProperties": {
+                                    ".*": {
+                                        "type": "string"
+                                    }
+                                }
                             }
-                        }
-                    }]
-                }]
+                        ]
+                    }
+                ]
             }
         },
         "Tags5": {
@@ -207,48 +253,58 @@
             "uniqueItems": true,
             "insertionOrder": false,
             "items": {
-                "oneOf": [{
-                    "type": "object",
-                    "anyOf": [{
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key"]
-                    }, {
-                        "properties": {
-                            "Key": {
-                                "type": "string",
-                                "pattern": "*"
-                            },
-                            "Value2": {
-                                "type": "string",
-                                "minLength": 0,
-                                "maxLength": 256
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": ["Key", "Value2"]
-                    },
+                "oneOf": [
                     {
                         "type": "object",
-                        "description": "This resource type use map for Tags, suggest to use List of Tag",
-                        "additionalProperties": false,
-                        "patternProperties": {
-                            ".*": {
-                                "type": "string"
+                        "anyOf": [
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "Key": {
+                                        "type": "string",
+                                        "pattern": "*"
+                                    },
+                                    "Value2": {
+                                        "type": "string",
+                                        "minLength": 0,
+                                        "maxLength": 256
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "Key",
+                                    "Value2"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "description": "This resource type use map for Tags, suggest to use List of Tag",
+                                "additionalProperties": false,
+                                "patternProperties": {
+                                    ".*": {
+                                        "type": "string"
+                                    }
+                                }
                             }
-                        }
-                    }]
-                }]
+                        ]
+                    }
+                ]
             }
         },
         "Arn": {
@@ -259,26 +315,64 @@
         }
     },
     "additionalProperties": false,
-    "required": ["KeyPolicy", "PendingWindowInDays"],
+    "required": [
+        "KeyPolicy",
+        "PendingWindowInDays"
+    ],
     "readOnlyProperties": [],
-    "createOnlyProperties": ["/properties/KeyId"],
-    "primaryIdentifier": ["/properties/KeyId", "/properties/NewProperty/Name"],
-    "writeOnlyProperties": ["/properties/PendingWindowInDays", "/properties/KeyPolicy"],
+    "createOnlyProperties": [
+        "/properties/KeyId"
+    ],
+    "primaryIdentifier": [
+        "/properties/KeyId",
+        "/properties/NewProperty/Name"
+    ],
+    "writeOnlyProperties": [
+        "/properties/PendingWindowInDays",
+        "/properties/KeyPolicy"
+    ],
     "handlers": {
         "create": {
-            "permissions": ["kms:CreateKey", "kms:CreateKeyNew", "kms:EnableKeyRotation", "kms:DisableKey", "kms:TagResource"]
+            "permissions": [
+                "kms:CreateKey",
+                "kms:CreateKeyNew",
+                "kms:EnableKeyRotation",
+                "kms:DisableKey",
+                "kms:TagResource"
+            ]
         },
         "read": {
-            "permissions": ["kms:DescribeKey", "kms:GetKeyPolicy", "kms:GetKeyRotationStatus", "kms:ListResourceTags"]
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListResourceTags"
+            ]
         },
         "update": {
-            "permissions": ["kms:DescribeKey", "kms:DisableKey", "kms:DisableKeyRotation", "kms:EnableKey", "kms:EnableKeyRotation", "kms:PutKeyPolicy", "kms:TagResource", "kms:UntagResource", "kms:UpdateKeyDescription"]
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:DisableKey",
+                "kms:DisableKeyRotation",
+                "kms:EnableKey",
+                "kms:EnableKeyRotation",
+                "kms:PutKeyPolicy",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:UpdateKeyDescription"
+            ]
         },
         "delete": {
-            "permissions": ["kms:DescribeKey", "kms:ScheduleKeyDeletion"]
+            "permissions": [
+                "kms:DescribeKey",
+                "kms:ScheduleKeyDeletion"
+            ]
         },
         "list": {
-            "permissions": ["kms:ListKeys", "kms:DescribeKey"]
+            "permissions": [
+                "kms:ListKeys",
+                "kms:DescribeKey"
+            ]
         }
     }
 }
