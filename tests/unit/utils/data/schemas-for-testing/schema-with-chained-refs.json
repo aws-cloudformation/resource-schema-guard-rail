@@ -32,7 +32,7 @@
         },
         "Tag": {
             "type": "object",
-            "anyOf":[
+            "anyOf": [
                 {
                     "properties": {
                         "Key": {
@@ -69,8 +69,8 @@
                     ]
                 },
                 {
-                    "type" : "object",
-                    "description" : "This resource type use map for Tags, suggest to use List of Tag",
+                    "type": "object",
+                    "description": "This resource type use map for Tags, suggest to use List of Tag",
                     "additionalProperties": false,
                     "patternProperties": {
                         ".*": {
@@ -85,14 +85,12 @@
         "NewProperty": {
             "$ref": "#/definitions/NewPropertyRef"
         },
-        
         "Configurations": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/ConfigurationItem"
             }
         },
-        
         "Description": {
             "type": "string",
             "pattern": ""
@@ -199,8 +197,7 @@
         "KeyPolicy",
         "PendingWindowInDays"
     ],
-    "readOnlyProperties": [
-    ],
+    "readOnlyProperties": [],
     "createOnlyProperties": [
         "/properties/KeyId"
     ],
@@ -216,7 +213,7 @@
         "create": {
             "permissions": [
                 "kms:CreateKey",
-                "kms:CreateKeyNew", 
+                "kms:CreateKeyNew",
                 "kms:EnableKeyRotation",
                 "kms:DisableKey",
                 "kms:TagResource"
