@@ -1,0 +1,104 @@
+let newProps = newProperties
+
+
+rule ensure_old_property_not_turned_immutable when createOnlyProperties.added exists
+{
+    createOnlyProperties.added[*] {
+        this IN %newProps
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "SF_ID_1",
+            "message": "Only NEW properties can be marked as createOnlyProperties"
+        }
+        >>
+    }
+}
+
+
+rule ensure_old_property_not_turned_immutable when createOnlyProperties.added exists
+{
+    minLength.removed[*] {
+        this IN pattern.added
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "SF_ID_1",
+            "message": "Only NEW properties can be marked as createOnlyProperties"
+        }
+        >>
+    }
+}
+
+
+rule ensure_old_property_not_turned_writeonly when writeOnlyProperties.added exists
+{
+    writeOnlyProperties.added[*] {
+        this IN %newProps
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "SF_ID_2",
+            "message": "Only NEW properties can be marked as writeOnlyProperties"
+        }
+        >>
+    }
+}
+
+rule ensure_primary_identifier_not_changed when primaryIdentifier exists
+{
+    primaryIdentifier.added !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "SF_ID_3",
+        "message": "primaryIdentifier cannot add more members"
+    }
+    >>
+
+    primaryIdentifier.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "SF_ID_4",
+        "message": "primaryIdentifier cannot remove members"
+    }
+    >>   
+}
+
+
+rule ensure_no_more_required_properties when required exists
+{
+    required.added !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "SF_ID_5",
+        "message": "cannot add more REQUIRED properties"
+    }
+    >>   
+}
+
+
+rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exists
+{
+    readOnlyProperties.added[*] {
+        this IN %newProps
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "SF_ID_6",
+            "message": "Only NEW properties can be marked as createOnlyProperties"
+        }
+        >>
+    }
+
+    readOnlyProperties.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "SF_ID_7",
+        "message": "Only NEW properties can be marked as createOnlyProperties"
+    }
+    >>
+}
