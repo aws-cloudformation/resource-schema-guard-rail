@@ -118,6 +118,8 @@ def _get_path(path_list):
 def _cast_path(value: str):
     """cast the path of the change to process constructs"""
     pattern = r"(?<=\[)'?([\s\S]+?)'?(?=\])"
+    value = value.replace("items']['properties", "*")
+    value = re.sub(r"[0-9]+]", "", value)
     result = re.findall(pattern, value)
     return result
 
@@ -136,6 +138,23 @@ def _add_item(constructs_diff, result_key, change_key, result_value):
         constructs_diff[result_key][change_key].append(result_value)
     else:
         constructs_diff[result_key][change_key] = [result_value]
+
+
+def _process_nested_properties(constructs_diff, result_key, prefix, diff_value):
+    if "items" in diff_value and PROPERTIES in diff_value["items"]:
+        for nested_property in diff_value["items"]["properties"]:
+            _add_item(
+                constructs_diff,
+                PROPERTIES,
+                result_key,
+                prefix + "/*/" + nested_property,
+            )
+            _process_nested_properties(
+                constructs_diff,
+                result_key,
+                prefix + "/*/" + nested_property,
+                diff_value["items"]["properties"][nested_property],
+            )
 
 
 def _translate_iterable_change(
@@ -181,12 +200,16 @@ def _translate_dict_change(
     """
 
     def __translate_dict_added_diff(constructs_diff, diff_value):
-        for key in diff_value:
+        for key, value in diff_value.items():
             path_list = _cast_path(key)
             if is_property(path_list):
                 _add_item(
                     constructs_diff, PROPERTIES, DIFFKEYS.ADDED, _get_path(path_list)
                 )
+                if isinstance(value, dict):
+                    _process_nested_properties(
+                        constructs_diff, DIFFKEYS.ADDED, _get_path(path_list), value
+                    )
             if is_native_construct(path_list):
                 _add_item(
                     constructs_diff,
@@ -196,12 +219,16 @@ def _translate_dict_change(
                 )
 
     def __translate_dict_removed_diff(constructs_diff, diff_value):
-        for key in diff_value:
+        for key, value in diff_value.items():
             path_list = _cast_path(key)
             if is_property(path_list):
                 _add_item(
                     constructs_diff, PROPERTIES, DIFFKEYS.REMOVED, _get_path(path_list)
                 )
+                if isinstance(value, dict):
+                    _process_nested_properties(
+                        constructs_diff, DIFFKEYS.REMOVED, _get_path(path_list), value
+                    )
             if is_native_construct(path_list):
                 _add_item(
                     constructs_diff,
@@ -258,6 +285,7 @@ def _translate_meta_diff(iterable: Iterable):
     Returns:
         _type_: _description_
     """
+    print(iterable)
     diff_switcher = {
         METADIFF.ITERABLE_ITEM_ADDED: partial(
             _translate_iterable_change, DIFFKEYS.ADDED

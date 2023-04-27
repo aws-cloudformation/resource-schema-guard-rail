@@ -7,8 +7,9 @@ from src.rpdk.guard_rail.core.stateful import schema_diff
 
 
 @pytest.mark.parametrize(
-    "previous_schema, current_schema, expected_diff",
+    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
     [
+        # Test Case #1: New Primary Identifier
         (
             {"primaryIdentifier": ["bar"]},
             {"primaryIdentifier": ["bar_changed", "bar_added"]},
@@ -18,7 +19,14 @@ from src.rpdk.guard_rail.core.stateful import schema_diff
                     "removed": ["bar"],
                 }
             },
+            {
+                "primaryIdentifier": {
+                    "added": ["bar"],
+                    "removed": ["bar_changed", "bar_added"],
+                }
+            },
         ),
+        # Test Case #2: New Native Constructs and modifications
         (
             {
                 "properties": {
@@ -60,24 +68,29 @@ from src.rpdk.guard_rail.core.stateful import schema_diff
                     ]
                 },
             },
+            {
+                "type": {"added": ["/properties/Description"]},
+                "minLength": {
+                    "changed": [
+                        {
+                            "property": "/properties/Description",
+                            "old_value": 10,
+                            "new_value": 0,
+                        }
+                    ]
+                },
+                "maxLength": {
+                    "changed": [
+                        {
+                            "property": "/properties/Description",
+                            "old_value": 4096,
+                            "new_value": 8192,
+                        }
+                    ]
+                },
+            },
         ),
-    ],
-)
-def test_schema_diff(previous_schema, current_schema, expected_diff):
-    """
-
-    Args:
-        previous_schema:
-        current_schema:
-        expected_diff:
-    """
-    assert expected_diff == schema_diff(previous_schema, current_schema)
-
-
-@pytest.mark.parametrize(
-    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
-    [
-        # Test Case #1: New Property
+        # Test Case #3: New Property
         (
             {"properties": {}},
             {
@@ -93,109 +106,208 @@ def test_schema_diff(previous_schema, current_schema, expected_diff):
             {"properties": {"added": ["/properties/NewProperty"]}},
             {"properties": {"removed": ["/properties/NewProperty"]}},
         ),
-        # # Test Case #2: New Property with nested structure
+        # Test Case #4: New Property with nested structure
+        (
+            {"properties": {}},
+            {
+                "properties": {
+                    "Configurations": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {"type": "string"},
+                                "Configurations": {  # recursive property
+                                    "type": "array",
+                                    "items": {},  # ends at this level
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "added": [
+                        # we need to add root property
+                        # so as it's leafs as separate items
+                        "/properties/Configurations",
+                        "/properties/Configurations/*/Name",
+                        "/properties/Configurations/*/Configurations",
+                    ]
+                }
+            },
+            {
+                "properties": {
+                    "removed": [
+                        # we need to add root property
+                        # so as it's leafs as separate items
+                        "/properties/Configurations",
+                        "/properties/Configurations/*/Name",
+                        "/properties/Configurations/*/Configurations",
+                    ]
+                }
+            },
+        ),
+        # Test Case #5: New Nested Property
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {"Key": {"type": "string"}},
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "string"},
+                                "Value": {"type": "string"},
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "added": [
+                        "/properties/Tags/*/Value",
+                    ]
+                }
+            },
+            {
+                "properties": {
+                    "removed": [
+                        "/properties/Tags/*/Value",
+                    ]
+                }
+            },
+        ),
+        # Test Case #6: Modified Nested Property
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {"Key": {"type": "string"}},
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "int"},
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": "int",
+                            "old_value": "string",
+                            "property": "/properties/Tags/*/Key",
+                        }
+                    ]
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": "string",
+                            "old_value": "int",
+                            "property": "/properties/Tags/*/Key",
+                        }
+                    ]
+                }
+            },
+        ),
+        # Test Case #7: New Two Level Nested Property
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {"Key": {"type": "string"}},
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "string"},
+                                "Value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "NestedKey": {"type": "string"},
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "added": [
+                        "/properties/Tags/*/Value",
+                        "/properties/Tags/*/Value/*/NestedKey",
+                    ]
+                }
+            },
+            {
+                "properties": {
+                    "removed": [
+                        "/properties/Tags/*/Value",
+                        "/properties/Tags/*/Value/*/NestedKey",
+                    ]
+                }
+            },
+        ),
+        # # Test Case #8: New Property with nested combiner (We might shelf this for now)
         # (
         #         {
-        #             "properties": {}
-        #         },
-        #         {
         #             "properties": {
-        #                 "Configurations": {
+        #                 "Tags": {
         #                     'type': 'array',
         #                     'items': {
-        #                         'type': 'object',
-        #                         'properties': {
-        #                             'Name': {
-        #                                 'type': 'string'
-        #                             },
-        #                             'Configurations': {  # recursive property
-        #                                 'type': 'array',
-        #                                 'items': {}  # ends at this level
+        #                         'anyOf': [
+        #                             {
+        #                                 'type': 'object',
+        #                                 'properties': {
+        #                                     'Key': {'type': 'string'},
+        #                                     'Value': {'type': 'string'}
+        #                                 }
         #                             }
-        #                         }
-        #                     }
-        #                 }
-        #             }
-        #         },
-        #         {
-        #             "properties": {
-        #                 "added": [
-        #                     # we need to add root property
-        #                     # so as it's leafs as separate items
-        #                     "/properties/Configurations",
-        #                     "/properties/Configurations/*/Name",
-        #                     "/properties/Configurations/*/Configurations"
-        #                 ]
-        #             }
-        #         },
-        #         {
-        #             "properties": {
-        #                 "removed": [
-        #                     # we need to add root property
-        #                     # so as it's leafs as separate items
-        #                     "/properties/Configurations",
-        #                     "/properties/Configurations/*/Name",
-        #                     "/properties/Configurations/*/Configurations"
-        #                 ]
-        #             }
-        #         },
-        # ),
-        # # Test Case #3: New Nested Property
-        # (
-        #         {
-        #             "properties": {
-        #                 "Tags": {
-        #                     'type': 'array',
-        #                     'items': {
-        #                         'type': 'object',
-        #                         'properties': {
-        #                             'Key': {'type': 'string'}
-        #                         }
-        #                     }
-        #                 }
-        #             }
-        #         },
-        #         {
-        #             "properties": {
-        #                 "Tags": {
-        #                     'type': 'array',
-        #                     'items': {
-        #                         'type': 'object',
-        #                         'properties': {
-        #                             'Key': {'type': 'string'},
-        #                             'Value': {'type': 'string'}
-        #                         }
-        #                     }
-        #                 }
-        #             }
-        #         },
-        #         {
-        #             "properties": {
-        #                 "added": [
-        #                     "/properties/Tags/*/Value",
-        #                 ]
-        #             }
-        #         },
-        #         {
-        #             "properties": {
-        #                 "removed": [
-        #                     "/properties/Tags/*/Value",
-        #                 ]
-        #             }
-        #         },
-        # ),
-        # # Test Case #4: New Property with nested combiner (We might shelf this for now)
-        # (
-        #         {
-        #             "properties": {
-        #                 "Tags": {
-        #                     'type': 'array',
-        #                     'items': {
-        #                         'type': 'object',
-        #                         'properties': {
-        #                             'Key': {'type': 'string'},
-        #                             'Value': {'type': 'string'}
-        #                         }
+        #                         ]
         #                     }
         #                 }
         #             }
@@ -209,7 +321,7 @@ def test_schema_diff(previous_schema, current_schema, expected_diff):
         #                             {
         #                                 'type': 'object',
         #                                 'properties': {
-        #                                     'Key': {'type': 'string'},
+        #                                     'Key1': {'type': 'string'},
         #                                     'Value': {'type': 'string'}
         #                                 }
         #                             },
@@ -221,7 +333,6 @@ def test_schema_diff(previous_schema, current_schema, expected_diff):
         #                                 }
         #                             }
         #                         ]
-        #
         #                     }
         #                 }
         #             }
