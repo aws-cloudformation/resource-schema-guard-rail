@@ -23,7 +23,14 @@ from src.rpdk.guard_rail.core.data_types import (
     Statefull,
     Stateless,
 )
-from src.rpdk.guard_rail.rule_library import combiners, core, permissions, tags
+from src.rpdk.guard_rail.core.stateful import schema_diff
+from src.rpdk.guard_rail.rule_library import (
+    combiners,
+    core,
+    permissions,
+    statefull,
+    tags,
+)
 from src.rpdk.guard_rail.utils.common import is_guard_rule
 from src.rpdk.guard_rail.utils.logger import LOG, logdebug
 
@@ -32,19 +39,22 @@ WARNING = "WARNING"
 
 
 @logdebug
-def prepare_ruleset():
-    """Fetches module level schema rules.
+def prepare_ruleset(mode: str = "stateless"):
+    """Fetches module level schema rules based on mode.
 
-    Iterates over provided modules (core, combiners, permissions, tags)
+    Iterates over provided modules (core, combiners, permissions, tags) or (statefull)
     and checks if content is a guard rule-set, ten adds it to the list
     `to-run`
 
     Returns:
         Set[str]: set of rules in a string form
     """
-    static_rule_modules = [core, combiners, permissions, tags]
+    rule_modules = {
+        "stateless": [core, combiners, permissions, tags],
+        "statefull": [statefull],
+    }
     rule_set = set()
-    for module in static_rule_modules:
+    for module in rule_modules[mode]:
         for content in pkg_resources.contents(module):
             if not is_guard_rule(content):
                 continue
@@ -162,4 +172,21 @@ def _(payload):
     Returns:
         GuardRuleSetResult: Rule Result
     """
-    raise NotImplementedError("Statefull evaluation is not supported yet")
+    compliance_output = []
+    ruleset = prepare_ruleset("statefull") | set(payload.rules)
+
+    def __execute__(schema_exec, ruleset):
+        output = None
+        for rules in ruleset:
+            output = schema_exec(rules)
+        return output
+
+    schema_to_execute = __exec_rules__(
+        schema=schema_diff(
+            previous_json=payload.previous_schema, current_json=payload.current_schema
+        )
+    )
+    output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+    compliance_output.append(output)
+
+    return compliance_output

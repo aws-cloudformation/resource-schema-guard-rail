@@ -85,28 +85,21 @@ def test_exec_compliance_stateless(
     "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
     [
         (
-            collect_schemas(
-                schemas=[
-                    "file:/"
-                    + str(
-                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
-                            "../data/sample-schema.json"
-                        )
-                    )
-                ]
-            ),
-            collect_schemas(
-                schemas=[
-                    "file:/"
-                    + str(
-                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
-                            "../data/sample-schema.json"
-                        )
-                    )
-                ]
-            ),
+            {"primaryIdentifier": ["bar"]},
+            {"primaryIdentifier": ["bar_changed", "bar_added"]},
             [],
-            [],
+            {
+                "ensure_primary_identifier_not_changed": [
+                    GuardRuleResult(
+                        check_id="SF_ID_3",
+                        message="primaryIdentifier cannot add more members",
+                    ),
+                    GuardRuleResult(
+                        check_id="SF_ID_4",
+                        message="primaryIdentifier cannot remove members",
+                    ),
+                ]
+            },
             [],
         ),
     ],
@@ -121,6 +114,12 @@ def test_exec_compliance_statefull(
             current_schema=current_schema,
             rules=collected_rules,
         )
-        exec_compliance(payload)
+        compliance_result = exec_compliance(payload)[0]
+        for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+            assert non_compliant_rule in compliance_result.non_compliant
+            assert (
+                non_compliant_result
+                == compliance_result.non_compliant[non_compliant_rule]
+            )
     except NotImplementedError as e:
         assert "Statefull evaluation is not supported yet" == str(e)
