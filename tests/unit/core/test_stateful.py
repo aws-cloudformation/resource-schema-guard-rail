@@ -292,6 +292,69 @@ from src.rpdk.guard_rail.core.stateful import schema_diff
                 }
             },
         ),
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {"Key": {"type": "string"}},
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "string"},
+                                "Value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "NestedKey": {"type": "string"},
+                                            "NestedObject": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "NestedObjectName": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "added": [
+                        "/properties/Tags/*/Value",
+                        "/properties/Tags/*/Value/*/NestedKey",
+                        "/properties/Tags/*/Value/*/NestedObject",
+                        "/properties/Tags/*/Value/*/NestedObject/NestedObjectName",
+                    ]
+                }
+            },
+            {
+                "properties": {
+                    "removed": [
+                        "/properties/Tags/*/Value",
+                        "/properties/Tags/*/Value/*/NestedKey",
+                        "/properties/Tags/*/Value/*/NestedObject",
+                        "/properties/Tags/*/Value/*/NestedObject/NestedObjectName",
+                    ]
+                }
+            },
+        ),
         # # Test Case #8: New Property with nested combiner (We might shelf this for now)
         # (
         #         {
@@ -357,6 +420,234 @@ from src.rpdk.guard_rail.core.stateful import schema_diff
     ],
 )
 def test_schema_diff_complex_property_mutations(
+    schema_variant1, schema_variant2, expected_diff, expected_diff_negative
+):
+    """
+
+    Args:
+        schema_variant1:
+        schema_variant2:
+        expected_diff:
+        expected_diff_negative:
+    """
+    assert expected_diff == schema_diff(schema_variant1, schema_variant2)
+    assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
+
+
+@pytest.mark.parametrize(
+    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
+    [
+        # Test Case #1: Type changed inside nested variable
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "string"},
+                                "Value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "NestedKey": {"type": "string"},
+                                            "NestedKey2": {},
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Key": {"type": "string"},
+                                "Value": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "NestedKey": {"type": "integer"},
+                                            "NestedKey2": {"type": "list"},
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": "integer",
+                            "old_value": "string",
+                            "property": "/properties/Tags/*/Value/*/NestedKey",
+                        }
+                    ],
+                    "added": ["/properties/Tags/*/Value/*/NestedKey2"],
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": "string",
+                            "old_value": "integer",
+                            "property": "/properties/Tags/*/Value/*/NestedKey",
+                        }
+                    ],
+                    "removed": ["/properties/Tags/*/Value/*/NestedKey2"],
+                }
+            },
+        ),
+        # Test Case #2: Enum change
+        (
+            {
+                "properties": {
+                    "MarvelComics": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "SpiderMan": {
+                                    "type": "string",
+                                    "enum": [
+                                        "AMAZING_SPIDERMAN",
+                                        "AMAZING_SPIDERMAN2",
+                                    ],
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "MarvelComics": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "SpiderMan": {
+                                    "type": "string",
+                                    "enum": [
+                                        "AMAZING_SPIDERMAN",
+                                        "AMAZING_SPIDERMAN2",
+                                        "AMAZING_SPIDERMAN3",
+                                    ],
+                                },
+                            },
+                        },
+                    }
+                }
+            },
+            {"enum": {"added": ["AMAZING_SPIDERMAN3"]}},
+            {"enum": {"removed": ["AMAZING_SPIDERMAN3"]}},
+        ),
+    ],
+)
+def test_schema_diff_complex_json_semantics_mutations(
+    schema_variant1, schema_variant2, expected_diff, expected_diff_negative
+):
+    """
+
+    Args:
+        schema_variant1:
+        schema_variant2:
+        expected_diff:
+        expected_diff_negative:
+    """
+    assert expected_diff == schema_diff(schema_variant1, schema_variant2)
+    assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
+
+
+@pytest.mark.skip(reason="TODO: implement cobiners")
+@pytest.mark.parametrize(
+    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
+    [
+        # Test Case #1: type changed from scalar to list
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                    }
+                }
+            },
+            {"properties": {"Tags": {"type": ["array", "string"]}}},
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": ["array", "string"],
+                            "old_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "old_value": ["array", "string"],
+                            "new_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+        ),
+        # Test Case #2: type changed from scalar to list using anyof
+        (
+            {
+                "properties": {
+                    "Tags": {
+                        "type": "array",
+                    }
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {"anyOf": [{"type": "array"}, {"type": "string"}]}
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": ["array", "string"],
+                            "old_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "old_value": ["array", "string"],
+                            "new_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+        ),
+    ],
+)
+def test_schema_diff_complex_json_semantics_with_combiners_mutations(
     schema_variant1, schema_variant2, expected_diff, expected_diff_negative
 ):
     """
