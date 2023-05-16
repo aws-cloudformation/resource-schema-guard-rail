@@ -5,8 +5,8 @@ from unittest import mock
 
 import pytest
 
-from src.rpdk.guard_rail.core.data_types import Statefull, Stateless
-from src.rpdk.guard_rail.core.runner import exec_compliance, prepare_ruleset
+from rpdk.guard_rail.core.data_types import Statefull, Stateless
+from rpdk.guard_rail.core.runner import exec_compliance, prepare_ruleset
 
 
 def test_prepare_ruleset():
@@ -28,7 +28,7 @@ def test_exec_compliance_stateless(collected_schemas, collected_rules):
     assert "check_if_taggable_is_used" in compliance_result[0].compliant
 
 
-@mock.patch("src.rpdk.guard_rail.core.runner.schema_diff")
+@mock.patch("rpdk.guard_rail.core.runner.schema_diff")
 @pytest.mark.parametrize(
     "previous_schema, current_schema, collected_rules, schema_diff",
     [

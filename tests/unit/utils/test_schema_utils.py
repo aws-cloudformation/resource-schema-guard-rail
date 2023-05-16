@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from src.rpdk.guard_rail.utils.arg_handler import collect_schemas
-from src.rpdk.guard_rail.utils.schema_utils import resolve_schema
+from rpdk.guard_rail.utils.arg_handler import collect_schemas
+from rpdk.guard_rail.utils.schema_utils import resolve_schema
 
 
 @pytest.mark.parametrize(

@@ -16,21 +16,6 @@ rule ensure_old_property_not_turned_immutable when createOnlyProperties.added ex
 }
 
 
-rule ensure_old_property_not_turned_immutable when createOnlyProperties.added exists
-{
-    minLength.removed[*] {
-        this IN pattern.added
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "SF_ID_1",
-            "message": "Only NEW properties can be marked as createOnlyProperties"
-        }
-        >>
-    }
-}
-
-
 rule ensure_old_property_not_turned_writeonly when writeOnlyProperties.added exists
 {
     writeOnlyProperties.added[*] {
@@ -80,7 +65,7 @@ rule ensure_no_more_required_properties when required exists
 }
 
 
-rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exists
+rule ensure_old_property_not_removed_nor_added_from_readonly when readOnlyProperties exists
 {
     readOnlyProperties.added[*] {
         this IN %newProps
@@ -88,7 +73,7 @@ rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exist
         {
             "result": "NON_COMPLIANT",
             "check_id": "SF_ID_6",
-            "message": "Only NEW properties can be marked as createOnlyProperties"
+            "message": "Only NEW properties can be marked as readOnlyProperties"
         }
         >>
     }
@@ -98,7 +83,7 @@ rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exist
     {
         "result": "NON_COMPLIANT",
         "check_id": "SF_ID_7",
-        "message": "Only NEW properties can be marked as createOnlyProperties"
+        "message": "Only NEW properties can be marked as readOnlyProperties"
     }
     >>
 }

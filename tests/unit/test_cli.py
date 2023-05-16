@@ -6,8 +6,8 @@ from unittest import mock
 
 import pytest
 
-from src.cli import main
-from src.rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
+from cli import main
+from rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
 
 
 @pytest.fixture(scope="module")
@@ -29,10 +29,10 @@ def compliance_result():
     yield result
 
 
-@mock.patch("src.cli.exec_compliance")
-@mock.patch("src.cli.argument_validation")
-@mock.patch("src.cli.collect_rules")
-@mock.patch("src.cli.collect_schemas")
+@mock.patch("cli.exec_compliance")
+@mock.patch("cli.argument_validation")
+@mock.patch("cli.collect_rules")
+@mock.patch("cli.collect_schemas")
 @pytest.mark.parametrize(
     "args",
     [
@@ -77,15 +77,15 @@ def compliance_result():
     ],
 )
 def test_main_cli(
-    mock_exec_compliance,
-    mock_argument_validation,
-    mock_collect_rules,
     mock_collect_schemas,
+    mock_collect_rules,
+    mock_argument_validation,
+    mock_exec_compliance,
     args,
 ):
     """Main cli unit test with downstream mocked"""
     mock_collect_schemas.return_value = [{"foo": "bar"}, {"foo": "bar"}]
-    mock_exec_compliance.return_value = compliance_result
+    mock_exec_compliance.return_value = [compliance_result]
     mock_argument_validation.return_value = True
     mock_collect_rules.return_value = []
     main(args_in=args)

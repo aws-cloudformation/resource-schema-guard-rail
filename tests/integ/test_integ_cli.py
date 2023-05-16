@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from src.cli import main
+from cli import main
 
 
 @pytest.mark.parametrize(

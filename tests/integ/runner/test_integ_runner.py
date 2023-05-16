@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from src.rpdk.guard_rail.core.data_types import GuardRuleResult, Statefull, Stateless
-from src.rpdk.guard_rail.core.runner import exec_compliance
-from src.rpdk.guard_rail.utils.arg_handler import collect_schemas
+from rpdk.guard_rail.core.data_types import GuardRuleResult, Statefull, Stateless
+from rpdk.guard_rail.core.runner import exec_compliance
+from rpdk.guard_rail.utils.arg_handler import collect_schemas
 
 
 @pytest.mark.parametrize(
@@ -108,18 +108,14 @@ def test_exec_compliance_statefull(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
     """Test exec_compliance for statefull"""
-    try:
-        payload: Statefull = Statefull(
-            previous_schema=previous_schema,
-            current_schema=current_schema,
-            rules=collected_rules,
+    payload: Statefull = Statefull(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
         )
-        compliance_result = exec_compliance(payload)[0]
-        for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
-            assert non_compliant_rule in compliance_result.non_compliant
-            assert (
-                non_compliant_result
-                == compliance_result.non_compliant[non_compliant_rule]
-            )
-    except NotImplementedError as e:
-        assert "Statefull evaluation is not supported yet" == str(e)

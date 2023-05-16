@@ -17,22 +17,12 @@ from functools import singledispatch
 from typing import Any, Dict, Mapping
 
 import cfn_guard_rs
-from src.rpdk.guard_rail.core.data_types import (
-    GuardRuleResult,
-    GuardRuleSetResult,
-    Statefull,
-    Stateless,
-)
-from src.rpdk.guard_rail.core.stateful import schema_diff
-from src.rpdk.guard_rail.rule_library import (
-    combiners,
-    core,
-    permissions,
-    statefull,
-    tags,
-)
-from src.rpdk.guard_rail.utils.common import is_guard_rule
-from src.rpdk.guard_rail.utils.logger import LOG, logdebug
+
+from ..rule_library import combiners, core, permissions, statefull, tags
+from ..utils.common import is_guard_rule
+from ..utils.logger import LOG, logdebug
+from .data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
+from .stateful import schema_diff
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
@@ -90,7 +80,6 @@ def __exec_rules__(schema: Dict):
             for rule_name, checks in guard_result.not_compliant.items():
                 for check in checks:
                     try:
-                        print(check)
                         if check.message:
                             _message_dict = literal_eval(check.message.strip())
                             rule_result = GuardRuleResult(
