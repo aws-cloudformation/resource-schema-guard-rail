@@ -3,7 +3,7 @@ Unit test for stateful.py
 """
 import pytest
 
-from src.rpdk.guard_rail.core.stateful import schema_diff
+from rpdk.guard_rail.core.stateful import schema_diff
 
 
 @pytest.mark.parametrize(

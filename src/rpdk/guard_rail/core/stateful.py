@@ -26,7 +26,7 @@ from typing import Any, Dict, Iterable
 
 import strenum
 from deepdiff import DeepDiff
-from src.rpdk.guard_rail.utils.schema_utils import resolve_schema
+from rpdk.guard_rail.utils.schema_utils import resolve_schema
 
 
 class METADIFF(strenum.LowercaseStrEnum):
