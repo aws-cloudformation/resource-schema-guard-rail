@@ -50,9 +50,6 @@ def main(args_in=None):
     collected_schemas = collect_schemas(schemas=args.schemas)
     collected_rules = collect_rules(rules=args.rules)
 
-    print(collected_schemas)
-    print(collected_rules)
-
     compliance_result = None
 
     if not args.statefull:

@@ -84,7 +84,6 @@ def __exec_rules__(schema: Dict):
             for rule_name, checks in guard_result.not_compliant.items():
                 for check in checks:
                     try:
-                        print(check)
                         if check.message:
                             _message_dict = literal_eval(check.message.strip())
                             rule_result = GuardRuleResult(
