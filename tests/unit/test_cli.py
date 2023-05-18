@@ -77,15 +77,15 @@ def compliance_result():
     ],
 )
 def test_main_cli(
-    mock_exec_compliance,
-    mock_argument_validation,
-    mock_collect_rules,
     mock_collect_schemas,
+    mock_collect_rules,
+    mock_argument_validation,
+    mock_exec_compliance,
     args,
 ):
     """Main cli unit test with downstream mocked"""
     mock_collect_schemas.return_value = [{"foo": "bar"}, {"foo": "bar"}]
-    mock_exec_compliance.return_value = compliance_result
+    mock_exec_compliance.return_value = [compliance_result]
     mock_argument_validation.return_value = True
     mock_collect_rules.return_value = []
     main(args_in=args)
