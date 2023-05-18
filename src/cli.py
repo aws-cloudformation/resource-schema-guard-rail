@@ -56,15 +56,10 @@ def main(args_in=None):
         payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
         compliance_result = invoke(payload)
     else:
-        # should be index safe as argument validation should fail prematurely
-        # payload: Statefull = Statefull(
-        #     previous_schema=collected_schemas[0],
-        #     current_schema=collected_schemas[1],
-        #     rules=collected_rules,
-        # )
+        #should be index safe as argument validation should fail prematurely
         payload: Statefull = Statefull(
-            previous_schema={},
-            current_schema={},
+            previous_schema=collected_schemas[0],
+            current_schema=collected_schemas[1],
             rules=collected_rules,
         )
         compliance_result = invoke(payload)
