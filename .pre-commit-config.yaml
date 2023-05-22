@@ -42,6 +42,11 @@ repos:
     description: Run pylint in the local virtualenv
     entry: pylint "setup.py" "src/" "tests/"
     language: system
+    args:
+      [
+        "-rn", # Only display messages
+        "--rcfile=.pylintrc", # Link to config file
+      ]
     pass_filenames: false
     always_run: true
     verbose: true

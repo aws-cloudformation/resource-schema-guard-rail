@@ -26,7 +26,7 @@ from typing import Any, Dict, Iterable
 
 import strenum
 from deepdiff import DeepDiff
-from src.rpdk.guard_rail.utils.schema_utils import resolve_schema
+from rpdk.guard_rail.utils.schema_utils import resolve_schema
 
 
 class METADIFF(strenum.LowercaseStrEnum):
@@ -87,7 +87,6 @@ def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
         ignore_order=True,
         verbose_level=2,
     )
-    print(deep_diff)
     return _translate_meta_diff(deep_diff.to_dict())
 
 

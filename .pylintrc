@@ -67,6 +67,7 @@ confidence=
 # --disable=W".
 disable=
     import-error,
+    E0611, # no-name-in-module
     W0613, # Unused argument %r
     W0640, # Cell variable %s defined in loop A variable used in a closure is defined in a loop
     R0902, # Too many instance attributes (%s/%s)
