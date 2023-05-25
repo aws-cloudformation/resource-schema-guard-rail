@@ -1,94 +1,94 @@
-let newProps = newProperties
+let newProps = properties.added
 
+
+rule ensure_old_property_not_removed when properties exists
+{
+    properties.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PR001",
+        "message": "Resource properties MUST NOT be removed"
+    }
+    >>
+}
 
 rule ensure_old_property_not_turned_immutable when createOnlyProperties.added exists
 {
-    createOnlyProperties.added[*] {
-        this IN %newProps
+    when properties.added exists {
+        createOnlyProperties.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR002",
+                "message": "Only NEWLY ADDED properties can be marked as createOnlyProperties"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        createOnlyProperties.added !exists
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "SF_ID_1",
-            "message": "Only NEW properties can be marked as createOnlyProperties"
+            "check_id": "PR002",
+            "message": "Only NEWLY ADDED properties can be marked as createOnlyProperties"
         }
         >>
     }
 }
-
-
-rule ensure_old_property_not_turned_immutable when createOnlyProperties.added exists
-{
-    minLength.removed[*] {
-        this IN pattern.added
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "SF_ID_1",
-            "message": "Only NEW properties can be marked as createOnlyProperties"
-        }
-        >>
-    }
-}
-
 
 rule ensure_old_property_not_turned_writeonly when writeOnlyProperties.added exists
 {
-    writeOnlyProperties.added[*] {
-        this IN %newProps
+    when properties.added exists {
+        writeOnlyProperties.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR003",
+                "message": "Only NEWLY ADDED properties can be marked as writeOnlyProperties"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        writeOnlyProperties.added !exists
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "SF_ID_2",
-            "message": "Only NEW properties can be marked as writeOnlyProperties"
+            "check_id": "PR003",
+            "message": "Only NEWLY ADDED properties can be marked as writeOnlyProperties"
         }
         >>
     }
 }
 
-rule ensure_primary_identifier_not_changed when primaryIdentifier exists
-{
-    primaryIdentifier.added !exists
-    <<
-    {
-        "result": "NON_COMPLIANT",
-        "check_id": "SF_ID_3",
-        "message": "primaryIdentifier cannot add more members"
-    }
-    >>
-
-    primaryIdentifier.removed !exists
-    <<
-    {
-        "result": "NON_COMPLIANT",
-        "check_id": "SF_ID_4",
-        "message": "primaryIdentifier cannot remove members"
-    }
-    >>
-}
-
-
-rule ensure_no_more_required_properties when required exists
-{
-    required.added !exists
-    <<
-    {
-        "result": "NON_COMPLIANT",
-        "check_id": "SF_ID_5",
-        "message": "cannot add more REQUIRED properties"
-    }
-    >>
-}
-
-
 rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exists
 {
-    readOnlyProperties.added[*] {
-        this IN %newProps
+    when properties.added exists {
+        readOnlyProperties.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR004",
+                "message": "Only NEWLY ADDED properties can be marked as readOnlyProperties"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        readOnlyProperties.added !exists
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "SF_ID_6",
-            "message": "Only NEW properties can be marked as createOnlyProperties"
+            "check_id": "PR004",
+            "message": "Only NEWLY ADDED properties can be marked as readOnlyProperties"
         }
         >>
     }
@@ -97,8 +97,426 @@ rule ensure_old_property_not_removed_from_readonly when readOnlyProperties exist
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "SF_ID_7",
-        "message": "Only NEW properties can be marked as createOnlyProperties"
+        "check_id": "PR005",
+        "message": "Resource properties MUST NOT be removed from readOnlyProperties"
     }
     >>
+}
+
+rule ensure_primary_identifier_not_changed when primaryIdentifier exists
+{
+    primaryIdentifier.added !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PID001",
+        "message": "primaryIdentifier cannot add more members"
+    }
+    >>
+
+    primaryIdentifier.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PID002",
+        "message": "primaryIdentifier cannot remove members"
+    }
+    >>
+}
+
+rule ensure_no_more_required_properties when required exists
+{
+    required.added !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "RQ001",
+        "message": "cannot add more REQUIRED properties"
+    }
+    >>
+}
+
+rule ensure_property_type_not_changed when type exists
+{
+    when properties.added exists {
+        type.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "TP001",
+                "message": "Only NEWLY ADDED properties can have new type added"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        type.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TP001",
+            "message": "Only NEWLY ADDED properties can have new type added"
+        }
+        >>
+    }
+
+    type.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TP002",
+        "message": "cannot remove TYPE from a property"
+    }
+    >>
+
+    type.changed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TP003",
+        "message": "cannot change TYPE of a property"
+    }
+    >>
+}
+
+rule ensure_enum_not_changed when enum exists
+{
+    enum.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "ENM001",
+        "message": "CANNOT remove values from enum"
+    }
+    >>
+}
+
+rule ensure_minlength_not_contracted when minLength exists
+{
+    minLength.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "ML001",
+        "message": "cannot remove minLength from properties"
+    }
+    >>
+
+    when properties.added exists {
+        minLength.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "ML002",
+                "message": "only NEWLY ADDED properties can have additional minLength constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        minLength.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "ML002",
+            "message": "only NEWLY ADDED properties can have additional minLength constraint"
+        }
+        >>
+    }
+
+    minLength.changed[*] {
+        this.old_value > this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "ML003",
+            "message": "new minLength value cannot exceed old value"
+        }
+        >>
+    }
+}
+
+rule ensure_maxlength_not_contracted when maxLength exists
+{
+    maxLength.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "ML004",
+        "message": "cannot remove maxLength from properties"
+    }
+    >>
+
+    when properties.added exists {
+        maxLength.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "ML005",
+                "message": "only NEWLY ADDED properties can have additional maxLength constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        maxLength.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "ML005",
+            "message": "only NEWLY ADDED properties can have additional maxLength constraint"
+        }
+        >>
+    }
+
+    maxLength.changed[*] {
+        this.old_value < this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "ML006",
+            "message": "new maxLength value cannot be less than the old value"
+        }
+        >>
+    }
+}
+
+rule ensure_property_string_pattern_not_changed when pattern exists
+{
+    when properties.added exists {
+        pattern.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PAT001",
+                "message": "Only NEWLY ADDED properties can have new pattern added"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        pattern.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PAT001",
+            "message": "Only NEWLY ADDED properties can have new pattern added"
+        }
+        >>
+    }
+
+    pattern.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PAT002",
+        "message": "cannot remove PATTERN from a property"
+    }
+    >>
+
+    pattern.changed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PAT003",
+        "message": "cannot change PATTERN of a property"
+    }
+    >>
+}
+
+rule ensure_minitems_not_contracted when minItems exists
+{
+    minItems.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "MI001",
+        "message": "cannot remove minItems from properties"
+    }
+    >>
+
+    when properties.added exists {
+        minItems.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "MI002",
+                "message": "only NEWLY ADDED properties can have additional minItems constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        minItems.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI002",
+            "message": "only NEWLY ADDED properties can have additional minItems constraint"
+        }
+        >>
+    }
+
+    minItems.changed[*] {
+        this.old_value > this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI003",
+            "message": "new minItems value cannot exceed old value"
+        }
+        >>
+    }
+}
+
+rule ensure_maxitems_not_contracted when maxItems exists
+{
+    maxItems.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "MI004",
+        "message": "cannot remove maxItems from properties"
+    }
+    >>
+
+    when properties.added exists {
+        maxItems.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "MI005",
+                "message": "only NEWLY ADDED properties can have additional maxItems constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        maxItems.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI005",
+            "message": "only NEWLY ADDED properties can have additional maxItems constraint"
+        }
+        >>
+    }
+
+    maxItems.changed[*] {
+        this.old_value < this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI006",
+            "message": "new maxItems value cannot be less than the old value"
+        }
+        >>
+    }
+}
+
+
+rule ensure_minimum_not_contracted when minimum exists
+{
+    minimum.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "MI007",
+        "message": "cannot remove minimum from properties"
+    }
+    >>
+
+    when properties.added exists {
+        minimum.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "MI008",
+                "message": "only NEWLY ADDED properties can have additional minimum constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        minimum.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI008",
+            "message": "only NEWLY ADDED properties can have additional minimum constraint"
+        }
+        >>
+    }
+
+    minimum.changed[*] {
+        this.old_value > this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI009",
+            "message": "new minimum value cannot exceed old value"
+        }
+        >>
+    }
+}
+
+rule ensure_maximum_not_contracted when maximum exists
+{
+    maximum.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "MI010",
+        "message": "cannot remove maximum from properties"
+    }
+    >>
+
+    when properties.added exists {
+        maximum.added[*] {
+            this IN %newProps
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "MI011",
+                "message": "only NEWLY ADDED properties can have additional maximum constraint"
+            }
+            >>
+        }
+    }
+
+    when properties.added !exists {
+        maximum.added !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI011",
+            "message": "only NEWLY ADDED properties can have additional maximum constraint"
+        }
+        >>
+    }
+
+    maximum.changed[*] {
+        this.old_value < this.new_value
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "MI012",
+            "message": "new maximum value cannot be less than the old value"
+        }
+        >>
+    }
 }

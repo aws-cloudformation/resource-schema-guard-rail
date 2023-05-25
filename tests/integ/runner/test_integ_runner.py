@@ -91,11 +91,11 @@ def test_exec_compliance_stateless(
             {
                 "ensure_primary_identifier_not_changed": [
                     GuardRuleResult(
-                        check_id="SF_ID_3",
+                        check_id="PID001",
                         message="primaryIdentifier cannot add more members",
                     ),
                     GuardRuleResult(
-                        check_id="SF_ID_4",
+                        check_id="PID002",
                         message="primaryIdentifier cannot remove members",
                     ),
                 ]
@@ -123,3 +123,422 @@ def test_exec_compliance_statefull(
             )
     except NotImplementedError as e:
         assert "Statefull evaluation is not supported yet" == str(e)
+
+
+@pytest.mark.parametrize(
+    "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            {
+                "properties": {
+                    "DeprecatedProperty": {},
+                    "WriteOnlyProp": {},
+                    "Name": {},
+                    "Enum": {},
+                    "LastName": {},
+                },
+                "createOnlyProperties": ["/properties/Name"],
+                "writeOnlyProperties": [],
+                "readOnlyProperties": [
+                    "/properties/LastName",
+                ],
+                "primaryIdentifier": ["/properties/Name"],
+            },
+            {
+                "properties": {
+                    "WriteOnlyProp": {},
+                    "Name": {},
+                    "Enum": {},
+                    "LastName": {},
+                    "Prop": {},
+                },
+                "createOnlyProperties": [
+                    "/properties/Name",
+                    "/properties/LastName",
+                ],
+                "writeOnlyProperties": [
+                    "/properties/WriteOnlyProp",
+                ],
+                "readOnlyProperties": [
+                    "/properties/Name",
+                ],
+                "primaryIdentifier": ["/properties/LastName"],
+            },
+            [],
+            {
+                "ensure_old_property_not_removed": [
+                    GuardRuleResult(
+                        check_id="PR001",
+                        message="Resource properties MUST NOT be removed",
+                    )
+                ],
+                "ensure_old_property_not_turned_immutable": [
+                    GuardRuleResult(
+                        check_id="PR002",
+                        message="Only NEWLY ADDED properties can be marked as createOnlyProperties",
+                    )
+                ],
+                "ensure_old_property_not_turned_writeonly": [
+                    GuardRuleResult(
+                        check_id="PR003",
+                        message="Only NEWLY ADDED properties can be marked as writeOnlyProperties",
+                    )
+                ],
+                "ensure_old_property_not_removed_from_readonly": [
+                    GuardRuleResult(
+                        check_id="PR004",
+                        message="Only NEWLY ADDED properties can be marked as readOnlyProperties",
+                    ),
+                    GuardRuleResult(
+                        check_id="PR005",
+                        message="Resource properties MUST NOT be removed from readOnlyProperties",
+                    ),
+                ],
+                "ensure_primary_identifier_not_changed": [
+                    GuardRuleResult(
+                        check_id="PID001",
+                        message="primaryIdentifier cannot add more members",
+                    ),
+                    GuardRuleResult(
+                        check_id="PID002",
+                        message="primaryIdentifier cannot remove members",
+                    ),
+                ],
+            },
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_statefull_properties_breaking_changes(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for statefull"""
+    payload: Statefull = Statefull(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
+    "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            {
+                "properties": {
+                    "DeprecatedProperty": {},
+                    "WriteOnlyProp": {"type": "string"},
+                    "Name": {},
+                    "Enum": {"type": "string", "enum": ["VALUE1"]},
+                    "LastName": {"type": "string"},
+                },
+                "required": ["Name"],
+            },
+            {
+                "properties": {
+                    "WriteOnlyProp": {"type": "boolean"},
+                    "Name": {"type": "string"},
+                    "Enum": {"type": "string"},
+                    "LastName": {},
+                    "Prop": {},
+                },
+                "required": ["Name", "LastName"],
+            },
+            [],
+            {
+                "ensure_no_more_required_properties": [
+                    GuardRuleResult(
+                        check_id="RQ001",
+                        message="cannot add more REQUIRED properties",
+                    )
+                ],
+                "ensure_property_type_not_changed": [
+                    GuardRuleResult(
+                        check_id="TP001",
+                        message="Only NEWLY ADDED properties can have new type added",
+                    ),
+                    GuardRuleResult(
+                        check_id="TP002",
+                        message="cannot remove TYPE from a property",
+                    ),
+                    GuardRuleResult(
+                        check_id="TP003",
+                        message="cannot change TYPE of a property",
+                    ),
+                ],
+                "ensure_enum_not_changed": [
+                    GuardRuleResult(
+                        check_id="ENM001",
+                        message="CANNOT remove values from enum",
+                    )
+                ],
+            },
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_statefull_json_breaking_changes(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for statefull"""
+    payload: Statefull = Statefull(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
+    "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            {
+                "properties": {
+                    "MiddleName": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 20,
+                        "pattern": "value1",
+                    },
+                    "LastName": {
+                        "type": "string",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 20,
+                        "pattern": "value1",
+                    },
+                    "Friends": {"type": "array", "minItems": 2, "maxItems": 3},
+                    "Pets": {
+                        "type": "array",
+                    },
+                    "Relatives": {"type": "array", "minItems": 2, "maxItems": 3},
+                    "YearsOfEx": {"type": "array", "minimum": 1, "maximum": 100},
+                    "Degrees": {
+                        "type": "number",
+                    },
+                    "Age": {"type": "number", "minimum": 1, "maximum": 100},
+                },
+            },
+            {
+                "properties": {
+                    "MiddleName": {
+                        "type": "string",
+                    },
+                    "LastName": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 20,
+                        "pattern": "value1",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "minLength": 11,
+                        "maxLength": 19,
+                        "pattern": "value2",
+                    },
+                    "Friends": {
+                        "type": "array",
+                    },
+                    "Pets": {"type": "array", "minItems": 2, "maxItems": 3},
+                    "Relatives": {"type": "array", "minItems": 3, "maxItems": 2},
+                    "YearsOfEx": {"type": "array"},
+                    "Degrees": {"type": "number", "minimum": 1, "maximum": 100},
+                    "Age": {"type": "number", "minimum": 100, "maximum": 1},
+                    "Prop": {},
+                },
+            },
+            [],
+            {
+                "ensure_minlength_not_contracted": [
+                    GuardRuleResult(
+                        check_id="ML001",
+                        message="cannot remove minLength from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="ML002",
+                        message="only NEWLY ADDED properties can have additional minLength constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="ML003",
+                        message="new minLength value cannot exceed old value",
+                    ),
+                ],
+                "ensure_maxlength_not_contracted": [
+                    GuardRuleResult(
+                        check_id="ML004",
+                        message="cannot remove maxLength from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="ML005",
+                        message="only NEWLY ADDED properties can have additional maxLength constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="ML006",
+                        message="new maxLength value cannot be less than the old value",
+                    ),
+                ],
+                "ensure_property_string_pattern_not_changed": [
+                    GuardRuleResult(
+                        check_id="PAT001",
+                        message="Only NEWLY ADDED properties can have new pattern added",
+                    ),
+                    GuardRuleResult(
+                        check_id="PAT002",
+                        message="cannot remove PATTERN from a property",
+                    ),
+                    GuardRuleResult(
+                        check_id="PAT003",
+                        message="cannot change PATTERN of a property",
+                    ),
+                ],
+                "ensure_minitems_not_contracted": [
+                    GuardRuleResult(
+                        check_id="MI001",
+                        message="cannot remove minItems from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI002",
+                        message="only NEWLY ADDED properties can have additional minItems constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI003",
+                        message="new minItems value cannot exceed old value",
+                    ),
+                ],
+                "ensure_maxitems_not_contracted": [
+                    GuardRuleResult(
+                        check_id="MI004",
+                        message="cannot remove maxItems from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI005",
+                        message="only NEWLY ADDED properties can have additional maxItems constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI006",
+                        message="new maxItems value cannot be less than the old value",
+                    ),
+                ],
+                "ensure_minimum_not_contracted": [
+                    GuardRuleResult(
+                        check_id="MI007",
+                        message="cannot remove minimum from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI008",
+                        message="only NEWLY ADDED properties can have additional minimum constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI009",
+                        message="new minimum value cannot exceed old value",
+                    ),
+                ],
+                "ensure_maximum_not_contracted": [
+                    GuardRuleResult(
+                        check_id="MI010",
+                        message="cannot remove maximum from properties",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI011",
+                        message="only NEWLY ADDED properties can have additional maximum constraint",
+                    ),
+                    GuardRuleResult(
+                        check_id="MI012",
+                        message="new maximum value cannot be less than the old value",
+                    ),
+                ],
+            },
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_statefull_json_validation_breaking_changes(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for statefull"""
+    payload: Statefull = Statefull(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
+    "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                    },
+                    "Name": {
+                        "type": "string",
+                    },
+                },
+                "createOnlyProperties": [
+                    "/properties/Name",
+                ],
+            },
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                    },
+                    "Name": {
+                        "type": "string",
+                    },
+                },
+                "createOnlyProperties": [
+                    "/properties/Name",
+                    "/properties/LastName",
+                ],
+            },
+            [],
+            {
+                "ensure_old_property_not_turned_immutable": [
+                    GuardRuleResult(
+                        check_id="PR002",
+                        message="Only NEWLY ADDED properties can be marked as createOnlyProperties",
+                    )
+                ],
+            },
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_statefull_create_only_breaking_change_with_no_properties_change(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for statefull"""
+    payload: Statefull = Statefull(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
