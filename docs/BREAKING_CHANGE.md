@@ -4,7 +4,7 @@
 #### Property Related CloudFormation Construct
 
 | Rule Name   |      Check Id      |  Message |
-|----------|:-------------:|------:|------:|
+|----------|-------------|------|------|
 | `ensure_old_property_not_removed` |  `PR001` | `"Resource properties MUST NOT be removed"` |
 |`ensure_old_property_not_turned_immutable`|`PR002`|`"Only NEWLY ADDED properties can be marked as createOnlyProperties"`|
 |`ensure_old_property_not_turned_writeonly`|`PR003`|`"Only NEWLY ADDED properties can be marked as writeOnlyProperties"`|
@@ -12,22 +12,22 @@
 ||`PR005`|`"Resource properties MUST NOT be removed from readOnlyProperties"`|
 
 ***
-#### Primary Identifier 
+#### Primary Identifier
 | Rule Name   |      Check Id      |  Message |
-|----------|:-------------:|------:|------:|
+|----------|------------|------|------|
 |`ensure_primary_identifier_not_changed`|`PID001`|`"primaryIdentifier cannot add more members"`|
 ||`PID002`|`"primaryIdentifier cannot remove members"`|
 
 ***
 #### Required
 | Rule Name   |      Check Id      |  Message |
-|----------|:-------------:|------:|------:|
+|----------|-------------|------|------|
 |`ensure_no_more_required_properties`|`RQ001`|`"cannot add more REQUIRED properties"`|
 
 ***
 #### Type
 | Rule Name   |      Check Id      |  Message |
-|----------|:-------------:|------:|------:|
+|----------|-------------|------|------|
 |`ensure_property_type_not_changed`|`TP001`|`"Only NEWLY ADDED properties can have new type added"`|
 ||`TP002`|`"cannot remove TYPE from a property"`|
 ||`TP003`|`"cannot change TYPE of a property"`|
@@ -35,7 +35,7 @@
 ***
 #### Json Related Validation Constructs
 | Rule Name   |      Check Id      |  Message |
-|----------|:-------------:|------:|------:|
+|----------|-------------|------|------|
 |`ensure_enum_not_changed`|`ENM001`|`"CANNOT remove values from enum"`|
 |`ensure_minlength_not_contracted`|`ML001`|`"cannot remove minLength from properties"`|
 ||`ML002`|`"only NEWLY ADDED properties can have additional minLength constraint"`|

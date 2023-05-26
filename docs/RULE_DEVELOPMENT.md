@@ -19,7 +19,7 @@
 
 ## Basic Linting Rules
 ### Rule Mechanics
-Stateless rules are run over the resource schemas. There is no concept of previous state. Assumption - it evaluates live state of the schema. Rules are supposed to cover json semantics. 
+Stateless rules are run over the resource schemas. There is no concept of previous state. Assumption - it evaluates live state of the schema. Rules are supposed to cover json semantics.
 
 ##### Sample Schema Snippet
 ```json
@@ -122,7 +122,7 @@ It currently supports two types of keywords - CloudFormation built and Json nati
 
 ##### Sample Rule
 ```
-rule ensure_min_length_new_value_is_positive when minLength exists 
+rule ensure_min_length_new_value_is_positive when minLength exists
 {
     minLength.changed[*] {
         this.new_value > 0
@@ -139,7 +139,7 @@ rule ensure_min_length_new_value_is_positive when minLength exists
 
 ##### Limitations
 ###### Combiners
-Currently, Stateful module can only process resource schemas without combiners. Combiners support is planned to be implemented later. 
+Currently, Stateful module can only process resource schemas without combiners. Combiners support is planned to be implemented later.
 
 * `allOf`
 * `anyOf`

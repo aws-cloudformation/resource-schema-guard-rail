@@ -6,18 +6,18 @@
 This is not a stable version (Beta), it's still under development
 
 ## Overview
-AWS CloudFormation Resource Schema Guard Rail is an open-source tool, which uses [CloudFormation Guard](https://github.com/aws-cloudformation/cloudformation-guard/) policy-as-code evaluation engine to assess resource schema compliance. It validates json resource schemas against the AWS CloudFormation modeling best practices. 
+AWS CloudFormation Resource Schema Guard Rail is an open-source tool, which uses [CloudFormation Guard](https://github.com/aws-cloudformation/cloudformation-guard/) policy-as-code evaluation engine to assess resource schema compliance. It validates json resource schemas against the AWS CloudFormation modeling best practices.
 
 ### Contribute
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 #### Rule Development
-Read [Guard Rail: Rule Development](docs/RULE_DEVELOPMENT.md) for more information on how to write resource schema rules. 
+Read [Guard Rail: Rule Development](docs/RULE_DEVELOPMENT.md) for more information on how to write resource schema rules.
 
 ### How to use it?
 Schema guard rail package has a built-in library of rules, that CloudFormation believe are the best practices that resource modelers should follow. It supports two types of evaluation - Basic Linting & Breaking Change;
 
 #### Basic Linter (Stateless)
-Linter works only with current version of resource schema and runs CloudFormation authored rules, which will highlight problematic schema constructs. A provider developers can run multiple independent schemas at once as well as attach custom rules. 
+Linter works only with current version of resource schema and runs CloudFormation authored rules, which will highlight problematic schema constructs. A provider developers can run multiple independent schemas at once as well as attach custom rules.
 
 In order to start using Basic Linting you need to run following command:
 ```bash
@@ -27,7 +27,7 @@ $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 -
 **[List of Linting Rules](docs/BASIC_LINTING.md)**
 
 #### Breaking Change (Stateful)
-Along with basic linting, guard rail supports capability of breaking change evaluation. Provider developer must provider two json objects - previous & current versions of the same resource schema. CloudFormation authored rules will be run and evaluation current version of the schema whether it is compliant or not. 
+Along with basic linting, guard rail supports capability of breaking change evaluation. Provider developer must provider two json objects - previous & current versions of the same resource schema. CloudFormation authored rules will be run and evaluation current version of the schema whether it is compliant or not.
 
 In order to start using Basic Linting you need to run following command:
 ```bash
@@ -37,7 +37,7 @@ $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 -
 **[List of Breaking Change Rules](docs/BREAKING_CHANGE.md)**
 
 
-*Additionally, you can specify `format` argument, which will produce a nicely formatted output. 
+*Additionally, you can specify `format` argument, which will produce a nicely formatted output.
 
 ### How to install it locally?
 
