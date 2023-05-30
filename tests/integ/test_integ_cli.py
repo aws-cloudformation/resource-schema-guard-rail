@@ -68,16 +68,16 @@ def test_main_cli_stateless(args):
                         "data/sample-schema.json"
                     )
                 ),
-                "--statefull",
+                "--stateful",
             ]
         ),
     ],
 )
-def test_main_cli_statefull(
+def test_main_cli_stateful(
     args,
 ):
     """Main cli unit test"""
     try:
         main(args_in=args)
     except NotImplementedError as e:
-        assert "Statefull evaluation is not supported yet" == str(e)
+        assert "Stateful evaluation is not supported yet" == str(e)

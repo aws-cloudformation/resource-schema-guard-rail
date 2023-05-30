@@ -21,14 +21,14 @@ def test_arg_parse_setup():
 
 
 @pytest.mark.parametrize(
-    "schemas,statefull,expect_to_pass",
+    "schemas,stateful,expect_to_pass",
     [
         (["schema1", "schema2"], True, True),
         (["schema1"], True, False),
         (["schema1"], False, True),
     ],
 )
-def test_argument_validation(schemas, statefull, expect_to_pass):
+def test_argument_validation(schemas, stateful, expect_to_pass):
     """test argument validation"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -37,9 +37,9 @@ def test_argument_validation(schemas, statefull, expect_to_pass):
         default=schemas,
     )
     parser.add_argument(
-        "--statefull",
-        dest="statefull",
-        default=statefull,
+        "--stateful",
+        dest="stateful",
+        default=stateful,
     )
 
     if expect_to_pass:
@@ -50,7 +50,7 @@ def test_argument_validation(schemas, statefull, expect_to_pass):
             argument_validation(parser.parse_args([]))
         except AssertionError as e:
             assert (
-                "If Statefull mode is executed, then two schemas MUST be provided (current/previous)"
+                "If Stateful mode is executed, then two schemas MUST be provided (current/previous)"
                 == str(e)
             )
 

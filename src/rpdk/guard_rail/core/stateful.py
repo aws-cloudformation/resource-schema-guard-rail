@@ -1,4 +1,4 @@
-"""Module to perform statefull schema diff.
+"""Module to perform stateful schema diff.
 
 The main idea is to run two json blobs (v1, v2) over deepdiff module;
 This module will generate a metadiff, which will have three main categories:
@@ -90,6 +90,16 @@ def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
     )
     print(_translate_meta_diff(deep_diff.to_dict()))
     return _translate_meta_diff(deep_diff.to_dict())
+
+
+def _is_combiner_property(path_list):
+    """This method accepts an array of steps.
+    If set is not empty and it starts with `properties`
+    and ends with combiner, then it's considered
+    to be a combiner property"""
+    return (
+        len(path_list) > 0 and path_list[0] == PROPERTIES and path_list[-1] in combiners
+    )
 
 
 def _is_resource_property(path_list):
@@ -211,6 +221,10 @@ def _translate_iterable_change(
     def __translate_iter_added_diff(diffkey, schema_meta_diff, diff_value):
         for key, value in diff_value.items():
             path_list = _cast_path(key)
+            if _is_combiner_property(path_list):
+                raise NotImplementedError(
+                    "Schemas with combiners are not yet supported for stateful evaluation"
+                )
             if _is_cfn_construct(path_list):
                 _add_item(schema_meta_diff, path_list[0], diffkey, value)
 
@@ -253,6 +267,10 @@ def _translate_dict_change(
     def __translate_dict_diff(diffkey, schema_meta_diff, diff_value):
         for key, value in diff_value.items():
             path_list = _cast_path(key)
+            if _is_combiner_property(path_list):
+                raise NotImplementedError(
+                    "Schemas with combiners are not yet supported for stateful evaluation"
+                )
             if _is_resource_property(path_list):
                 _add_item(schema_meta_diff, PROPERTIES, diffkey, _get_path(path_list))
                 if isinstance(value, dict):

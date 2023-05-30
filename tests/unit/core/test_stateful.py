@@ -571,7 +571,6 @@ def test_schema_diff_complex_json_semantics_mutations(
     assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
 
 
-@pytest.mark.skip(reason="TODO: implement cobiners")
 @pytest.mark.parametrize(
     "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
     [
@@ -645,6 +644,47 @@ def test_schema_diff_complex_json_semantics_mutations(
                 }
             },
         ),
+        # Test Case #2: type changed from list using anyof
+        (
+            {
+                "properties": {
+                    "Tags": {"anyOf": [{"type": "array"}, {"type": "string"}]}
+                }
+            },
+            {
+                "properties": {
+                    "Tags": {
+                        "anyOf": [
+                            {"type": "array"},
+                            {"type": "string"},
+                            {"type": "integer"},
+                        ]
+                    }
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "new_value": ["array", "string"],
+                            "old_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+            {
+                "type": {
+                    "changed": [
+                        {
+                            "old_value": ["array", "string"],
+                            "new_value": "array",
+                            "property": "/properties/Tags",
+                        }
+                    ]
+                }
+            },
+        ),
     ],
 )
 def test_schema_diff_complex_json_semantics_with_combiners_mutations(
@@ -658,5 +698,11 @@ def test_schema_diff_complex_json_semantics_with_combiners_mutations(
         expected_diff:
         expected_diff_negative:
     """
-    assert expected_diff == schema_diff(schema_variant1, schema_variant2)
-    assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
+    try:
+        assert expected_diff == schema_diff(schema_variant1, schema_variant2)
+        assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
+    except NotImplementedError as e:
+        assert (
+            "Schemas with combiners are not yet supported for stateful evaluation"
+            == str(e)
+        )

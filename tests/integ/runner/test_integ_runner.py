@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from rpdk.guard_rail.core.data_types import GuardRuleResult, Statefull, Stateless
+from rpdk.guard_rail.core.data_types import GuardRuleResult, Stateful, Stateless
 from rpdk.guard_rail.core.runner import exec_compliance
 from rpdk.guard_rail.utils.arg_handler import collect_schemas
 
@@ -104,12 +104,12 @@ def test_exec_compliance_stateless(
         ),
     ],
 )
-def test_exec_compliance_statefull(
+def test_exec_compliance_stateful(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test exec_compliance for statefull"""
+    """Test exec_compliance for stateful"""
     try:
-        payload: Statefull = Statefull(
+        payload: Stateful = Stateful(
             previous_schema=previous_schema,
             current_schema=current_schema,
             rules=collected_rules,
@@ -122,7 +122,7 @@ def test_exec_compliance_statefull(
                 == compliance_result.non_compliant[non_compliant_rule]
             )
     except NotImplementedError as e:
-        assert "Statefull evaluation is not supported yet" == str(e)
+        assert "Stateful evaluation is not supported yet" == str(e)
 
 
 @pytest.mark.parametrize(
@@ -209,11 +209,11 @@ def test_exec_compliance_statefull(
         ),
     ],
 )
-def test_exec_compliance_statefull_properties_breaking_changes(
+def test_exec_compliance_stateful_properties_breaking_changes(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test exec_compliance for statefull"""
-    payload: Statefull = Statefull(
+    """Test exec_compliance for stateful"""
+    payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
         rules=collected_rules,
@@ -283,11 +283,11 @@ def test_exec_compliance_statefull_properties_breaking_changes(
         ),
     ],
 )
-def test_exec_compliance_statefull_json_breaking_changes(
+def test_exec_compliance_stateful_json_breaking_changes(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test exec_compliance for statefull"""
-    payload: Statefull = Statefull(
+    """Test exec_compliance for stateful"""
+    payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
         rules=collected_rules,
@@ -466,11 +466,11 @@ def test_exec_compliance_statefull_json_breaking_changes(
         ),
     ],
 )
-def test_exec_compliance_statefull_json_validation_breaking_changes(
+def test_exec_compliance_stateful_json_validation_breaking_changes(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test exec_compliance for statefull"""
-    payload: Statefull = Statefull(
+    """Test exec_compliance for stateful"""
+    payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
         rules=collected_rules,
@@ -527,11 +527,11 @@ def test_exec_compliance_statefull_json_validation_breaking_changes(
         ),
     ],
 )
-def test_exec_compliance_statefull_create_only_breaking_change_with_no_properties_change(
+def test_exec_compliance_stateful_create_only_breaking_change_with_no_properties_change(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test exec_compliance for statefull"""
-    payload: Statefull = Statefull(
+    """Test exec_compliance for stateful"""
+    payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
         rules=collected_rules,
