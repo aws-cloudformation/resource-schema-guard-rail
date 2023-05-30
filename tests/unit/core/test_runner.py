@@ -5,14 +5,14 @@ from unittest import mock
 
 import pytest
 
-from rpdk.guard_rail.core.data_types import Statefull, Stateless
+from rpdk.guard_rail.core.data_types import Stateful, Stateless
 from rpdk.guard_rail.core.runner import exec_compliance, prepare_ruleset
 
 
 def test_prepare_ruleset():
     """Test rule set prepare"""
     assert prepare_ruleset()
-    assert prepare_ruleset("statefull")
+    assert prepare_ruleset("stateful")
 
 
 @pytest.mark.parametrize(
@@ -45,12 +45,12 @@ def test_exec_compliance_stateless(collected_schemas, collected_rules):
         ),
     ],
 )
-def test_exec_compliance_statefull(
+def test_exec_compliance_stateful(
     mock_schema_diff, previous_schema, current_schema, collected_rules, schema_diff
 ):
-    """Test exec_compliance for statefull"""
+    """Test exec_compliance for stateful"""
     mock_schema_diff.return_value = schema_diff
-    payload: Statefull = Statefull(
+    payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
         rules=collected_rules,

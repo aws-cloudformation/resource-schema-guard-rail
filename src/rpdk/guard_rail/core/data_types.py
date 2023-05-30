@@ -8,11 +8,11 @@ Provides custom data types:
 
 Typical usage example:
 
-    from guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult, Statefull, Stateless
+    from guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult, Stateful, Stateless
 
     payload: Stateless = Stateless(schemas=list_of_schemas, rules=list_of_rules)
     # or
-    payload: Statefull = Statefull(
+    payload: Stateful = Stateful(
             previous_schema=previous_schema,
             current_schema=current_schema,
             rules=list_of_rules,
@@ -46,8 +46,8 @@ class Stateless:
 
 
 @dataclass
-class Statefull:
-    """Implements Statefull type for statefull compliance assessment
+class Stateful:
+    """Implements Stateful type for stateful compliance assessment
     over specified list of rules
 
     Args:

@@ -3,12 +3,12 @@
 Main function is __exec_rules__, which is a factory function. It uses closure
 to run multiple schemas over multiple sets of rules. There is an abstraction function
 on top of lower level (__exec_rules__) - exec_compliance. This function invokes factory function
-in stateless and statefull mode
+in stateless and stateful mode
 
 Typical usage example:
 
     from guard_rail.core.runner import exec_compliance
-    payload: Stateless|Statefull = ...
+    payload: Stateless|Stateful = ...
     exec_compliance(payload)
 """
 import importlib.resources as pkg_resources
@@ -20,11 +20,11 @@ import cfn_guard_rs
 from rpdk.guard_rail.core.data_types import (
     GuardRuleResult,
     GuardRuleSetResult,
-    Statefull,
+    Stateful,
     Stateless,
 )
 from rpdk.guard_rail.core.stateful import schema_diff
-from rpdk.guard_rail.rule_library import combiners, core, permissions, statefull, tags
+from rpdk.guard_rail.rule_library import combiners, core, permissions, stateful, tags
 from rpdk.guard_rail.utils.common import is_guard_rule
 from rpdk.guard_rail.utils.logger import LOG, logdebug
 
@@ -36,7 +36,7 @@ WARNING = "WARNING"
 def prepare_ruleset(mode: str = "stateless"):
     """Fetches module level schema rules based on mode.
 
-    Iterates over provided modules (core, combiners, permissions, tags) or (statefull)
+    Iterates over provided modules (core, combiners, permissions, tags) or (stateful)
     and checks if content is a guard rule-set, ten adds it to the list
     `to-run`
 
@@ -45,7 +45,7 @@ def prepare_ruleset(mode: str = "stateless"):
     """
     rule_modules = {
         "stateless": [core, combiners, permissions, tags],
-        "statefull": [statefull],
+        "stateful": [stateful],
     }
     rule_set = set()
     for module in rule_modules[mode]:
@@ -118,7 +118,7 @@ def exec_compliance(*args, **kwards):
     This function holds no implementation,
     There are two types of compliance checks:
     * Stateless - works with current schema state
-    * Statefull - works with current and previous schema states
+    * Stateful - works with current and previous schema states
     Raises:
         NotImplementedError: not supported implementation
     """
@@ -155,18 +155,18 @@ def _(payload):
     return compliance_output
 
 
-@exec_compliance.register(Statefull)
+@exec_compliance.register(Stateful)
 def _(payload):
-    """Implements exec_compliance for statefull compliance assessment
+    """Implements exec_compliance for stateful compliance assessment
     over specified list of rules
 
     Args:
-        payload (Statefull): Statefull payload
+        payload (Stateful): Stateful payload
     Returns:
         GuardRuleSetResult: Rule Result
     """
     compliance_output = []
-    ruleset = prepare_ruleset("statefull") | set(payload.rules)
+    ruleset = prepare_ruleset("stateful") | set(payload.rules)
 
     def __execute__(schema_exec, ruleset):
         output = None

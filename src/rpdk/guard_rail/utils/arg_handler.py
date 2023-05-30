@@ -45,8 +45,8 @@ def apply_rule(execute_rule, msg, /):
 
 
 @apply_rule(
-    lambda args: len(args.schemas) == 2 if args.statefull else True,
-    "If Statefull mode is executed, then two schemas MUST be provided (current/previous)",
+    lambda args: len(args.schemas) == 2 if args.stateful else True,
+    "If Stateful mode is executed, then two schemas MUST be provided (current/previous)",
 )
 def argument_validation(
     args: argparse.Namespace,
@@ -71,11 +71,11 @@ def setup_args():  # pylint: disable=C0116
     )
 
     parser.add_argument(
-        "--statefull",
-        dest="statefull",
+        "--stateful",
+        dest="stateful",
         action="store_true",
         default=False,
-        help="If specified will execute statefull compliance evaluation",
+        help="If specified will execute stateful compliance evaluation",
     )
 
     parser.add_argument(

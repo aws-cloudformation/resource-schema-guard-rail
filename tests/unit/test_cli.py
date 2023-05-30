@@ -71,7 +71,7 @@ def compliance_result():
                 "file://path1",
                 "--rule",
                 "file://path2",
-                "--statefull",
+                "--stateful",
             ]
         ),
     ],

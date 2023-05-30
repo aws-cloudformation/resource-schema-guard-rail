@@ -703,6 +703,6 @@ def test_schema_diff_complex_json_semantics_with_combiners_mutations(
         assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
     except NotImplementedError as e:
         assert (
-            "Schemas with combiners are not yet supported for statefull evaluation"
+            "Schemas with combiners are not yet supported for stateful evaluation"
             == str(e)
         )

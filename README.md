@@ -31,7 +31,7 @@ Along with basic linting, guard rail supports capability of breaking change eval
 
 In order to start using Basic Linting you need to run following command:
 ```bash
-$ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 --rule ... --statefull
+$ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 --rule ... --stateful
 ```
 
 **[List of Breaking Change Rules](docs/BREAKING_CHANGE.md)**

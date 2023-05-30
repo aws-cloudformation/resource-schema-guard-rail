@@ -17,7 +17,7 @@ Arguments:
 from functools import singledispatch
 from typing import List
 
-from rpdk.guard_rail.core.data_types import GuardRuleSetResult, Statefull, Stateless
+from rpdk.guard_rail.core.data_types import GuardRuleSetResult, Stateful, Stateless
 from rpdk.guard_rail.core.runner import exec_compliance
 from rpdk.guard_rail.utils.arg_handler import (
     argument_validation,
@@ -52,12 +52,12 @@ def main(args_in=None):
 
     compliance_result = None
 
-    if not args.statefull:
+    if not args.stateful:
         payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
         compliance_result = invoke(payload)
     else:
         # should be index safe as argument validation should fail prematurely
-        payload: Statefull = Statefull(
+        payload: Stateful = Stateful(
             previous_schema=collected_schemas[0],
             current_schema=collected_schemas[1],
             rules=collected_rules,
@@ -87,6 +87,6 @@ def _(payload):
     return exec_compliance(payload)
 
 
-@invoke.register(Statefull)
+@invoke.register(Stateful)
 def _(payload):
     return exec_compliance(payload)

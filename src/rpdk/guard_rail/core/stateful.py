@@ -1,4 +1,4 @@
-"""Module to perform statefull schema diff.
+"""Module to perform stateful schema diff.
 
 The main idea is to run two json blobs (v1, v2) over deepdiff module;
 This module will generate a metadiff, which will have three main categories:
@@ -223,7 +223,7 @@ def _translate_iterable_change(
             path_list = _cast_path(key)
             if _is_combiner_property(path_list):
                 raise NotImplementedError(
-                    "Schemas with combiners are not yet supported for statefull evaluation"
+                    "Schemas with combiners are not yet supported for stateful evaluation"
                 )
             if _is_cfn_construct(path_list):
                 _add_item(schema_meta_diff, path_list[0], diffkey, value)
@@ -269,7 +269,7 @@ def _translate_dict_change(
             path_list = _cast_path(key)
             if _is_combiner_property(path_list):
                 raise NotImplementedError(
-                    "Schemas with combiners are not yet supported for statefull evaluation"
+                    "Schemas with combiners are not yet supported for stateful evaluation"
                 )
             if _is_resource_property(path_list):
                 _add_item(schema_meta_diff, PROPERTIES, diffkey, _get_path(path_list))
