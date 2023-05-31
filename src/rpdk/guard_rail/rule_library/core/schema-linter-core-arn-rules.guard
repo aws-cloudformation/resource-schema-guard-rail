@@ -4,7 +4,7 @@ rule ensure_arn_properties_type_string when %props !empty {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "ARN_1",
+        "check_id": "ARN001",
         "message": "arn related property MUST have pattern specified"
     }
     >>
@@ -15,7 +15,7 @@ rule ensure_arn_properties_contain_pattern when %props !empty {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "ARN_2",
+        "check_id": "ARN002",
         "message": "arn related property MUST have pattern specified"
     }
     >>

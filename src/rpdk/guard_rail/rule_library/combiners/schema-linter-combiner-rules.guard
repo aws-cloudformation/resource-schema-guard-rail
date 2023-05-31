@@ -9,7 +9,7 @@ rule ensure_properties_do_not_support_multitype {
             <<
             {
                 "result": "NON_COMPLIANT",
-                "check_id": "COM_1",
+                "check_id": "COM001",
                 "message": "each property MUST specify type"
             }
             >>
@@ -17,7 +17,7 @@ rule ensure_properties_do_not_support_multitype {
             <<
             {
                 "result": "NON_COMPLIANT",
-                "check_id": "COM_2",
+                "check_id": "COM002",
                 "message": "type MUST NOT have combined definition"
             }
             >>
@@ -33,7 +33,7 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "COM_3",
+            "check_id": "COM003",
             "message": "property array MUST be modeled via items"
         }
         >>
@@ -42,8 +42,28 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "COM_4",
+            "check_id": "COM004",
             "message": "property array MUST NOT specify items via anyOf"
+        }
+        >>
+
+
+        items.allOf not exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "COM005",
+            "message": "property array MUST NOT specify items via allOf"
+        }
+        >>
+
+
+        items.oneOf not exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "COM006",
+            "message": "property array MUST NOT specify items via oneOf"
         }
         >>
     }

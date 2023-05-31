@@ -5,7 +5,7 @@ rule check_if_taggable_is_used {
     <<
     {
         "result": "WARNING",
-        "check_id": "TAG_1",
+        "check_id": "TAG001",
         "message": "`taggable` is deprecated, please used `tagging` property"
     }
     >>
@@ -16,7 +16,7 @@ rule ensure_tagging_is_specified {
     <<
     {
         "result": "WARNING",
-        "check_id": "TAG_2",
+        "check_id": "TAG002",
         "message": "`tagging` MUST be specified"
     }
     >>
@@ -27,7 +27,7 @@ rule ensure_taggable_and_tagging_do_not_coexist when taggable exists {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "TAG_3",
+        "check_id": "TAG003",
         "message": "`taggable` and `tagging` MUST NOT coexist"
     }
     >>
@@ -39,7 +39,7 @@ rule ensure_property_tags_exists_v1 when taggable exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_4.1",
+            "check_id": "TAG004",
             "message": "Resource MUST implement Tags property if `taggable` is true"
         }
         >>
@@ -51,7 +51,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "TAG_5",
+        "check_id": "TAG005",
         "message": "`tagging` MUST BE a struct"
     }
     >>
@@ -60,7 +60,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "TAG_6",
+        "check_id": "TAG006",
         "message": "`taggable` MUST BE specified when `tagging` is provided"
     }
     >>
@@ -71,7 +71,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_7",
+            "check_id": "TAG007",
             "message": "Resource MUST provide `tagOnCreate` {true|false} if `tagging.taggable` is true"
         }
         >>
@@ -80,7 +80,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_8",
+            "check_id": "TAG008",
             "message": "Resource MUST provide `tagUpdatable` {true|false} if `tagging.taggable` is true"
         }
         >>
@@ -89,7 +89,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_9",
+            "check_id": "TAG009",
             "message": "Resource MUST provide `cloudFormationSystemTags` {true|false} if `tagging.taggable` is true"
         }
         >>
@@ -98,7 +98,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_10",
+            "check_id": "TAG010",
             "message": "Resource MUST provide `tagProperty` {/properties/Tags} if `tagging.taggable` is true"
         }
         >>
@@ -107,7 +107,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "TAG_4.2",
+            "check_id": "TAG011",
             "message": "Resource MUST implement Tags property if `tagging.taggable` is true"
         }
         >>

@@ -70,3 +70,11 @@ pre-commit run --all-files
 ## License
 
 This project is licensed under the Apache-2.0 License.
+
+## Community
+
+Join us on Discord! Connect & interact with CloudFormation developers &
+experts, find channels to discuss and get help for our CLI, cfn-lint, CloudFormation registry, StackSets,
+Guard and more:
+
+[![Join our Discord](https://discordapp.com/api/guilds/981586120448020580/widget.png?style=banner3)](https://discord.gg/9zpd7TTRwq)

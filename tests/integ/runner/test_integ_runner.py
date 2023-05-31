@@ -29,19 +29,19 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             {
                 "ensure_properties_do_not_support_multitype": [
                     GuardRuleResult(
-                        check_id="COM_2",
+                        check_id="COM002",
                         message="type MUST NOT have combined definition",
                     )
                 ],
                 "ensure_primary_identifier_is_read_or_create_only": [
                     GuardRuleResult(
-                        check_id="P_ID_2",
+                        check_id="PID003",
                         message="primaryIdentifier MUST be either readOnly or createOnly",
                     )
                 ],
                 "ensure_arn_properties_contain_pattern": [
                     GuardRuleResult(
-                        check_id="ARN_2",
+                        check_id="ARN002",
                         message="arn related property MUST have pattern specified",
                     )
                 ],
@@ -49,13 +49,13 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             {
                 "check_if_taggable_is_used": [
                     GuardRuleResult(
-                        check_id="TAG_1",
+                        check_id="TAG001",
                         message="`taggable` is deprecated, please used `tagging` property",
                     )
                 ],
                 "ensure_tagging_is_specified": [
                     GuardRuleResult(
-                        check_id="TAG_2", message="`tagging` MUST be specified"
+                        check_id="TAG002", message="`tagging` MUST be specified"
                     )
                 ],
             },
