@@ -3,7 +3,7 @@
 
 
 ### Notes
-This is not a stable version (Beta), it's still under development
+This is not a stable version, it's still under development
 
 ## Overview
 AWS CloudFormation Resource Schema Guard Rail is an open-source tool, which uses [CloudFormation Guard](https://github.com/aws-cloudformation/cloudformation-guard/) policy-as-code evaluation engine to assess resource schema compliance. It validates json resource schemas against the AWS CloudFormation modeling best practices.
