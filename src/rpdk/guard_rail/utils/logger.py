@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 console = logging.StreamHandler()
-console.setLevel(logging.INFO)
+console.setLevel(logging.ERROR)
 formatter = logging.Formatter("%(asctime)s: %(levelname)-8s - %(message).500s")
 console.setFormatter(formatter)
 logging.getLogger("").addHandler(console)
