@@ -7,7 +7,7 @@ rule ensure_resource_create_handler_exists_and_have_permissions {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "PER_1",
+        "check_id": "PER001",
         "message": "Resource MUST implement create handler"
     }
     >>
@@ -17,7 +17,7 @@ rule ensure_resource_create_handler_exists_and_have_permissions {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PER_2",
+            "check_id": "PER002",
             "message": "Resource MUST NOT specify wildcard permissions for create handler"
         }
         >>
@@ -29,7 +29,7 @@ rule ensure_resource_read_handler_exists_and_have_permissions {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "PER_3",
+        "check_id": "PER003",
         "message": "Resource MUST implement read handler"
     }
     >>
@@ -39,7 +39,7 @@ rule ensure_resource_read_handler_exists_and_have_permissions {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PER_4",
+            "check_id": "PER004",
             "message": "Resource MUST NOT specify wildcard permissions for read handler"
         }
         >>
@@ -51,7 +51,7 @@ rule ensure_resource_update_handler_exists_and_have_permissions {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "PER_5",
+        "check_id": "PER005",
         "message": "Resource MUST implement update handler"
     }
     >>
@@ -61,7 +61,7 @@ rule ensure_resource_update_handler_exists_and_have_permissions {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PER_6",
+            "check_id": "PER006",
             "message": "Resource MUST NOT specify wildcard permissions for update handler"
         }
         >>
@@ -73,7 +73,7 @@ rule ensure_resource_delete_handler_exists_and_have_permissions {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "PER_7",
+        "check_id": "PER007",
         "message": "Resource MUST implement delete handler"
     }
     >>
@@ -83,7 +83,7 @@ rule ensure_resource_delete_handler_exists_and_have_permissions {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PER_8",
+            "check_id": "PER008",
             "message": "Resource MUST NOT specify wildcard permissions for delete handler"
         }
         >>
@@ -95,7 +95,7 @@ rule ensure_resource_list_handler_exists_and_have_permissions {
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "PER_9",
+        "check_id": "PER009",
         "message": "Resource MUST implement list handler"
     }
     >>
@@ -105,7 +105,7 @@ rule ensure_resource_list_handler_exists_and_have_permissions {
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PER_10",
+            "check_id": "PER010",
             "message": "Resource MUST NOT specify wildcard permissions for list handler"
         }
         >>

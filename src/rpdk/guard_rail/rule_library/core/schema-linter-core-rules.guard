@@ -11,7 +11,7 @@ rule ensure_primary_identifier_exists_and_not_empty
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "P_ID_1",
+        "check_id": "PID001",
         "message": "primaryIdentifier MUST exist"
     }
     >>
@@ -19,7 +19,7 @@ rule ensure_primary_identifier_exists_and_not_empty
     <<
     {
         "result": "NON_COMPLIANT",
-        "check_id": "P_ID_2",
+        "check_id": "PID002",
         "message": "primaryIdentifier MUST contain values"
     }
     >>
@@ -33,7 +33,7 @@ rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identi
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "P_ID_2",
+            "check_id": "PID003",
             "message": "primaryIdentifier MUST be either readOnly or createOnly"
         }
         >>
@@ -49,7 +49,7 @@ rule ensure_create_and_read_only_intersection_is_empty
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "RO_PR_1",
+            "check_id": "PR001",
             "message": "read/createOnlyProperties MUST NOT have common properties"
         }
         >>
@@ -60,7 +60,7 @@ rule ensure_create_and_read_only_intersection_is_empty
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "CO_PR_1",
+            "check_id": "PR002",
             "message": "create/readOnlyProperties MUST NOT have common properties"
         }
         >>
@@ -74,7 +74,7 @@ rule ensure_write_and_read_only_intersection_is_empty
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "RO_PR_2",
+            "check_id": "PR003",
             "message": "read/writeOnlyProperties MUST NOT have common properties"
         }
         >>
@@ -84,7 +84,7 @@ rule ensure_write_and_read_only_intersection_is_empty
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "WO_PR_1",
+            "check_id": "PR004",
             "message": "write/readOnlyProperties MUST NOT have common properties"
         }
         >>
@@ -95,13 +95,34 @@ rule ensure_write_and_read_only_intersection_is_empty
 
 rule ensure_description_is_descriptive {
     description != /^Resource Type definition for/
+    <<
+    {
+        "result": "WARNING",
+        "check_id": "GN001",
+        "message": "description should start with `Resource Type definition for ...`"
+    }
+    >>
 }
 
 # URLs should use https
 rule ensure_sourceUrl_uses_https when sourceUrl exists {
     sourceUrl == /^https:/
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "GN002",
+        "message": "sourceUrl should use https protocol"
+    }
+    >>
 }
 
 rule ensure_default_replacementStrategy when replacementStrategy exists {
     replacementStrategy == 'create_then_delete'
+    <<
+    {
+        "result": "WARNING",
+        "check_id": "GN003",
+        "message": "replacement strategy should not implement create_then_delete"
+    }
+    >>
 }

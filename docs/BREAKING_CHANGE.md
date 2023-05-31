@@ -27,7 +27,7 @@
 ***
 #### Type
 | Rule Name   |      Check Id      |  Message |
-|----------|-------------|------|------|
+|----------|-------------|------|
 |`ensure_property_type_not_changed`|`TP001`|`"Only NEWLY ADDED properties can have new type added"`|
 ||`TP002`|`"cannot remove TYPE from a property"`|
 ||`TP003`|`"cannot change TYPE of a property"`|
