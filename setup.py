@@ -36,25 +36,14 @@ def read_requirements(req):
 
 setuptools.setup(
     name="resource-schema-guard-rail",
-    version="0.0.9",
+    version="0.0.6",
     description="Schema Guard Rail",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Amazon Web Services",
     author_email="aws-cloudformation-developers@amazon.com",
-    packages=[
-        "rpdk.guard_rail",
-        "rpdk.guard_rail.core",
-        "rpdk.guard_rail.rule_library",
-        "rpdk.guard_rail.utils",
-        "rpdk.guard_rail.rule_library.combiners",
-        "rpdk.guard_rail.rule_library.core",
-        "rpdk.guard_rail.rule_library.permissions",
-        "rpdk.guard_rail.rule_library.stateful",
-        "rpdk.guard_rail.rule_library.tags",
-    ],
+    packages=setuptools.find_packages(where="src"),
     package_dir={"": "src"},
-    py_modules=["cli"],
     install_requires=read_requirements("requirements_dev.txt"),
     python_requires=">=3.7",
     entry_points={
