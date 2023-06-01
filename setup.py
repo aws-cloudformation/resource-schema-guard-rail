@@ -36,7 +36,7 @@ def read_requirements(req):
 
 setuptools.setup(
     name="resource-schema-guard-rail",
-    version="0.0.7",
+    version="0.0.9",
     description="Schema Guard Rail",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -47,6 +47,11 @@ setuptools.setup(
         "rpdk.guard_rail.core",
         "rpdk.guard_rail.rule_library",
         "rpdk.guard_rail.utils",
+        "rpdk.guard_rail.rule_library.combiners",
+        "rpdk.guard_rail.rule_library.core",
+        "rpdk.guard_rail.rule_library.permissions",
+        "rpdk.guard_rail.rule_library.stateful",
+        "rpdk.guard_rail.rule_library.tags",
     ],
     package_dir={"": "src"},
     py_modules=["cli"],
