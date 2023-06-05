@@ -1,7 +1,8 @@
 # CloudFormation - Resource Schema Guard Rail
+![Apache 2.0 License](https://img.shields.io/github/license/aws-cloudformation/resource-schema-guard-rail)
 [![Pull Request CI](https://github.com/aws-cloudformation/resource-schema-guard-rail/actions/workflows/pr-ci.yml/badge.svg?branch=main)](https://github.com/aws-cloudformation/resource-schema-guard-rail/actions/workflows/pr-ci.yml)
-[![PyPI version](https://badge.fury.io/py/resource-schema-guard-rail.svg)](https://badge.fury.io/py/resource-schema-guard-rail)
-
+[![PyPI](https://img.shields.io/pypi/v/resource-schema-guard-rail?label=pypi)](https://badge.fury.io/py/resource-schema-guard-rail)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/resource-schema-guard-rail?label=python)](https://pypi.org/project/resource-schema-guard-rail/)
 
 ### Notes
 This is not a stable version (Beta), it's still under development
