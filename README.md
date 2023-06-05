@@ -1,5 +1,6 @@
 # CloudFormation - Resource Schema Guard Rail
 [![Pull Request CI](https://github.com/aws-cloudformation/resource-schema-guard-rail/actions/workflows/pr-ci.yml/badge.svg?branch=main)](https://github.com/aws-cloudformation/resource-schema-guard-rail/actions/workflows/pr-ci.yml)
+[![PyPI version](https://badge.fury.io/py/resource-schema-guard-rail.svg)](https://badge.fury.io/py/resource-schema-guard-rail)
 
 
 ### Notes
