@@ -18,6 +18,7 @@ Typical usage example:
     schema_v2 = ...
     schema_meta_diff = schema_diff(schema_v1, schema_v2)
 """
+import json
 import re
 from copy import copy
 from enum import auto
@@ -88,7 +89,7 @@ def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
         ignore_order=True,
         verbose_level=2,
     )
-    print(_translate_meta_diff(deep_diff.to_dict()))
+    print(json.dumps(_translate_meta_diff(deep_diff.to_dict())))
     return _translate_meta_diff(deep_diff.to_dict())
 
 
