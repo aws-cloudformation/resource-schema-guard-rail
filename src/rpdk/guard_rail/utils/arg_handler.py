@@ -155,7 +155,7 @@ def collect_schemas(schemas: Sequence[str] = None):
 
             if schema_deser is None:
                 schema_input_path_validation(schema_item)
-                path = "/" + re.search(JSON_PATH_EXTRACT_PATTERN, schema_item).group(0)
+                path = "/" + re.search(JSON_PATH_EXTRACT_PATTERN, schema_item).group(2)
                 file_obj = read_file(path)
                 schema_deser = __to_json(file_obj)
 
@@ -180,7 +180,7 @@ def collect_rules(rules: Sequence[str] = None):
             rule_input_path_validation(rule)
 
             if re.search(GUARD_FILE_PATTERN, rule):
-                path = "/" + re.search(GUARD_PATH_EXTRACT_PATTERN, rule).group(0)
+                path = "/" + re.search(GUARD_PATH_EXTRACT_PATTERN, rule).group(2)
                 file_obj = read_file(path)
                 _rules.append(file_obj)
 
