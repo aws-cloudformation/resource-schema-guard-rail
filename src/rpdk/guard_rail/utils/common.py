@@ -11,8 +11,8 @@ SCHEMA_FILE_PATTERN = re.compile(r"^(.+)\/([^\/]+)(\.json)$")
 GUARD_FILE_PATTERN = re.compile(r"^(.+)\/([^\/]+)(\.guard)$")
 
 
-JSON_PATH_EXTRACT_PATTERN = r"(?![file:\/])(.+)\/([^\/]+)(\.json)$"
-GUARD_PATH_EXTRACT_PATTERN = r"(?![file:\/])(.+)\/([^\/]+)(\.guard)$"
+JSON_PATH_EXTRACT_PATTERN = r"(^file:/)((.+)(\.json))$"
+GUARD_PATH_EXTRACT_PATTERN = r"(^file:/)((.+)(\.guard))$"
 
 
 @logdebug
