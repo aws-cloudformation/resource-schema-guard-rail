@@ -156,7 +156,7 @@ def test_exec_compliance_stateful(
             rules=collected_rules,
         )
         compliance_result = exec_compliance(payload)[0]
-        print(compliance_result)
+
         for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
             assert non_compliant_rule in compliance_result.non_compliant
             assert (

@@ -56,7 +56,7 @@ rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identi
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PID00",
+            "check_id": "PID003",
             "message": "primaryIdentifier MUST be either readOnly or createOnly"
         }
         >>
@@ -86,22 +86,6 @@ rule ensure_create_and_read_only_intersection_is_empty
             let create = createOnlyProperties
             readOnlyProperties[*] {
                 this !IN %create
-                <<
-                {
-                    "result": "NON_COMPLIANT",
-                    "check_id": "PR001",
-                    "message": "read/createOnlyProperties MUST NOT have common properties"
-                }
-                >>
-            }
-        }
-    }
-
-    when createOnlyProperties exists {
-        when readOnlyProperties exists {
-            let read = readOnlyProperties
-            createOnlyProperties[*] {
-                this !IN %read
                 <<
                 {
                     "result": "NON_COMPLIANT",
