@@ -1,0 +1,59 @@
+{
+    "typeName": "SAMPLE::UNITTEST::SCHEMA",
+    "properties": {
+        "PropertyA": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+        },
+        "PropertyIdentifier": {
+            "type": "string",
+            "maxLength": 1600,
+            "pattern": "^arn(:[a-z0-9]+([.-][a-z0-9]+)*){2}(:([a-z0-9]+([.-][a-z0-9]+)*)?){2}:([^/].*)?$"
+        },
+        "PropertyAdditionalIdentifier": {
+            "type": "string",
+            "maxLength": 1600,
+            "pattern": "^arn(:[a-z0-9]+([.-][a-z0-9]+)*){2}(:([a-z0-9]+([.-][a-z0-9]+)*)?){2}:([^/].*)?$"
+        },
+        "PropertyIndex": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[-._\\w]+$"
+        }
+    },
+    "readOnlyProperties": [
+        "/properties/PropertyA",
+        "/properties/PropertyIdentifier"
+    ],
+    "createOnlyProperties": [
+        "/properties/PropertyAdditionalIdentifier"
+    ],
+    "primaryIdentifier": [
+        "/properties/PropertyIndex"
+    ],
+    "additionalProperties": false,
+    "handlers": {
+        "create": {
+            "permissions": [
+                "unittest:permission"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "unittest:permission"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "unittest:permission"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "unittest:permission"
+            ]
+        }
+    }
+}

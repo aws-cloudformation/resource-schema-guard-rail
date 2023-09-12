@@ -5,7 +5,8 @@ rule ensure_properties_do_not_support_multitype {
         this is_struct
 
         this[*] {
-            type exists
+            type exists OR
+            '$ref' exists
             <<
             {
                 "result": "NON_COMPLIANT",

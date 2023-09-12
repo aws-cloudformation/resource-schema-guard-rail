@@ -1,4 +1,5 @@
 """Module with common variable and methods."""
+import json
 import re
 
 from .logger import LOG, logdebug
@@ -25,6 +26,16 @@ def read_file(file_path: str):  # pylint: disable=C0116
     try:
         with open(file_path, "r", encoding="utf8") as file:
             return file.read()
+    except IOError as ex:
+        LOG.info("File not found. Please check the path.")
+        raise ex
+
+
+@logdebug
+def read_json(file_path: str):  # pylint: disable=C0116
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return json.load(file)
     except IOError as ex:
         LOG.info("File not found. Please check the path.")
         raise ex
