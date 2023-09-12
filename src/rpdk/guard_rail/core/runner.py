@@ -75,9 +75,9 @@ def __exec_rules__(schema: Dict):
         def __render_output(evaluation_result: object):
             def __add_item__(rule_name: str, mapping: Mapping, result: Any):
                 if rule_name in mapping:
-                    mapping[rule_name].append(result)
+                    mapping[rule_name].add(result)
                     return
-                mapping[rule_name] = [result]
+                mapping[rule_name] = {result}
 
             non_compliant = {}
             warning = {}
@@ -86,9 +86,11 @@ def __exec_rules__(schema: Dict):
                     try:
                         if check.message:
                             _message_dict = literal_eval(check.message.strip())
+                            _path = check.path
                             rule_result = GuardRuleResult(
                                 check_id=_message_dict["check_id"],
                                 message=_message_dict["message"],
+                                path=_path,
                             )
 
                             if _message_dict.get("result", NON_COMPLIANT) == WARNING:
@@ -141,7 +143,7 @@ def _(payload):
     compliance_output = []
     ruleset = prepare_ruleset() | set(payload.rules)
 
-    def __execute__(schema_exec, ruleset):
+    def __execute_rules__(schema_exec, ruleset):
         output = None
         for rules in ruleset:
             output = schema_exec(rules)
@@ -149,9 +151,8 @@ def _(payload):
 
     for schema in payload.schemas:
         schema_to_execute = __exec_rules__(schema=schema)
-        output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+        output = __execute_rules__(schema_exec=schema_to_execute, ruleset=ruleset)
         compliance_output.append(output)
-
     return compliance_output
 
 

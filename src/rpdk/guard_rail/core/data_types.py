@@ -60,10 +60,17 @@ class Stateful:
     rules: List[str] = field(default_factory=list)
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class GuardRuleResult:
+    # making this class hashable as guard return output on
+    # multiple unmatched properties
+    # e.g. primaryIdentifier[*] in createOnlyProperties
+    # if there is no match it outputs 4 unmatched properties
+    # for user output we only care about unique values that are NOT
+    # present anywhere
     check_id: str = field(default="unidentified")
     message: str = field(default="unidentified")
+    path: str = field(default="unidentified")
 
 
 @dataclass

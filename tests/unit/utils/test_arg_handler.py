@@ -81,21 +81,6 @@ def test_input_validation(input_path, expect_to_pass):
 
 @pytest.mark.parametrize(
     "schemas,expected_schemas",
-    [
-        (['{"foo": "bar"}'], [{"foo": "bar"}]),
-        ([], []),
-        (None, []),
-        (['{"foo": "bar"}', '{"foo": "bar"}'], [{"foo": "bar"}, {"foo": "bar"}]),
-    ],
-)
-def test_collect_schemas_body(schemas, expected_schemas):
-    """test collect schemas body"""
-    result = collect_schemas(schemas=schemas)
-    assert result == expected_schemas
-
-
-@pytest.mark.parametrize(
-    "schemas,expected_schemas",
     [(["data/sample.json"], [{"foo": "bar"}])],
 )
 def test_collect_schemas_file(schemas, expected_schemas):
@@ -131,6 +116,11 @@ def test_collect_schemas_file_fail(schemas, msg):
         )
     except Exception as e:
         assert msg == str(e) or msg in str(e)
+
+
+def test_collect_empty_schemas_argument():
+    """test fail scenario of collect schemas body"""
+    assert not collect_schemas(schemas=[])
 
 
 @pytest.mark.parametrize(

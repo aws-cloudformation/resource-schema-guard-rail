@@ -1,10 +1,3 @@
-let read = readOnlyProperties
-let create = createOnlyProperties
-let write = writeOnlyProperties
-
-
-
-
 rule ensure_primary_identifier_exists_and_not_empty
 {
     primaryIdentifier exists
@@ -27,16 +20,60 @@ rule ensure_primary_identifier_exists_and_not_empty
 
 rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identifier_exists_and_not_empty
 {
-    primaryIdentifier[*] {
-        this IN %read OR
-        this IN %create
+    when readOnlyProperties exists {
+        let read = readOnlyProperties
+        when createOnlyProperties exists {
+            let create = createOnlyProperties
+            primaryIdentifier[*] {
+                this IN %read OR
+                this IN %create
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PID003",
+                    "message": "primaryIdentifier MUST be either readOnly or createOnly"
+                }
+                >>
+            }
+        }
+
+        when createOnlyProperties !exists {
+            primaryIdentifier[*] {
+                this IN %read
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PID003",
+                    "message": "primaryIdentifier MUST be either readOnly or createOnly"
+                }
+                >>
+            }
+        }
+    }
+
+    when readOnlyProperties !exists {
+        createOnlyProperties !exists
         <<
         {
             "result": "NON_COMPLIANT",
-            "check_id": "PID003",
+            "check_id": "PID00",
             "message": "primaryIdentifier MUST be either readOnly or createOnly"
         }
         >>
+
+        when createOnlyProperties exists {
+            let create = createOnlyProperties
+            primaryIdentifier[*] {
+                this IN %create
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PID003",
+                    "message": "primaryIdentifier MUST be either readOnly or createOnly"
+                }
+                >>
+            }
+        }
     }
 }
 
@@ -44,50 +81,71 @@ rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identi
 
 rule ensure_create_and_read_only_intersection_is_empty
 {
-    readOnlyProperties[*] {
-        this !IN %create
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "PR001",
-            "message": "read/createOnlyProperties MUST NOT have common properties"
+    when readOnlyProperties exists {
+        when createOnlyProperties exists {
+            let create = createOnlyProperties
+            readOnlyProperties[*] {
+                this !IN %create
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PR001",
+                    "message": "read/createOnlyProperties MUST NOT have common properties"
+                }
+                >>
+            }
         }
-        >>
     }
 
-    createOnlyProperties[*] {
-        this !IN %read
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "PR002",
-            "message": "create/readOnlyProperties MUST NOT have common properties"
+    when createOnlyProperties exists {
+        when readOnlyProperties exists {
+            let read = readOnlyProperties
+            createOnlyProperties[*] {
+                this !IN %read
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PR001",
+                    "message": "read/createOnlyProperties MUST NOT have common properties"
+                }
+                >>
+            }
         }
-        >>
     }
 }
 
 rule ensure_write_and_read_only_intersection_is_empty
 {
-    readOnlyProperties[*] {
-        this !IN %write
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "PR003",
-            "message": "read/writeOnlyProperties MUST NOT have common properties"
+    when readOnlyProperties exists {
+        when writeOnlyProperties exists {
+            let write = writeOnlyProperties
+            readOnlyProperties[*] {
+                this !IN %write
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PR004",
+                    "message": "write/readOnlyProperties MUST NOT have common properties"
+                }
+                >>
+            }
         }
-        >>
     }
-    writeOnlyProperties[*] {
-        this !IN %read
-        <<
-        {
-            "result": "NON_COMPLIANT",
-            "check_id": "PR004",
-            "message": "write/readOnlyProperties MUST NOT have common properties"
+
+    when writeOnlyProperties exists {
+        when readOnlyProperties exists {
+            let read = readOnlyProperties
+            writeOnlyProperties[*] {
+                this !IN %read
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PR004",
+                    "message": "write/readOnlyProperties MUST NOT have common properties"
+                }
+                >>
+            }
         }
-        >>
     }
 }
 
