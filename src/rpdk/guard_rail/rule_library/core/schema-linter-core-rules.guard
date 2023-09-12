@@ -115,22 +115,6 @@ rule ensure_write_and_read_only_intersection_is_empty
             }
         }
     }
-
-    when writeOnlyProperties exists {
-        when readOnlyProperties exists {
-            let read = readOnlyProperties
-            writeOnlyProperties[*] {
-                this !IN %read
-                <<
-                {
-                    "result": "NON_COMPLIANT",
-                    "check_id": "PR004",
-                    "message": "write/readOnlyProperties MUST NOT have common properties"
-                }
-                >>
-            }
-        }
-    }
 }
 
 
