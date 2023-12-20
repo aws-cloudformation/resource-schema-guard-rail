@@ -113,18 +113,21 @@
     ],
     "readOnlyProperties": [
         "/properties/Arn",
-        "/properties/KeyId"
+        "/properties/KeyId",
+        "/Properties/KeyId2"
     ],
     "createOnlyProperties": [
-        "/properties/KeyPolicy"
+        "/properties/KeyPolicy",
+        "/Properties/KeyPolicy2"
     ],
     "primaryIdentifier": [
         "/properties/KeyPolicy",
         "/properties/KeyId",
-        "/properties/Arn2"
+        "/Properties/Arn2"
     ],
     "writeOnlyProperties": [
-        "/properties/PendingWindowInDays"
+        "/properties/PendingWindowInDays",
+        "/Properties/PendingWindowInDays2"
     ],
     "taggable": true,
     "handlers": {
