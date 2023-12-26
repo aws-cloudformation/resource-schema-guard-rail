@@ -48,6 +48,28 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="",
                     )
                 },
+                "verify_property_notation": {
+                    GuardRuleResult(
+                        check_id="PR005",
+                        message="primaryIdentifier MUST have correct property notation `properties/..`",
+                        path="/primaryIdentifier/2",
+                    ),
+                    GuardRuleResult(
+                        check_id="PR006",
+                        message="createOnlyProperties MUST have correct property notation `properties/..`",
+                        path="/createOnlyProperties/1",
+                    ),
+                    GuardRuleResult(
+                        check_id="PR007",
+                        message="readOnlyProperties MUST have correct property notation `properties/..`",
+                        path="/readOnlyProperties/2",
+                    ),
+                    GuardRuleResult(
+                        check_id="PR008",
+                        message="writeOnlyProperties MUST have correct property notation `properties/..`",
+                        path="/writeOnlyProperties/1",
+                    ),
+                },
             },
             {
                 "check_if_taggable_is_used": {

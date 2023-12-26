@@ -117,6 +117,62 @@ rule ensure_write_and_read_only_intersection_is_empty
     }
 }
 
+rule verify_property_notation
+{
+    let allowedPattern = /(\/properties\/)\w+/
+    when primaryIdentifier exists {
+        primaryIdentifier[*] {
+            this == %allowedPattern
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR005",
+                "message": "primaryIdentifier MUST have correct property notation `properties/..`"
+            }
+            >>
+        }
+    }
+
+    when createOnlyProperties exists {
+        createOnlyProperties[*] {
+            this == %allowedPattern
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR006",
+                "message": "createOnlyProperties MUST have correct property notation `properties/..`"
+            }
+            >>
+        }
+    }
+
+    when readOnlyProperties exists {
+        readOnlyProperties[*] {
+            this == %allowedPattern
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR007",
+                "message": "readOnlyProperties MUST have correct property notation `properties/..`"
+            }
+            >>
+        }
+    }
+
+    when writeOnlyProperties exists {
+        writeOnlyProperties[*] {
+            this == %allowedPattern
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR008",
+                "message": "writeOnlyProperties MUST have correct property notation `properties/..`"
+            }
+            >>
+        }
+    }
+}
+
 
 
 rule ensure_description_is_descriptive {

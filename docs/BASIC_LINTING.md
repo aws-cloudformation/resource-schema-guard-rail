@@ -17,6 +17,11 @@
 | |  `PR002` | `"create/readOnlyProperties MUST NOT have common properties"` |
 | `ensure_write_and_read_only_intersection_is_empty` |  `PR003` | `"read/writeOnlyProperties MUST NOT have common properties"` |
 | |  `PR004` | `"write/readOnlyProperties MUST NOT have common properties"` |
+| `verify_property_notation` |  `PR005` | `"primaryIdentifier MUST have correct property notation 'properties/..'"` |
+| |  `PR006` | `"createOnlyProperties MUST have correct property notation 'properties/..'"` |
+| |  `PR007` | `"readOnlyProperties MUST have correct property notation 'properties/..'"` |
+| |  `PR008` | `"writeOnlyProperties MUST have correct property notation 'properties/..'"` |
+
 
 #### Combiners
 | Rule Name   |      Check Id      |  Message |
