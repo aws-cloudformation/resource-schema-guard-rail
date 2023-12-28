@@ -26,7 +26,8 @@
             "additionalProperties": false
         },
         "PolicyDefinition": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "object",
                     "title": "Static",
                     "properties": {
@@ -126,8 +127,8 @@
         "Definition"
     ],
     "writeOnlyProperties": [
-        "/properties/Definition/Static/Statement", 
-        "/properties/Definition/Static.Description", 
+        "/properties/Definition/Static/Statement",
+        "/properties/Definition/Static.Description",
         "/properties/Definition/TemplateLinked"
     ],
     "readOnlyProperties": [
