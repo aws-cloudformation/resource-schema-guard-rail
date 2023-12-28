@@ -51,22 +51,22 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                 "verify_property_notation": {
                     GuardRuleResult(
                         check_id="PR005",
-                        message="primaryIdentifier MUST have correct property notation `properties/..`",
+                        message="primaryIdentifier MUST have properties defined in the schema",
                         path="/primaryIdentifier/2",
                     ),
                     GuardRuleResult(
                         check_id="PR006",
-                        message="createOnlyProperties MUST have correct property notation `properties/..`",
+                        message="createOnlyProperties MUST have properties defined in the schema",
                         path="/createOnlyProperties/1",
                     ),
                     GuardRuleResult(
                         check_id="PR007",
-                        message="readOnlyProperties MUST have correct property notation `properties/..`",
+                        message="readOnlyProperties MUST have properties defined in the schema",
                         path="/readOnlyProperties/2",
                     ),
                     GuardRuleResult(
                         check_id="PR008",
-                        message="writeOnlyProperties MUST have correct property notation `properties/..`",
+                        message="writeOnlyProperties MUST have properties defined in the schema",
                         path="/writeOnlyProperties/1",
                     ),
                 },
@@ -124,6 +124,60 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
     ],
 )
 def test_exec_compliance_stateless(
+    collected_schemas, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for stateless"""
+    payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
+    compliance_result = exec_compliance(payload)[0]
+
+    # Assert for non-compliant rules
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+    # Assert for warning rules
+    for warning_rule, warning_result in warning_rules.items():
+        assert warning_rule in compliance_result.warning
+        assert warning_result == compliance_result.warning[warning_rule]
+
+
+@pytest.mark.parametrize(
+    "collected_schemas,collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/aws-verifiedpermissions-policy.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_properties_do_not_support_multitype": {
+                    GuardRuleResult(
+                        check_id="COM001",
+                        message="each property MUST specify type",
+                        path="/properties/Definition",
+                    )
+                },
+                "verify_property_notation": {
+                    GuardRuleResult(
+                        check_id="PR008",
+                        message="writeOnlyProperties MUST have properties defined in the schema",
+                        path="/writeOnlyProperties/1",
+                    )
+                },
+            },
+            {},
+        ),
+    ],
+)
+def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
     collected_schemas, collected_rules, non_compliant_rules, warning_rules
 ):
     """Test exec_compliance for stateless"""

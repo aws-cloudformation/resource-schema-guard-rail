@@ -1,9 +1,11 @@
 """Module to handle schema manipulations."""
-from typing import Any, Dict, Set
+from copy import deepcopy
+from typing import Any, Dict, Sequence, Set, Tuple
 
 from jsonschema import RefResolver
 
 _PROPERTIES = "properties"
+_DEFINITIONS = "definitions"
 _REF = "$ref"
 _ITEMS = "items"
 _PATTERN_PROPERTIES = "patternProperties"
@@ -64,5 +66,81 @@ def resolve_schema(schema: Dict):
         return schema
 
     resolved_schema = _internal_resolver(schema, resolver, set())
-    resolved_schema.pop("definitions", None)
+    resolved_schema.pop(_DEFINITIONS, None)
     return resolved_schema
+
+
+def _fetch_all_paths(schema: Dict):
+    """Traversing resolved schema and fetching
+    all properties paths.
+
+    Example:
+    {"properties": {"foo": {"properties": {"bar": {...}}}}}
+    translated into -> ["/properties/foo", "/properties/foo/bar"]
+    Args:
+        schema (Dict): raw/resolved schema
+    Returns:
+        Sequence: list of traversed paths
+    """
+
+    def __traverse(
+        prop_name: str, prop_definition: Dict, cur_path: Tuple[str], all_paths: Sequence
+    ):
+        # need to add parents/leafs
+        all_paths.add(cur_path if cur_path[-1] != "*" else cur_path[:-1])
+        definition_replica = deepcopy(prop_definition)
+
+        if _ITEMS in definition_replica:
+            __traverse(
+                prop_name, definition_replica[_ITEMS], cur_path + ("*",), all_paths
+            )
+        else:
+            # if combiners are specified then we need to squash variants
+            # and iterate over each sub schema
+            if _ALL_OF in definition_replica:
+                for sub_schema in definition_replica[_ALL_OF]:
+                    __traverse(prop_name, sub_schema, cur_path, all_paths)
+            elif _ANY_OF in definition_replica:
+                for sub_schema in definition_replica[_ANY_OF]:
+                    __traverse(prop_name, sub_schema, cur_path, all_paths)
+            elif _ONE_OF in definition_replica:
+                for sub_schema in definition_replica[_ONE_OF]:
+                    __traverse(prop_name, sub_schema, cur_path, all_paths)
+            else:
+                # if no combiners were found then we check if there are
+                # nested properties
+                if _PROPERTIES in prop_definition:
+                    nested_properties = definition_replica[_PROPERTIES]
+                    while nested_properties:
+                        _prop_name, _prop_definition = nested_properties.popitem()
+                        __traverse(
+                            _prop_name,
+                            _prop_definition,
+                            cur_path + (_prop_name,),
+                            all_paths,
+                        )
+
+    resolved_schema = resolve_schema(schema)
+    properties_replica = deepcopy(resolved_schema.get(_PROPERTIES, {}))
+    traversed_paths = set()
+    path = tuple()
+
+    while properties_replica:
+        property_name, property_definition = properties_replica.popitem()
+        __traverse(
+            property_name, property_definition, path + (property_name,), traversed_paths
+        )
+    return ["/properties/" + "/".join(i) for i in traversed_paths]
+
+
+def add_paths_to_schema(schema: Dict):
+    """Method to add all defined properties as paths
+
+    Args:
+        schema (Dict): resource schema
+
+    Returns:
+        Dict: schema with added paths
+    """
+    schema["paths"] = _fetch_all_paths(schema)
+    return schema
