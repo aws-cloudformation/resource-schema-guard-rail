@@ -1,0 +1,79 @@
+{
+    "definitions": {
+        "Tuple": {
+            "type": "object",
+            "properties": {
+                "Field": {
+                    "$ref": "#/definitions/Field"
+                },
+                "TextTransformation": {
+                    "type": "string"
+                }
+            }
+        },
+        "Field": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "Data": {
+                            "type": "string",
+                            "pattern": ".*\\S.*",
+                            "minLength": 1,
+                            "maxLength": 128
+                        },
+                        "Type": {
+                            "type": "string",
+                            "enum": [
+                                "HEADER"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "Type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "BODY"
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "NewType": {
+                                        "type": "string",
+                                        "enum": [
+                                            "URI"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "properties": {
+        "Id": {
+            "type": "string"
+        },
+        "Name": {
+            "type": "string"
+        },
+        "Tuples": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Tuple"
+            }
+        }
+    }
+}

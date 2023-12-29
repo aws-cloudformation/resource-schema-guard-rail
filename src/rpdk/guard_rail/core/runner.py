@@ -27,6 +27,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
 from rpdk.guard_rail.rule_library import combiners, core, permissions, stateful, tags
 from rpdk.guard_rail.utils.common import is_guard_rule
 from rpdk.guard_rail.utils.logger import LOG, logdebug
+from rpdk.guard_rail.utils.schema_utils import add_paths_to_schema
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
@@ -150,7 +151,8 @@ def _(payload):
         return output
 
     for schema in payload.schemas:
-        schema_to_execute = __exec_rules__(schema=schema)
+        schema_with_paths = add_paths_to_schema(schema=schema)
+        schema_to_execute = __exec_rules__(schema=schema_with_paths)
         output = __execute_rules__(schema_exec=schema_to_execute, ruleset=ruleset)
         compliance_output.append(output)
     return compliance_output
