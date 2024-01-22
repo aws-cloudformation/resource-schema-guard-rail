@@ -67,7 +67,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
 
     when tagging.taggable == true {
 
-        tagOnCreate exists
+        tagging.tagOnCreate exists
         <<
         {
             "result": "NON_COMPLIANT",
@@ -76,7 +76,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         }
         >>
 
-        tagUpdatable exists
+        tagging.tagUpdatable exists
         <<
         {
             "result": "NON_COMPLIANT",
@@ -85,7 +85,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         }
         >>
 
-        cloudFormationSystemTags exists
+        tagging.cloudFormationSystemTags exists
         <<
         {
             "result": "NON_COMPLIANT",
@@ -94,7 +94,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         }
         >>
 
-        tagProperty exists
+        tagging.tagProperty exists
         <<
         {
             "result": "NON_COMPLIANT",
