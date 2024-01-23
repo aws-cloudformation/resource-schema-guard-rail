@@ -24,4 +24,4 @@ jobs:
     - name: Publish distribution 📦 to PyPI (If triggered from release)
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_KEY_RESOURCE-SCHEMA-GUARD-RAIL }}
+        password: ${{ secrets.PYPI_API_KEY_RESOURCE_SCHEMA_GUARD_RAIL }}
