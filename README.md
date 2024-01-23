@@ -58,7 +58,7 @@ source env/bin/activate
 #### Install Package Locally from the root
 
 ```
-pip install -e . -r requirements_dev.txt
+pip install -e . -r requirements.txt
 pre-commit install
 ```
 
