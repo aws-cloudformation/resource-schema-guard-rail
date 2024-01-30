@@ -111,11 +111,58 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="/primaryIdentifier/0",
                     )
                 },
+            },
+            {
                 "ensure_resource_update_handler_exists_and_have_permissions": {
                     GuardRuleResult(
                         check_id="PER005",
-                        message="Resource MUST implement update handler",
+                        message="Resource SHOULD implement update handler",
                         path="",
+                    )
+                }
+            },
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-update-handler-no-permissions.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_resource_update_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER006",
+                        message="Resource update handler MUST have permissions list specified",
+                        path="",
+                    )
+                },
+            },
+            {},
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-update-handler-empty-permissions.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_resource_update_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER006",
+                        message="Resource update handler MUST have non-empty permissions",
+                        path="/handlers/update/permissions",
                     )
                 },
             },

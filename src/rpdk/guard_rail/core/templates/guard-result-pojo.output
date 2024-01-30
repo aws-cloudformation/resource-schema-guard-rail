@@ -19,11 +19,12 @@
 {% endfor %}
 
 
+{% if failed_rules%}
 {{failed_header}}
 {% for rule, checks in failed_rules.items() %}
 {{rule.upper()}}:
     {%- for check in checks %}
-    {% if check.path or check.path != "unidentified"%}check-id: {{check.check_id}}
+    {% if check.path and check.path != "unidentified"%}check-id: {{check.check_id}}
     message: {{check.message}}
     path: {{check.path}}
     {% else %}check-id: {{check.check_id}}
@@ -31,3 +32,4 @@
     {% endif %}
     {%- endfor -%}
 {% endfor %}
+{% endif %}
