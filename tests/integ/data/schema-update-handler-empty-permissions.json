@@ -1,0 +1,8 @@
+{
+    "typeName": "SAMPLE::UNITTEST::SCHEMA",
+    "handlers": {
+        "update": {
+            "permissions": []
+        }
+    }
+}

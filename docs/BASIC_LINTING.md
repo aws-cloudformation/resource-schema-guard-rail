@@ -55,12 +55,14 @@
 | | `PER002` | `"Resource MUST NOT specify wildcard permissions for create handler"` |
 | `ensure_resource_read_handler_exists_and_have_permissions` | `PER003` | `"Resource MUST implement read handler"` |
 | | `PER004` | `"Resource MUST NOT specify wildcard permissions for read handler"` |
-| `ensure_resource_update_handler_exists_and_have_permissions` | `PER005` | `"Resource MUST implement update handler"` |
-| | `PER006` | `"Resource MUST NOT specify wildcard permissions for update handler"` |
-| `ensure_resource_delete_handler_exists_and_have_permissions` | `PER007` | `"Resource MUST implement delete handler"` |
-| | `PER008` | `"Resource MUST NOT specify wildcard permissions for delete handler"` |
-| `ensure_resource_list_handler_exists_and_have_permissions` | `PER009` | `"Resource MUST implement list handler"` |
-| | `PER010` | `"Resource MUST NOT specify wildcard permissions for list handler"` |
+| `ensure_resource_update_handler_exists_and_have_permissions` | `PER005` | `"Resource SHOULD implement update handler"` |
+| | `PER006` | `"Resource update handler MUST have permissions list specified"` |
+| | `PER006` | `"Resource update handler MUST have non-empty permissions"` |
+| | `PER007` | `"Resource MUST NOT specify wildcard permissions for update handler"` |
+| `ensure_resource_delete_handler_exists_and_have_permissions` | `PER008` | `"Resource MUST implement delete handler"` |
+| | `PER009` | `"Resource MUST NOT specify wildcard permissions for delete handler"` |
+| `ensure_resource_list_handler_exists_and_have_permissions` | `PER010` | `"Resource MUST implement list handler"` |
+| | `PER011` | `"Resource MUST NOT specify wildcard permissions for list handler"` |
 
 #### Other Checks
 | Rule Name   |      Check Id      |  Message |
