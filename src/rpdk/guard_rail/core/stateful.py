@@ -66,7 +66,6 @@ combiners = {
 cfn_leaf_level_constructs = {
     "relationshipRef",
     "insertionOrder",
-    "uniqueItems",
     "arrayType",
 }
 
@@ -85,6 +84,7 @@ native_constructs = {
     "contains",
     "items",
     "additionalProperties",
+    "uniqueItems",
 }
 
 
