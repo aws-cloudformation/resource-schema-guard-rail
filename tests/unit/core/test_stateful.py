@@ -1,3 +1,4 @@
+# pylint: disable=C0301
 """
 Unit test for stateful.py
 """
@@ -119,6 +120,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
                                 "Name": {"type": "string"},
                                 "Configurations": {  # recursive property
                                     "type": "array",
+                                    "insertionOrder": True,
                                     "items": {},  # ends at this level
                                 },
                             },
@@ -166,6 +168,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
                 "properties": {
                     "Tags": {
                         "type": "array",
+                        "insertionOrder": True,
                         "items": {
                             "type": "object",
                             "properties": {
@@ -181,31 +184,63 @@ from rpdk.guard_rail.core.stateful import schema_diff
                     "added": [
                         "/properties/Tags/*/Value",
                     ]
-                }
+                },
+                "insertionOrder": {"added": ["/properties/Tags"]},
             },
             {
                 "properties": {
                     "removed": [
                         "/properties/Tags/*/Value",
                     ]
-                }
+                },
+                "insertionOrder": {"removed": ["/properties/Tags"]},
             },
         ),
         # Test Case #6: Modified Nested Property
         (
             {
                 "properties": {
+                    "Configuration": {
+                        "type": "object",
+                        "properties": {
+                            "ExecuteCommandConfiguration": {
+                                "type": "object",
+                                "properties": {
+                                    "KmsKeyId": {
+                                        "type": "string",
+                                        "relationshipRef": {
+                                            "typeName": "AWS::KMS::Key",
+                                            "propertyPath": "/properties/Arn",
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
                     "Tags": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {"Key": {"type": "string"}},
                         },
-                    }
+                    },
                 }
             },
             {
                 "properties": {
+                    "Configuration": {
+                        "type": "object",
+                        "properties": {
+                            "ExecuteCommandConfiguration": {
+                                "type": "object",
+                                "properties": {
+                                    "KmsKeyId": {
+                                        "type": "string",
+                                    }
+                                },
+                            }
+                        },
+                    },
                     "Tags": {
                         "type": "array",
                         "items": {
@@ -214,10 +249,15 @@ from rpdk.guard_rail.core.stateful import schema_diff
                                 "Key": {"type": "int"},
                             },
                         },
-                    }
+                    },
                 }
             },
             {
+                "relationshipRef": {
+                    "removed": [
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId"
+                    ]
+                },
                 "type": {
                     "changed": [
                         {
@@ -226,9 +266,14 @@ from rpdk.guard_rail.core.stateful import schema_diff
                             "property": "/properties/Tags/*/Key",
                         }
                     ]
-                }
+                },
             },
             {
+                "relationshipRef": {
+                    "added": [
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId"
+                    ]
+                },
                 "type": {
                     "changed": [
                         {
@@ -237,7 +282,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
                             "property": "/properties/Tags/*/Key",
                         }
                     ]
-                }
+                },
             },
         ),
         # Test Case #7: New Two Level Nested Property
@@ -355,7 +400,175 @@ from rpdk.guard_rail.core.stateful import schema_diff
                 }
             },
         ),
-        # # Test Case #8: New Property with nested combiner (We might shelf this for now)
+        # Test Case #8: ECS Schema Snippet with cfn leaf constructs
+        # almost integ tests but not because we are not verifying checks
+        (
+            {
+                "definitions": {
+                    "CapacityProviderStrategyItem": {
+                        "description": "A capacity provider strategy consists of one or more capacity providers along with the `base` and `weight` to assign to them. A capacity provider must be associated with the cluster to be used in a capacity provider strategy. The PutClusterCapacityProviders API is used to associate a capacity provider with a cluster. Only capacity providers with an `ACTIVE` or `UPDATING` status can be used.",
+                        "additionalProperties": False,
+                        "type": "object",
+                        "properties": {
+                            "CapacityProvider": {"type": "string"},
+                            "Weight": {"type": "integer"},
+                            "Base": {"type": "integer"},
+                        },
+                    },
+                    "Configuration": {
+                        "type": "object",
+                        "properties": {
+                            "ExecuteCommandConfiguration": {
+                                "$ref": "#/definitions/ExecuteCommandConfiguration"
+                            }
+                        },
+                        "additionalProperties": False,
+                    },
+                    "ExecuteCommandConfiguration": {
+                        "type": "object",
+                        "properties": {"KmsKeyId": {"type": "string"}},
+                        "additionalProperties": False,
+                    },
+                    "ClusterSettings": {
+                        "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
+                        "type": "object",
+                        "properties": {
+                            "Name": {
+                                "type": "string",
+                                "description": "The name of the cluster setting. The value is ``containerInsights`` .",
+                            },
+                            "Value": {
+                                "type": "string",
+                                "description": "The value to set for the cluster setting. The supported values are ``enabled`` and ``disabled``. \n If you set ``name`` to ``containerInsights`` and ``value`` to ``enabled``, CloudWatch Container Insights will be on for the cluster, otherwise it will be off unless the ``containerInsights`` account setting is turned on. If a cluster value is specified, it will override the ``containerInsights`` value set with [PutAccountSetting](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSetting.html) or [PutAccountSettingDefault](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSettingDefault.html).",
+                            },
+                        },
+                        "additionalProperties": False,
+                    },
+                },
+                "properties": {
+                    "ClusterSettings": {
+                        "type": "array",
+                        "insertionOrder": True,
+                        "items": {"$ref": "#/definitions/ClusterSettings"},
+                        "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
+                    },
+                    "DefaultCapacityProviderStrategy": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/CapacityProviderStrategyItem"},
+                        "description": "The default capacity provider strategy for the cluster. When services or tasks are run in the cluster with no launch type or capacity provider strategy specified, the default capacity provider strategy is used.",
+                    },
+                    "Configuration": {"$ref": "#/definitions/Configuration"},
+                    "Arn": {"type": "string"},
+                },
+            },
+            {
+                "definitions": {
+                    "CapacityProviderStrategyItem": {
+                        "description": "A capacity provider strategy consists of one or more capacity providers along with the `base` and `weight` to assign to them. A capacity provider must be associated with the cluster to be used in a capacity provider strategy. The PutClusterCapacityProviders API is used to associate a capacity provider with a cluster. Only capacity providers with an `ACTIVE` or `UPDATING` status can be used.",
+                        "additionalProperties": False,
+                        "type": "object",
+                        "properties": {
+                            "CapacityProvider": {
+                                "type": "string",
+                                "relationshipRef": {
+                                    "typeName": "AWS::ECS::CapacityProvider",
+                                    "propertyPath": "/properties/Name",
+                                },
+                            },
+                            "Weight": {"type": "integer"},
+                            "Base": {"type": "integer"},
+                        },
+                    },
+                    "Configuration": {
+                        "type": "object",
+                        "properties": {
+                            "ExecuteCommandConfiguration": {
+                                "$ref": "#/definitions/ExecuteCommandConfiguration"
+                            }
+                        },
+                        "additionalProperties": False,
+                    },
+                    "ExecuteCommandConfiguration": {
+                        "type": "object",
+                        "properties": {
+                            "KmsKeyId": {
+                                "type": "string",
+                                "relationshipRef": {
+                                    "typeName": "AWS::KMS::Key",
+                                    "propertyPath": "/properties/Arn",
+                                },
+                            },
+                            "Logging": {
+                                "type": "string",
+                                "description": "The log setting to use for redirecting logs for your execute command results. The following log settings are available.\n  +   ``NONE``: The execute command session is not logged.\n  +   ``DEFAULT``: The ``awslogs`` configuration in the task definition is used. If no logging parameter is specified, it defaults to this value. If no ``awslogs`` log driver is configured in the task definition, the output won't be logged.\n  +   ``OVERRIDE``: Specify the logging details as a part of ``logConfiguration``. If the ``OVERRIDE`` logging option is specified, the ``logConfiguration`` is required.",
+                            },
+                        },
+                        "additionalProperties": False,
+                    },
+                    "ClusterSettings": {
+                        "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
+                        "type": "object",
+                        "properties": {
+                            "Name": {
+                                "type": "string",
+                                "description": "The name of the cluster setting. The value is ``containerInsights`` .",
+                            },
+                            "Value": {
+                                "type": "string",
+                                "description": "The value to set for the cluster setting. The supported values are ``enabled`` and ``disabled``. \n If you set ``name`` to ``containerInsights`` and ``value`` to ``enabled``, CloudWatch Container Insights will be on for the cluster, otherwise it will be off unless the ``containerInsights`` account setting is turned on. If a cluster value is specified, it will override the ``containerInsights`` value set with [PutAccountSetting](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSetting.html) or [PutAccountSettingDefault](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSettingDefault.html).",
+                            },
+                        },
+                        "additionalProperties": False,
+                    },
+                },
+                "properties": {
+                    "ClusterSettings": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/ClusterSettings"},
+                        "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
+                    },
+                    "DefaultCapacityProviderStrategy": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/CapacityProviderStrategyItem"},
+                        "description": "The default capacity provider strategy for the cluster. When services or tasks are run in the cluster with no launch type or capacity provider strategy specified, the default capacity provider strategy is used.",
+                    },
+                    "ECSEndpoint": {"type": "string"},
+                    "Configuration": {"$ref": "#/definitions/Configuration"},
+                    "Arn": {"type": "string"},
+                },
+            },
+            {
+                "properties": {
+                    "added": [
+                        "/properties/ECSEndpoint",
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/Logging",
+                    ]
+                },
+                "relationshipRef": {
+                    "added": [
+                        "/properties/DefaultCapacityProviderStrategy/*/CapacityProvider",
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId",
+                    ]
+                },
+                "insertionOrder": {"removed": ["/properties/ClusterSettings"]},
+            },
+            {
+                "properties": {
+                    "removed": [
+                        "/properties/ECSEndpoint",
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/Logging",
+                    ]
+                },
+                "relationshipRef": {
+                    "removed": [
+                        "/properties/DefaultCapacityProviderStrategy/*/CapacityProvider",
+                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId",
+                    ]
+                },
+                "insertionOrder": {"added": ["/properties/ClusterSettings"]},
+            },
+        ),
+        # # Test Case #9: New Property with nested combiner (We might shelf this for now)
         # (
         #         {
         #             "properties": {
