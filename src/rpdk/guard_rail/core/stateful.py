@@ -63,6 +63,12 @@ combiners = {
     "oneOf",
 }
 
+cfn_leaf_level_constructs = {
+    "relationshipRef",
+    "insertionOrder",
+    "arrayType",
+}
+
 native_constructs = {
     "type",
     "description",
@@ -78,6 +84,7 @@ native_constructs = {
     "contains",
     "items",
     "additionalProperties",
+    "uniqueItems",
 }
 
 
@@ -112,6 +119,7 @@ def _is_resource_property(path_list):
         len(path_list) > 0
         and path_list[0] == PROPERTIES
         and path_list[-1] not in native_constructs
+        and path_list[-1] not in cfn_leaf_level_constructs
     )
 
 
@@ -123,6 +131,11 @@ def _is_cfn_construct(path_list):
 def _is_json_construct(path_list):
     """This method defines json constructs"""
     return len(path_list) > 0 and path_list[-1] in native_constructs
+
+
+def _is_cfn_leaf_construct(path_list):
+    """This method defines json constructs"""
+    return len(path_list) > 0 and path_list[-1] in cfn_leaf_level_constructs
 
 
 def _get_path(path_list):
@@ -165,6 +178,13 @@ def _traverse_nested_properties(
         prefix (str): property path
         diff_value (Any): arbitrary value
     """
+
+    # cfn might have more custom leaf level props
+    # if not specifically added to cfn_leaf_level_constructs
+    # it could be traversed further and interpreted as a property
+    # this hedges out from lookup/attribute/unbounded exceptions
+    if not diff_value or not isinstance(diff_value, dict):
+        return
 
     # if type is absent, then we are dealing with properties
     if "type" not in diff_value:
@@ -236,6 +256,13 @@ def _translate_iterable_change(
                     diffkey,
                     value,
                 )
+            if _is_cfn_leaf_construct(path_list):
+                _add_item(
+                    schema_meta_diff,
+                    path_list[-1],
+                    diffkey,
+                    value,
+                )
 
     # using partial to avoid code repetition
     append_added = partial(__translate_iter_added_diff, DIFFKEYS.ADDED)
@@ -285,6 +312,13 @@ def _translate_dict_change(
                     diffkey,
                     _get_path(path_list[:-1]),
                 )
+            if _is_cfn_leaf_construct(path_list):
+                _add_item(
+                    schema_meta_diff,
+                    path_list[-1],
+                    diffkey,
+                    _get_path(path_list[:-1]),
+                )
 
     # using partial to avoid code repetition
     append_added = partial(__translate_dict_diff, DIFFKEYS.ADDED)
@@ -326,6 +360,17 @@ def _translate_values_changed_diff_(schema_meta_diff, diff_value):
                 value[DIFFKEYS.NEW_VALUE],
             )
         if _is_json_construct(path_list):
+            _add_item(
+                schema_meta_diff,
+                path_list[-1],
+                DIFFKEYS.CHANGED,
+                {
+                    DIFFKEYS.PROPERTY: _get_path(path_list[:-1]),
+                    DIFFKEYS.OLD_VALUE: value[DIFFKEYS.OLD_VALUE],
+                    DIFFKEYS.NEW_VALUE: value[DIFFKEYS.NEW_VALUE],
+                },
+            )
+        if _is_cfn_leaf_construct(path_list):
             _add_item(
                 schema_meta_diff,
                 path_list[-1],
