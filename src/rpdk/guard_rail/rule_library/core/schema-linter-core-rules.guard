@@ -191,7 +191,7 @@ rule ensure_sourceUrl_uses_https when sourceUrl exists {
     sourceUrl == /^https:/
     <<
     {
-        "result": "NON_COMPLIANT",
+        "result": "WARNING",
         "check_id": "GN002",
         "message": "sourceUrl should use https protocol"
     }

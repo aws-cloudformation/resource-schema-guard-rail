@@ -9,7 +9,7 @@ rule ensure_properties_do_not_support_multitype {
             '$ref' exists
             <<
             {
-                "result": "NON_COMPLIANT",
+                "result": "WARNING",
                 "check_id": "COM001",
                 "message": "each property MUST specify type"
             }
@@ -17,7 +17,7 @@ rule ensure_properties_do_not_support_multitype {
             type !is_list
             <<
             {
-                "result": "NON_COMPLIANT",
+                "result": "WARNING",
                 "check_id": "COM002",
                 "message": "type MUST NOT have combined definition"
             }
@@ -33,7 +33,7 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         items exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "COM003",
             "message": "property array MUST be modeled via items"
         }
@@ -42,7 +42,7 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         items.anyOf not exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "COM004",
             "message": "property array MUST NOT specify items via anyOf"
         }
@@ -52,7 +52,7 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         items.allOf not exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "COM005",
             "message": "property array MUST NOT specify items via allOf"
         }
@@ -62,7 +62,7 @@ rule ensure_array_doesnt_use_anyof when %arrays !empty {
         items.oneOf not exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "COM006",
             "message": "property array MUST NOT specify items via oneOf"
         }
