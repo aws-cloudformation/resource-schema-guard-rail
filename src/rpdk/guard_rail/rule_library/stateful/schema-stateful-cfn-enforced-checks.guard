@@ -294,7 +294,7 @@ rule ensure_property_string_pattern_not_changed when pattern exists
             this IN %newProps
             <<
             {
-                "result": "NON_COMPLIANT",
+                "result": "WARNING",
                 "check_id": "PAT001",
                 "message": "Only NEWLY ADDED properties can have new pattern added"
             }
@@ -306,7 +306,7 @@ rule ensure_property_string_pattern_not_changed when pattern exists
         pattern.added !exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "PAT001",
             "message": "Only NEWLY ADDED properties can have new pattern added"
         }
@@ -316,7 +316,7 @@ rule ensure_property_string_pattern_not_changed when pattern exists
     pattern.removed !exists
     <<
     {
-        "result": "NON_COMPLIANT",
+        "result": "WARNING",
         "check_id": "PAT002",
         "message": "cannot remove PATTERN from a property"
     }
@@ -325,7 +325,7 @@ rule ensure_property_string_pattern_not_changed when pattern exists
     pattern.changed !exists
     <<
     {
-        "result": "NON_COMPLIANT",
+        "result": "WARNING",
         "check_id": "PAT003",
         "message": "cannot change PATTERN of a property"
     }

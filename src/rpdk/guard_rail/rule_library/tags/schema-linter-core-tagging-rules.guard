@@ -15,7 +15,7 @@ rule ensure_tagging_is_specified {
     tagging exists
     <<
     {
-        "result": "WARNING",
+        "result": "NON_COMPLIANT",
         "check_id": "TAG002",
         "message": "`tagging` MUST be specified"
     }
@@ -38,7 +38,7 @@ rule ensure_property_tags_exists_v1 when taggable exists {
         properties.Tags exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "TAG004",
             "message": "Resource MUST implement Tags property if `taggable` is true"
         }
@@ -106,7 +106,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         properties.Tags exists
         <<
         {
-            "result": "NON_COMPLIANT",
+            "result": "WARNING",
             "check_id": "TAG011",
             "message": "Resource MUST implement Tags property if `tagging.taggable` is true"
         }
