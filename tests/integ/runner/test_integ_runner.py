@@ -311,7 +311,7 @@ def test_exec_compliance_stateful(
             rules=collected_rules,
         )
         compliance_result = exec_compliance(payload)[0]
-        
+
         if not non_compliant_rules:
             assert not compliance_result.non_compliant
 
