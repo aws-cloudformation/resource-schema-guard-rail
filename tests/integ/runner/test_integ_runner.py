@@ -27,25 +27,11 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             ),
             [],
             {
-                "ensure_properties_do_not_support_multitype": {
-                    GuardRuleResult(
-                        check_id="COM002",
-                        message="type MUST NOT have combined definition",
-                        path="/properties/KeyPolicy/type",
-                    )
-                },
                 "ensure_primary_identifier_is_read_or_create_only": {
                     GuardRuleResult(
                         check_id="PID003",
                         message="primaryIdentifier MUST be either readOnly or createOnly",
                         path="/primaryIdentifier/2",
-                    )
-                },
-                "ensure_arn_properties_contain_pattern": {
-                    GuardRuleResult(
-                        check_id="ARN002",
-                        message="arn related property MUST have pattern specified",
-                        path="",
                     )
                 },
                 "verify_property_notation": {
@@ -70,20 +56,34 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="/writeOnlyProperties/1",
                     ),
                 },
-            },
-            {
-                "check_if_taggable_is_used": {
-                    GuardRuleResult(
-                        check_id="TAG001",
-                        message="`taggable` is deprecated, please used `tagging` property",
-                        path="/taggable",
-                    )
-                },
                 "ensure_tagging_is_specified": {
                     GuardRuleResult(
                         check_id="TAG002",
                         message="`tagging` MUST be specified",
                         path="",
+                    )
+                },
+            },
+            {
+                "ensure_properties_do_not_support_multitype": {
+                    GuardRuleResult(
+                        check_id="COM002",
+                        message="type MUST NOT have combined definition",
+                        path="/properties/KeyPolicy/type",
+                    )
+                },
+                "ensure_arn_properties_contain_pattern": {
+                    GuardRuleResult(
+                        check_id="ARN002",
+                        message="arn related property MUST have pattern specified",
+                        path="",
+                    )
+                },
+                "check_if_taggable_is_used": {
+                    GuardRuleResult(
+                        check_id="TAG001",
+                        message="`taggable` is deprecated, please used `tagging` property",
+                        path="/taggable",
                     )
                 },
             },
@@ -205,13 +205,6 @@ def test_exec_compliance_stateless(
             ),
             [],
             {
-                "ensure_properties_do_not_support_multitype": {
-                    GuardRuleResult(
-                        check_id="COM001",
-                        message="each property MUST specify type",
-                        path="/properties/Definition",
-                    )
-                },
                 "verify_property_notation": {
                     GuardRuleResult(
                         check_id="PR008",
@@ -220,7 +213,15 @@ def test_exec_compliance_stateless(
                     )
                 },
             },
-            {},
+            {
+                "ensure_properties_do_not_support_multitype": {
+                    GuardRuleResult(
+                        check_id="COM001",
+                        message="each property MUST specify type",
+                        path="/properties/Definition",
+                    )
+                },
+            },
         ),
     ],
 )
@@ -586,23 +587,6 @@ def test_exec_compliance_stateful_json_breaking_changes(
                         path="/maxLength/changed/0/old_value",
                     ),
                 },
-                "ensure_property_string_pattern_not_changed": {
-                    GuardRuleResult(
-                        check_id="PAT001",
-                        message="Only NEWLY ADDED properties can have new pattern added",
-                        path="/pattern/added/0",
-                    ),
-                    GuardRuleResult(
-                        check_id="PAT002",
-                        message="cannot remove PATTERN from a property",
-                        path="/pattern/removed",
-                    ),
-                    GuardRuleResult(
-                        check_id="PAT003",
-                        message="cannot change PATTERN of a property",
-                        path="/pattern/changed",
-                    ),
-                },
                 "ensure_minitems_not_contracted": {
                     GuardRuleResult(
                         check_id="MI001",
@@ -672,7 +656,25 @@ def test_exec_compliance_stateful_json_breaking_changes(
                     ),
                 },
             },
-            [],
+            {
+                "ensure_property_string_pattern_not_changed": {
+                    GuardRuleResult(
+                        check_id="PAT001",
+                        message="Only NEWLY ADDED properties can have new pattern added",
+                        path="/pattern/added/0",
+                    ),
+                    GuardRuleResult(
+                        check_id="PAT002",
+                        message="cannot remove PATTERN from a property",
+                        path="/pattern/removed",
+                    ),
+                    GuardRuleResult(
+                        check_id="PAT003",
+                        message="cannot change PATTERN of a property",
+                        path="/pattern/changed",
+                    ),
+                },
+            },
         ),
     ],
 )
@@ -691,6 +693,9 @@ def test_exec_compliance_stateful_json_validation_breaking_changes(
         assert (
             non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
         )
+    for warning_rule, warning_result in warning_rules.items():
+        assert warning_rule in compliance_result.warning
+        assert warning_result == compliance_result.warning[warning_rule]
 
 
 @pytest.mark.parametrize(
