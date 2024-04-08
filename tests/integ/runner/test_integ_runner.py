@@ -267,6 +267,38 @@ def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
             },
             [],
         ),
+        (
+            {
+                "typeName": "AWS::ARCZonalShift::ZonalAutoshiftConfiguration",
+                "description": "Definition of AWS::ARCZonalShift::ZonalAutoshiftConfiguration Resource Type",
+                "definitions": {
+                    "ZonalAutoshiftStatus": {"type": "string", "enum": ["ENABLED"]},
+                },
+                "properties": {
+                    "ZonalAutoshiftStatus": {
+                        "$ref": "#/definitions/ZonalAutoshiftStatus"
+                    },
+                },
+            },
+            {
+                "typeName": "AWS::ARCZonalShift::ZonalAutoshiftConfiguration",
+                "description": "Definition of AWS::ARCZonalShift::ZonalAutoshiftConfiguration Resource Type",
+                "definitions": {
+                    "ZonalAutoshiftStatus": {"type": "string", "enum": ["ENABLED"]},
+                },
+                "properties": {
+                    "ZonalAutoshiftStatus": {
+                        "$ref": "#/definitions/ZonalAutoshiftStatus",
+                        "dependencies": {
+                            "ZonalAutoshiftStatus": ["PracticeRunConfiguration"]
+                        },
+                    },
+                },
+            },
+            [],
+            {},
+            [],
+        ),
     ],
 )
 def test_exec_compliance_stateful(
@@ -280,6 +312,9 @@ def test_exec_compliance_stateful(
             rules=collected_rules,
         )
         compliance_result = exec_compliance(payload)[0]
+
+        if not non_compliant_rules:
+            assert not compliance_result.non_compliant
 
         for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
             assert non_compliant_rule in compliance_result.non_compliant
