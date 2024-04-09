@@ -1,7 +1,4 @@
 {
-    "properties": {
-        "Tags": {}
-    },
     "tagging": {
         "taggable": true,
         "tagOnCreate": true,

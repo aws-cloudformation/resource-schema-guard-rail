@@ -263,10 +263,15 @@ def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
             {
                 "ensure_property_tags_exists_v2": {
                     GuardRuleResult(
+                        check_id="TAG011",
+                        message="Resource MUST implement Tags property if `tagging.taggable` is true",
+                        path="",
+                    ),
+                    GuardRuleResult(
                         check_id="TAG012",
                         message="Resource MUST provide `permission` if `tagging.taggable` is true",
                         path="",
-                    )
+                    ),
                 },
             },
         ),
