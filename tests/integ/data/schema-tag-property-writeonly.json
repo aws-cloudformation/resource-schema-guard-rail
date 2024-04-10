@@ -3,7 +3,9 @@
         "Tags": {},
         "Arn": {}
     },
-    "writeOnlyProperties": ["/properties/Tags"],
+    "writeOnlyProperties": [
+        "/properties/Tags"
+    ],
     "tagging": {
         "taggable": true,
         "tagOnCreate": true,
