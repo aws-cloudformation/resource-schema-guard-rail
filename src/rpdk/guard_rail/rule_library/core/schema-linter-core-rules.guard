@@ -16,6 +16,22 @@ rule ensure_primary_identifier_exists_and_not_empty
         "message": "primaryIdentifier MUST contain values"
     }
     >>
+
+    when primaryIdentifier exists {
+        when writeOnlyProperties exists {
+            let write = writeOnlyProperties
+            primaryIdentifier[*] {
+                this !IN %write
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PID004",
+                    "message": "primaryIdentifier MUST NOT be part of writeOnlyProperties"
+                }
+                >>
+            }
+        }
+    }
 }
 
 rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identifier_exists_and_not_empty
