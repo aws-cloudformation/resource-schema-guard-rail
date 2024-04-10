@@ -111,5 +111,28 @@ rule ensure_property_tags_exists_v2 when tagging exists {
             "message": "Resource MUST implement Tags property if `tagging.taggable` is true"
         }
         >>
+
+        when tagging.tagProperty exists {
+            let paths = paths
+            tagging.tagProperty IN %paths
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "TAG013",
+                "message": "`tagProperty` MUST specify property defined in the schema"
+            }
+            >>
+
+            when writeOnlyProperties exists {
+                tagging.tagProperty !IN writeOnlyProperties
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "TAG014",
+                    "message": "`tagProperty` MUST NOT be a part of `writeOnlyProperties`"
+                }
+                >>
+            }
+        }
     }
 }
