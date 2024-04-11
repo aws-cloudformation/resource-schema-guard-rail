@@ -168,6 +168,29 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             },
             {},
         ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-primary-id-writeonly.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_primary_identifier_exists_and_not_empty": {
+                    GuardRuleResult(
+                        check_id="PID004",
+                        message="primaryIdentifier MUST NOT be part of writeOnlyProperties",
+                        path="/primaryIdentifier/0",
+                    )
+                },
+            },
+            {},
+        ),
     ],
 )
 def test_exec_compliance_stateless(
