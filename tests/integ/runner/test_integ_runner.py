@@ -174,6 +174,52 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                     "file:/"
                     + str(
                         Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-malformed-tag-property.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG013",
+                        message="`tagProperty` MUST specify property defined in the schema",
+                        path="/tagging/tagProperty",
+                    )
+                },
+            },
+            {},
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-tag-property-writeonly.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG014",
+                        message="`tagProperty` MUST NOT be a part of `writeOnlyProperties`",
+                        path="/tagging/tagProperty",
+                    )
+                },
+            },
+            {},
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
                             "../data/schema-primary-id-writeonly.json"
                         )
                     )
