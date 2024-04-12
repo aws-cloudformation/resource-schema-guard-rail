@@ -314,6 +314,58 @@ def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
 
 
 @pytest.mark.parametrize(
+    "collected_schemas,collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-no-tagging-permission.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {},
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG011",
+                        message="Resource MUST implement Tags property if `tagging.taggable` is true",
+                        path="",
+                    ),
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permission` if `tagging.taggable` is true",
+                        path="",
+                    ),
+                },
+            },
+        ),
+    ],
+)
+def test_exec_compliance_stateless_tagging_permission_specified(
+    collected_schemas, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for stateless"""
+    payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
+    compliance_result = exec_compliance(payload)[0]
+
+    # Assert for non-compliant rules
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+    # Assert for warning rules
+    for warning_rule, warning_result in warning_rules.items():
+        assert warning_rule in compliance_result.warning
+        assert warning_result == compliance_result.warning[warning_rule]
+
+
+@pytest.mark.parametrize(
     "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
     [
         (
