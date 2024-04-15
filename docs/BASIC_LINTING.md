@@ -47,7 +47,7 @@
 | | `TAG009` | `"Resource MUST provide 'cloudFormationSystemTags' {true\|false} if 'tagging.taggable' is true"` |
 | | `TAG010` | `"Resource MUST provide 'tagProperty' {/properties/Tags} if 'tagging.taggable' is true"` |
 | | `TAG011` | `"Resource MUST implement Tags property if 'tagging.taggable' is true"` |
-| | `TAG012` | `"Resource MUST provide 'permission' if 'tagging.taggable' is true"` |
+| | `TAG012` | `"Resource MUST provide 'permissions' if 'tagging.taggable' is true"` |
 | | `TAG013` | `"'tagProperty' MUST specify property defined in the schema"` |
 | | `TAG014` | `"'tagProperty' MUST NOT be a part of 'writeOnlyProperties'"` |
 

@@ -338,7 +338,7 @@ def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
                     ),
                     GuardRuleResult(
                         check_id="TAG012",
-                        message="Resource MUST provide `permission` if `tagging.taggable` is true",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
                         path="",
                     ),
                 },
