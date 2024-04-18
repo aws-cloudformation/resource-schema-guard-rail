@@ -52,5 +52,5 @@ def test_success_result_str():
                 }
             )
         )
-        == "---------\n[SKIPPED]:\n\n\n\x1b[32m[PASSED]:\x1b[39m\n\n\n\x1b[33m[WARNING]:\x1b[39m\n\n\n\n\n\x1b[31m[FAILED]:\x1b[39m\n\nENSURE_OLD_PROPERTY_NOT_TURNED_IMMUTABLE:\n    check-id: MI007\n    message: cannot remove minimum from properties\n    path: /minimum/removed\n    \n"  # pylint: disable=C0301
+        == "---------\n[SKIPPED]:\n\n\n\x1b[32m[PASSED]:\x1b[39m\n\n\n\x1b[33m[WARNING]:\x1b[39m\n\n\n\x1b[31m[FAILED]:\x1b[39m\n\nENSURE_OLD_PROPERTY_NOT_TURNED_IMMUTABLE:\n    check-id: MI007\n    message: cannot remove minimum from properties\n    path: /minimum/removed\n    \n"  # pylint: disable=C0301
     )

@@ -17,8 +17,6 @@
     message: {{check.message}}
     {%- endfor -%}
 {% endfor %}
-
-
 {% if failed_rules%}
 {{failed_header}}
 {% for rule, checks in failed_rules.items() %}
