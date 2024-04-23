@@ -787,6 +787,52 @@ def test_schema_diff_complex_json_semantics_mutations(
 @pytest.mark.parametrize(
     "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
     [
+        (
+            {
+                "primaryIdentifier": [
+                    "/properties/A",
+                    "/properties/B",
+                ]
+            },
+            {
+                "primaryIdentifier": [
+                    "/properties/B",
+                    "/properties/A",
+                ]
+            },
+            {
+                "primaryIdentifier": {
+                    "added": ["/properties/B", "/properties/A"],
+                    "removed": ["/properties/A", "/properties/B"],
+                }
+            },
+            {
+                "primaryIdentifier": {
+                    "added": ["/properties/A", "/properties/B"],
+                    "removed": ["/properties/B", "/properties/A"],
+                }
+            },
+        )
+    ],
+)
+def test_schema_diff_primary_identifier_order_change(
+    schema_variant1, schema_variant2, expected_diff, expected_diff_negative
+):
+    """
+
+    Args:
+        schema_variant1:
+        schema_variant2:
+        expected_diff:
+        expected_diff_negative:
+    """
+    assert expected_diff == schema_diff(schema_variant1, schema_variant2)
+    assert expected_diff_negative == schema_diff(schema_variant2, schema_variant1)
+
+
+@pytest.mark.parametrize(
+    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
+    [
         # Test Case #1: type changed from scalar to list
         (
             {
