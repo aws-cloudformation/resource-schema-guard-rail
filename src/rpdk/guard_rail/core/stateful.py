@@ -19,7 +19,7 @@ Typical usage example:
     schema_meta_diff = schema_diff(schema_v1, schema_v2)
 """
 import re
-from copy import copy, deepcopy
+from copy import copy
 from enum import auto
 from functools import partial
 from typing import Any, Dict, Iterable
@@ -91,59 +91,29 @@ native_constructs = {
 }
 
 
-def remove_key(document: Dict[str, Any], key: str):
-    """removes only top level property"""
-    cloned_document = deepcopy(document)
-    if key in cloned_document:
-        del cloned_document[key]
-    return cloned_document
-
-
-def get_value(document: Dict[str, Any], key: str):
-    """retrieves only top level property"""
-    return document.get(key)
-
-
 def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
     """schema diff function to get formatted schema diff from deep diff"""
 
     previous_schema = resolve_schema(previous_json)
     current_schema = resolve_schema(current_json)
 
-    previous_schema_no_primary_id = remove_key(previous_schema, "primaryIdentifier")
-    current_schema_no_primary_id = remove_key(current_schema, "primaryIdentifier")
-
-    previous_schema_only_primary_id = {
-        "primaryIdentifier": get_value(previous_schema, "primaryIdentifier")
-    }
-    current_schema_only_primary_id = {
-        "primaryIdentifier": get_value(current_schema, "primaryIdentifier")
-    }
-
-    deep_diff_no_primary_id = DeepDiff(
-        previous_schema_no_primary_id,
-        current_schema_no_primary_id,
-        ignore_order=True,
+    deep_diff = DeepDiff(
+        previous_schema,
+        current_schema,
+        ignore_order_func=lambda level: "primaryIdentifier" not in level.path(),
         verbose_level=2,
     )
 
-    deep_diff_only_primary_id = DeepDiff(
-        previous_schema_only_primary_id,
-        current_schema_only_primary_id,
-        ignore_order=False,
-        verbose_level=2,
+    meta_diff = _translate_meta_diff(deep_diff.to_dict())
+    console.rule("[bold red][GENERATED DIFF BETWEEN SCHEMAS]")
+    console.print(
+        meta_diff,
+        style="link https://google.com",
+        highlight=True,
+        justify="left",
+        soft_wrap=True,
     )
-
-    meta_diff_no_primary_id = _translate_meta_diff(deep_diff_no_primary_id.to_dict())
-    meta_diff_only_primary_id = _translate_meta_diff(
-        deep_diff_only_primary_id.to_dict()
-    )
-    cumulative_meta_diff = {**meta_diff_no_primary_id, **meta_diff_only_primary_id}
-
-    print("[GENERATED DIFF BETWEEN SCHEMAS]")
-    console.print(cumulative_meta_diff, style="link https://google.com", highlight=True)
-
-    return cumulative_meta_diff
+    return meta_diff
 
 
 def _is_combiner_property(path_list):
