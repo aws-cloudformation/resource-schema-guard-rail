@@ -71,9 +71,10 @@ def main(args_in=None):
 
 
 def display(compliance_result: List[GuardRuleSetResult]):  # pylint: disable=C0116
+    print(compliance_result)
     for item in compliance_result:
         print()
-        print(item)
+        item.display()
     print()
 
 

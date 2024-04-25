@@ -21,14 +21,8 @@ Typical usage example:
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-from colorama import Fore, init
-from rpdk.guard_rail.utils.miscellaneous import jinja_loader
-
-init()
-
-FAILED_HEADER = f"{Fore.RED}[FAILED]:{Fore.RESET}"
-WARNING_HEADER = f"{Fore.YELLOW}[WARNING]:{Fore.RESET}"
-PASSED_HEADER = f"{Fore.GREEN}[PASSED]:{Fore.RESET}"
+from rich.console import Console
+from rich.table import Table
 
 
 @dataclass
@@ -111,23 +105,49 @@ class GuardRuleSetResult:
             **guard_ruleset_result.warning,
         }
 
-    def __str__(self):
+    def display(self):
+        """Displays a table with compliance results."""
         if (
             not self.compliant
             and not self.non_compliant
             and not self.skipped
             and not self.warning
         ):
-            return "Couldn't retrieve the result"
+            raise ValueError("No Rules have been executed")
 
-        environment = jinja_loader(__name__)
-        template = environment.get_template("guard-result-pojo.output")
-        return template.render(
-            skipped_rules=self.skipped,
-            passed_rules=self.compliant,
-            failed_rules=self.non_compliant,
-            warning_rules=self.warning,
-            failed_header=FAILED_HEADER,
-            warning_header=WARNING_HEADER,
-            passed_header=PASSED_HEADER,
-        )
+        table = Table(title="Schema Compliance Report")
+
+        table.add_column("Rule Name", justify="right", style="cyan", no_wrap=True)
+        table.add_column("Check Id", style="magenta")
+        table.add_column("Message", style="magenta")
+        table.add_column("Path", style="magenta")
+        table.add_column("Status", justify="right", style="green")
+
+        for rule in self.skipped:
+            table.add_row(rule, "-", "-", "-", "[white]skipped")
+
+        for rule in self.compliant:
+            table.add_row(rule, "-", "-", "-", "[green]passed")
+
+        for rule, checks in self.warning.items():
+            for check in checks:
+                table.add_row(
+                    rule,
+                    f"[b]{check.check_id}[/b]",
+                    f"[b]{check.message}[/b]",
+                    "-",
+                    "[yellow]warning",
+                )
+
+        for rule, checks in self.non_compliant.items():
+            for check in checks:
+                table.add_row(
+                    rule,
+                    f"[b]{check.check_id}[/b]",
+                    f"[b]{check.message}[/b]",
+                    "-" if not check.path else f"[b][red]{check.path}[/b]",
+                    "[red]failed",
+                )
+
+        console = Console()
+        console.print(table)
