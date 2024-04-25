@@ -24,9 +24,10 @@ from enum import auto
 from functools import partial
 from typing import Any, Dict, Iterable
 
-import strenum
 from deepdiff import DeepDiff
 from rich.console import Console
+
+import strenum
 from rpdk.guard_rail.utils.schema_utils import resolve_schema
 
 console = Console()

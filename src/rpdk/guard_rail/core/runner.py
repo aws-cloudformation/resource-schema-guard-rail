@@ -17,6 +17,7 @@ from functools import singledispatch
 from typing import Any, Dict, Mapping
 
 import cfn_guard_rs
+
 from rpdk.guard_rail.core.data_types import (
     GuardRuleResult,
     GuardRuleSetResult,

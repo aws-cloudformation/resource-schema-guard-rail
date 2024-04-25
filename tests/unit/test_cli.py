@@ -9,24 +9,16 @@ import pytest
 from cli import main
 from rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
 
+RULE_RESULT: GuardRuleResult = GuardRuleResult(check_id="id", message="rule message")
+NON_COMPLIANT: Dict[str, List[GuardRuleResult]] = {"non-compliant rule": [RULE_RESULT]}
 
-@pytest.fixture(scope="module")
-def compliance_result():
-    """Fixture function to create GuardRuleSetResult"""
-    rule_result: GuardRuleResult = GuardRuleResult(
-        check_id="id", message="rule message"
-    )
-    non_compliant: Dict[str, List[GuardRuleResult]] = {
-        "non-compliant rule": [rule_result]
-    }
-    warning: Dict[str, List[GuardRuleResult]] = {"warning rule": [rule_result]}
-    result = GuardRuleSetResult(
-        compliant=["compliant rule"],
-        non_compliant=non_compliant,
-        warning=warning,
-        skipped=["skipped rule"],
-    )
-    yield result
+WARNING: Dict[str, List[GuardRuleResult]] = {"warning rule": [RULE_RESULT]}
+COMPLIANCE_RESULT = GuardRuleSetResult(
+    compliant=["compliant rule"],
+    non_compliant=NON_COMPLIANT,
+    warning=WARNING,
+    skipped=["skipped rule"],
+)
 
 
 @mock.patch("cli.exec_compliance")
@@ -85,7 +77,7 @@ def test_main_cli(
 ):
     """Main cli unit test with downstream mocked"""
     mock_collect_schemas.return_value = [{"foo": "bar"}, {"foo": "bar"}]
-    mock_exec_compliance.return_value = [compliance_result]
+    mock_exec_compliance.return_value = [COMPLIANCE_RESULT]
     mock_argument_validation.return_value = True
     mock_collect_rules.return_value = []
     main(args_in=args)
