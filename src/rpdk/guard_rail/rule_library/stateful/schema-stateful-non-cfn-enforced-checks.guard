@@ -1,0 +1,20 @@
+rule ensure_default_values_have_not_changed when default exists
+{
+    default.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TFDF001",
+        "message": "cannot remove default values from properties"
+    }
+    >>
+
+    default.changed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TFDF002",
+        "message": "cannot change default values"
+    }
+    >>
+}

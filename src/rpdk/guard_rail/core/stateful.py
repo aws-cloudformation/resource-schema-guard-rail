@@ -89,6 +89,7 @@ native_constructs = {
     "additionalProperties",
     "uniqueItems",
     "dependencies",
+    "default",
 }
 
 

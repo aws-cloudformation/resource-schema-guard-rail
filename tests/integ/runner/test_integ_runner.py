@@ -1,3 +1,4 @@
+# pylint: disable=C0302
 """
 Integ test for runner.py
 """
@@ -900,6 +901,101 @@ def test_exec_compliance_stateful_json_validation_breaking_changes(
     ],
 )
 def test_exec_compliance_stateful_create_only_breaking_change_with_no_properties_change(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test exec_compliance for stateful"""
+    payload: Stateful = Stateful(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+    )
+    compliance_result = exec_compliance(payload)[0]
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
+    "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
+    [
+        (
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                        "default": "Snow",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "default": "Jon",
+                    },
+                },
+            },
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                        "default": "Targaryen",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "default": "Jon",
+                    },
+                },
+            },
+            [],
+            {
+                "ensure_default_values_have_not_changed": {
+                    GuardRuleResult(
+                        check_id="TFDF002",
+                        message="cannot change default values",
+                        path="/default/changed",
+                    )
+                },
+            },
+            [],
+        ),
+        (
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                        "default": "Snow",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "default": "Jon",
+                    },
+                },
+            },
+            {
+                "properties": {
+                    "LastName": {
+                        "type": "string",
+                    },
+                    "Name": {
+                        "type": "string",
+                        "default": "Jon",
+                    },
+                },
+            },
+            [],
+            {
+                "ensure_default_values_have_not_changed": {
+                    GuardRuleResult(
+                        check_id="TFDF001",
+                        message="cannot remove default values from properties",
+                        path="/default/removed",
+                    )
+                },
+            },
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_stateful_default_value_breaking_change(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
     """Test exec_compliance for stateful"""
