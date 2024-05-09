@@ -58,3 +58,11 @@
 ||`MI010`|`"cannot remove maximum from properties"`|
 ||`MI011`|`"only NEWLY ADDED properties can have additional maximum constraint"`|
 ||`MI012`|`"new maximum value cannot be less than the old value"`|
+
+
+***
+#### Non CFN Enforced Rules
+| Rule Name   |      Check Id      | Message                                                    |
+|----------|-------------|------------------------------------------------------------|
+|`ensure_default_values_have_not_changed`|`TFDF001`| `"cannot remove default values from properties"`                |
+||`TFDF002`|`"cannot change default values"`|
