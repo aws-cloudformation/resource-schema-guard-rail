@@ -64,6 +64,66 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="",
                     )
                 },
+                "ensure_resource_create_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER002",
+                        message="Resource MUST NOT specify wildcard permissions for create handler",
+                        path="/handlers/create/permissions/3",
+                    ),
+                    GuardRuleResult(
+                        check_id="PER002",
+                        message="Resource MUST NOT specify wildcard permissions for create handler",
+                        path="/handlers/create/permissions/2",
+                    ),
+                },
+                "ensure_resource_update_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER007",
+                        message="Resource MUST NOT specify wildcard permissions for update handler",
+                        path="/handlers/update/permissions/7",
+                    ),
+                    GuardRuleResult(
+                        check_id="PER007",
+                        message="Resource MUST NOT specify wildcard permissions for update handler",
+                        path="/handlers/update/permissions/8",
+                    ),
+                },
+                "ensure_resource_read_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER004",
+                        message="Resource MUST NOT specify wildcard permissions for read handler",
+                        path="/handlers/read/permissions/2",
+                    ),
+                    GuardRuleResult(
+                        check_id="PER004",
+                        message="Resource MUST NOT specify wildcard permissions for read handler",
+                        path="/handlers/read/permissions/3",
+                    ),
+                },
+                "ensure_resource_delete_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER009",
+                        message="Resource MUST NOT specify wildcard permissions for delete handler",
+                        path="/handlers/delete/permissions/1",
+                    ),
+                    GuardRuleResult(
+                        check_id="PER009",
+                        message="Resource MUST NOT specify wildcard permissions for delete handler",
+                        path="/handlers/delete/permissions/0",
+                    ),
+                },
+                "ensure_resource_list_handler_exists_and_have_permissions": {
+                    GuardRuleResult(
+                        check_id="PER011",
+                        message="Resource MUST NOT specify wildcard permissions for list handler",
+                        path="/handlers/list/permissions/1",
+                    ),
+                    GuardRuleResult(
+                        check_id="PER011",
+                        message="Resource MUST NOT specify wildcard permissions for list handler",
+                        path="/handlers/list/permissions/0",
+                    ),
+                },
             },
             {
                 "ensure_properties_do_not_support_multitype": {

@@ -135,16 +135,16 @@
             "permissions": [
                 "kms:CreateKey",
                 "kms:EnableKeyRotation",
-                "kms:DisableKey",
-                "kms:TagResource"
+                "kms:DisableKey*",
+                "kms:TagResource*"
             ]
         },
         "read": {
             "permissions": [
                 "kms:DescribeKey",
                 "kms:GetKeyPolicy",
-                "kms:GetKeyRotationStatus",
-                "kms:ListResourceTags"
+                "kms:GetKeyRotationStatus*",
+                "kms:ListResourceTags*"
             ]
         },
         "update": {
@@ -156,20 +156,20 @@
                 "kms:EnableKeyRotation",
                 "kms:PutKeyPolicy",
                 "kms:TagResource",
-                "kms:UntagResource",
-                "kms:UpdateKeyDescription"
+                "kms:UntagResource*",
+                "kms:UpdateKeyDescription*"
             ]
         },
         "delete": {
             "permissions": [
-                "kms:DescribeKey",
-                "kms:ScheduleKeyDeletion"
+                "kms:DescribeKey*",
+                "kms:ScheduleKeyDeletion*"
             ]
         },
         "list": {
             "permissions": [
-                "kms:ListKeys",
-                "kms:DescribeKey"
+                "kms:ListKeys*",
+                "kms:DescribeKey*"
             ]
         }
     }
