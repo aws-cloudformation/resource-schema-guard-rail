@@ -97,6 +97,18 @@ def _fetch_all_paths(schema: Dict):
         else:
             # if combiners are specified then we need to squash variants
             # and iterate over each sub schema
+
+            if _PROPERTIES in definition_replica:
+                nested_properties = definition_replica[_PROPERTIES]
+                while nested_properties:
+                    _prop_name, _prop_definition = nested_properties.popitem()
+                    __traverse(
+                        _prop_name,
+                        _prop_definition,
+                        cur_path + (_prop_name,),
+                        all_paths,
+                    )
+
             if _ALL_OF in definition_replica:
                 for sub_schema in definition_replica[_ALL_OF]:
                     __traverse(prop_name, sub_schema, cur_path, all_paths)
@@ -107,18 +119,7 @@ def _fetch_all_paths(schema: Dict):
                 for sub_schema in definition_replica[_ONE_OF]:
                     __traverse(prop_name, sub_schema, cur_path, all_paths)
             else:
-                # if no combiners were found then we check if there are
-                # nested properties
-                if _PROPERTIES in prop_definition:
-                    nested_properties = definition_replica[_PROPERTIES]
-                    while nested_properties:
-                        _prop_name, _prop_definition = nested_properties.popitem()
-                        __traverse(
-                            _prop_name,
-                            _prop_definition,
-                            cur_path + (_prop_name,),
-                            all_paths,
-                        )
+                pass
 
     resolved_schema = resolve_schema(schema)
     properties_replica = deepcopy(resolved_schema.get(_PROPERTIES, {}))
