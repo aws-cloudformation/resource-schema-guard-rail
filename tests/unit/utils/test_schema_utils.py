@@ -97,6 +97,15 @@ def test_resolve_schema(schema, result):
                 "/properties/Tuples/*/Field/*/NewType",
             },
         ),
+        (
+            "data/schemas-for-testing/schema-launch-template.json",
+            {
+                "/properties/LaunchTemplate",
+                "/properties/LaunchTemplate/LaunchTemplateName",
+                "/properties/LaunchTemplate/LaunchTemplateId",
+                "/properties/LaunchTemplate/Version",
+            },
+        ),
     ],
 )
 def test_add_paths_to_schema(schema, result):

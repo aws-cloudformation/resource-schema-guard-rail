@@ -1,0 +1,40 @@
+{
+    "definitions": {
+        "LaunchTemplateSpecification": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "LaunchTemplateName": {
+                    "type": "string",
+                    "description": "The name of the launch template. You must specify the LaunchTemplateName or the LaunchTemplateId, but not both."
+                },
+                "LaunchTemplateId": {
+                    "type": "string",
+                    "description": "The ID of the launch template. You must specify the LaunchTemplateName or the LaunchTemplateId, but not both."
+                },
+                "Version": {
+                    "type": "string",
+                    "description": "The version number of the launch template."
+                }
+            },
+            "oneOf": [{
+                    "required": [
+                        "LaunchTemplateName",
+                        "Version"
+                    ]
+                },
+                {
+                    "required": [
+                        "LaunchTemplateId",
+                        "Version"
+                    ]
+                }
+            ]
+        }
+    },
+    "properties": {
+        "LaunchTemplate": {
+            "$ref": "#/definitions/LaunchTemplateSpecification"
+        }
+    }
+}
