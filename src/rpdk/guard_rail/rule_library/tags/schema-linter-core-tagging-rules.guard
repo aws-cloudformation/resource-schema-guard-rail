@@ -137,7 +137,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         tagging.permissions exists
         <<
         {
-            "result": "WARNING",
+            "result": "NON_COMPLIANT",
             "check_id": "TAG012",
             "message": "Resource MUST provide `permissions` if `tagging.taggable` is true"
         }
