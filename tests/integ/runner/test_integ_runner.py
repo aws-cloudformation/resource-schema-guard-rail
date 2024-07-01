@@ -247,7 +247,12 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         check_id="TAG013",
                         message="`tagProperty` MUST specify property defined in the schema",
                         path="/tagging/tagProperty",
-                    )
+                    ),
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
+                        path="",
+                    ),
                 },
             },
             {},
@@ -270,7 +275,12 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         check_id="TAG014",
                         message="`tagProperty` MUST NOT be a part of `writeOnlyProperties`",
                         path="/tagging/tagProperty",
-                    )
+                    ),
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
+                        path="",
+                    ),
                 },
             },
             {},
@@ -389,19 +399,22 @@ def test_exec_compliance_stateless_aws_verifiedpermissions_policy(
                 ]
             ),
             [],
-            {},
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
+                        path="",
+                    ),
+                }
+            },
             {
                 "ensure_property_tags_exists_v2": {
                     GuardRuleResult(
                         check_id="TAG011",
                         message="Resource MUST implement Tags property if `tagging.taggable` is true",
                         path="",
-                    ),
-                    GuardRuleResult(
-                        check_id="TAG012",
-                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
-                        path="",
-                    ),
+                    )
                 },
             },
         ),
