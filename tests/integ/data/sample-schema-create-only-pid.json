@@ -1,0 +1,9 @@
+{
+    "createOnlyProperties": [
+        "/properties/PolicyStoreId"
+    ],
+    "primaryIdentifier": [
+        "/properties/PolicyId",
+        "/properties/PolicyStoreId"
+    ]
+}

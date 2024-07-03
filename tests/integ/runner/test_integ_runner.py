@@ -330,6 +330,47 @@ def test_exec_compliance_stateless(
 
 
 @pytest.mark.parametrize(
+    "collected_schemas,non_compliant_rules",
+    [
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/sample-schema-create-only-pid.json"
+                        )
+                    )
+                ]
+            ),
+            {
+                "ensure_primary_identifier_is_read_or_create_only": {
+                    GuardRuleResult(
+                        check_id="PID003",
+                        message="primaryIdentifier MUST be either readOnly or createOnly",
+                        path="/primaryIdentifier/0",
+                    )
+                },
+            },
+        ),
+    ],
+)
+def test_exec_compliance_stateless_createOnly_pid_fail(
+    collected_schemas, non_compliant_rules
+):
+    """Test exec_compliance for stateless"""
+    payload: Stateless = Stateless(schemas=collected_schemas, rules=[])
+    compliance_result = exec_compliance(payload)[0]
+
+    # Assert for non-compliant rules
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
     "collected_schemas,collected_rules,non_compliant_rules,warning_rules",
     [
         (
