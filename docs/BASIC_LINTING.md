@@ -38,6 +38,7 @@
 |----------|-------------|------|
 | `check_if_taggable_is_used` | `TAG001` | `"'taggable' is deprecated, please used 'tagging' property"` |
 | `ensure_tagging_is_specified` | `TAG002` | `"'tagging' MUST be specified"` |
+| | `TAG015` | `"'tagging.taggable' MUST be True"` |
 | `ensure_taggable_and_tagging_do_not_coexist` | `TAG003` | `"'taggable' and 'tagging' MUST NOT coexist"` |
 | `ensure_property_tags_exists_v1` | `TAG004` | `"Resource MUST implement Tags property if 'taggable' is true"` |
 | `ensure_property_tags_exists_v2` | `TAG005` | `"'tagging' MUST BE a struct"` |
