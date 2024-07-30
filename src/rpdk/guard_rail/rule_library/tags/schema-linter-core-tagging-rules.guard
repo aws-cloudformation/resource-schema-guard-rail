@@ -20,6 +20,17 @@ rule ensure_tagging_is_specified {
         "message": "`tagging` MUST be specified"
     }
     >>
+
+    when tagging exists {
+        tagging.taggable == true
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG015",
+            "message": "`tagging.taggable` MUST be true"
+        }
+        >>
+    }
 }
 
 rule ensure_taggable_and_tagging_do_not_coexist when taggable exists {
