@@ -51,6 +51,7 @@
 | | `TAG012` | `"Resource MUST provide 'permissions' if 'tagging.taggable' is true"` |
 | | `TAG013` | `"'tagProperty' MUST specify property defined in the schema"` |
 | | `TAG014` | `"'tagProperty' MUST NOT be a part of 'writeOnlyProperties'"` |
+| | `TAG016` | `"'tagging.taggable' MUST be true when Taging Property is defined in the schema"` |
 
 #### Permissions
 | Rule Name   |      Check Id      |  Message |

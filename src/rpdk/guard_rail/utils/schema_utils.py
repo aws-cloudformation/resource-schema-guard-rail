@@ -1,6 +1,6 @@
 """Module to handle schema manipulations."""
 from copy import deepcopy
-from typing import Any, Dict, Sequence, Set, Tuple
+from typing import Any, Dict, List, Sequence, Set, Tuple
 
 from jsonschema import RefResolver
 
@@ -143,5 +143,15 @@ def add_paths_to_schema(schema: Dict):
     Returns:
         Dict: schema with added paths
     """
-    schema["paths"] = _fetch_all_paths(schema)
+    paths = _fetch_all_paths(schema)
+    schema["paths"] = paths
+    _add_tag_property(paths, schema)
     return schema
+
+
+def _add_tag_property(paths: List[str], schema: Dict):
+    for path in paths:
+        property_name = path.split("/")[-1]
+        if "Tag" in property_name:
+            schema["TaggingPath"] = path
+            return

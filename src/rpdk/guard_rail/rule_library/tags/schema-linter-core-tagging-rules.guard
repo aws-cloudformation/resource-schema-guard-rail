@@ -154,4 +154,15 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         }
         >>
     }
+
+    when tagging.taggable == false {
+        TaggingPath !exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "TAG016",
+            "message": "`tagging.taggable` MUST be true when Taging Property is defined in the schema"
+        }
+        >>
+    }
 }
