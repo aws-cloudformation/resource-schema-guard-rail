@@ -1,0 +1,42 @@
+{
+    "properties": {
+        "StageDescription": {
+            "$ref": "#/definitions/StageDescription"
+        }
+    },
+    "definitions": {
+        "StageDescription": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Tags": {
+                    "type": "array",
+                    "uniqueItems": false,
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            }
+        },
+        "Tag": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Key": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Value",
+                "Key"
+            ]
+        }
+    },
+    "tagging": {
+        "taggable": false
+    }
+}

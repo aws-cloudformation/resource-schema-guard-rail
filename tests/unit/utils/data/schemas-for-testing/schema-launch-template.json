@@ -1,5 +1,35 @@
 {
     "definitions": {
+        "Description": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Tags": {
+                    "type": "array",
+                    "uniqueItems": false,
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            }
+        },
+        "Tag": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Key": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Value",
+                "Key"
+            ]
+        },
         "LaunchTemplateSpecification": {
             "type": "object",
             "additionalProperties": false,
@@ -36,6 +66,9 @@
     "properties": {
         "LaunchTemplate": {
             "$ref": "#/definitions/LaunchTemplateSpecification"
+        },
+        "Description": {
+            "$ref": "#/definitions/Description"
         }
     }
 }

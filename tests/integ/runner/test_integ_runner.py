@@ -481,6 +481,48 @@ def test_exec_compliance_stateless_tagging_permission_specified(
 
 
 @pytest.mark.parametrize(
+    "collected_schemas,collected_rules,non_compliant_rules",
+    [
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-not-taggable-with-tags.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG016",
+                        message="`tagging.taggable` MUST be true when Taging Property is defined in the schema",
+                        path="/properties/StageDescription/Tags",
+                    ),
+                }
+            },
+        ),
+    ],
+)
+def test_exec_compliance_stateless_not_taggable_with_tags(
+    collected_schemas, collected_rules, non_compliant_rules
+):
+    """Test exec_compliance for stateless"""
+    payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
+    compliance_result = exec_compliance(payload)[0]
+
+    # Assert for non-compliant rules
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert non_compliant_rule in compliance_result.non_compliant
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        )
+
+
+@pytest.mark.parametrize(
     "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
     [
         (

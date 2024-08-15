@@ -73,6 +73,7 @@ def __exec_rules__(schema: Dict):
     @logdebug
     def __exec__(rules: str):
         guard_result = cfn_guard_rs.run_checks(schema, rules)
+        tag_path = schema.get("TaggingPath")
 
         def __render_output(evaluation_result: object):
             def __add_item__(rule_name: str, mapping: Mapping, result: Any):
@@ -88,9 +89,13 @@ def __exec_rules__(schema: Dict):
                     try:
                         if check.message:
                             _message_dict = literal_eval(check.message.strip())
+                            _check_id = _message_dict["check_id"]
                             _path = check.path
+                            if _check_id == "TAG016" and tag_path:
+                                _path = tag_path
+
                             rule_result = GuardRuleResult(
-                                check_id=_message_dict["check_id"],
+                                check_id=_check_id,
                                 message=_message_dict["message"],
                                 path=_path,
                             )

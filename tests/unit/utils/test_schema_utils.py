@@ -104,6 +104,10 @@ def test_resolve_schema(schema, result):
                 "/properties/LaunchTemplate/LaunchTemplateName",
                 "/properties/LaunchTemplate/LaunchTemplateId",
                 "/properties/LaunchTemplate/Version",
+                "/properties/Description",
+                "/properties/Description/Tags",
+                "/properties/Description/Tags/*/Key",
+                "/properties/Description/Tags/*/Value",
             },
         ),
     ],
@@ -118,3 +122,34 @@ def test_add_paths_to_schema(schema, result):
     )
     schema_with_paths = add_paths_to_schema(collected_schemas_to_resolve[0])
     assert set(schema_with_paths["paths"]) == result
+
+
+@pytest.mark.parametrize(
+    "schema,result",
+    [
+        (
+            "data/schemas-for-testing/schema-launch-template.json",
+            {
+                "/properties/LaunchTemplate",
+                "/properties/LaunchTemplate/LaunchTemplateName",
+                "/properties/LaunchTemplate/LaunchTemplateId",
+                "/properties/LaunchTemplate/Version",
+                "/properties/Description",
+                "/properties/Description/Tags",
+                "/properties/Description/Tags/*/Key",
+                "/properties/Description/Tags/*/Value",
+            },
+        )
+    ],
+)
+def test_add_tag_path(schema, result):
+    """Unit test to verify that schema has tag property identified"""
+    collected_schemas_to_resolve = collect_schemas(
+        schemas=[
+            "file:/"
+            + str(Path(os.path.dirname(os.path.realpath(__file__))).joinpath(schema))
+        ]
+    )
+    schema_with_paths = add_paths_to_schema(collected_schemas_to_resolve[0])
+    assert "TaggingPath" in schema_with_paths
+    assert schema_with_paths["TaggingPath"] == "/properties/Description/Tags"
