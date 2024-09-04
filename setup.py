@@ -36,7 +36,7 @@ def read_requirements(req):
 
 setuptools.setup(
     name="resource-schema-guard-rail",
-    version="0.0.14",
+    version="0.0.15",
     description="Schema Guard Rail",
     long_description=long_description,
     long_description_content_type="text/markdown",
