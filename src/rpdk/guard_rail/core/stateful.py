@@ -165,6 +165,7 @@ def _cast_path(value: str):
     """cast the path of the change to process constructs"""
     pattern = r"(?<=\[)'?([\s\S]+?)'?(?=\])"
     value = value.replace("items']['properties", "*")
+    value = value.replace("]['properties'][", "][")
     value = re.sub(r"[0-9]+]", "", value)
     return re.findall(pattern, value)
 
