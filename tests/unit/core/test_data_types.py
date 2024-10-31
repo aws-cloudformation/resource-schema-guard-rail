@@ -37,5 +37,5 @@ def test_success_result_str():
                 }
             )
         )
-        == "GuardRuleSetResult(compliant=[], non_compliant={'ensure_old_property_not_turned_immutable': {GuardRuleResult(check_id='MI007', message='cannot remove minimum from properties', path='/minimum/removed')}}, warning={}, skipped=[])"  # pylint: disable=C0301
+        == "GuardRuleSetResult(compliant=[], non_compliant={'ensure_old_property_not_turned_immutable': {GuardRuleResult(check_id='MI007', message='cannot remove minimum from properties', path='/minimum/removed')}}, warning={}, skipped=[], schema_difference={})"  # pylint: disable=C0301
     )

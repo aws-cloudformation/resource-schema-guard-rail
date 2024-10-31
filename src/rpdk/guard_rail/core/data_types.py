@@ -19,7 +19,7 @@ Typical usage example:
         )
 """
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -78,12 +78,14 @@ class GuardRuleSetResult:
         non_compliant: rules, that schema(s) failed
         warning: rules, that schema(s) failed but it's not a hard requirement
         skipped: rules, that are not applicable to the schema(s)
+        schema_difference: optional dictionary containing schema difference
     """
 
     compliant: List[str] = field(default_factory=list)
     non_compliant: Dict[str, List[GuardRuleResult]] = field(default_factory=dict)
     warning: Dict[str, List[GuardRuleResult]] = field(default_factory=dict)
     skipped: List[str] = field(default_factory=list)
+    schema_difference: Optional[dict] = field(default_factory=dict)
 
     def merge(self, guard_ruleset_result: Any):
         """Merges the result into a nice mutual set.

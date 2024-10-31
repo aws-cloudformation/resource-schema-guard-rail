@@ -183,12 +183,13 @@ def _(payload):
             output = schema_exec(rules)
         return output
 
-    schema_to_execute = __exec_rules__(
-        schema=schema_diff(
-            previous_json=payload.previous_schema, current_json=payload.current_schema
-        )
+    schema_difference = schema_diff(
+        previous_json=payload.previous_schema, current_json=payload.current_schema
     )
+
+    schema_to_execute = __exec_rules__(schema=schema_difference)
     output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+    output.schema_difference = schema_difference
     compliance_output.append(output)
 
     return compliance_output
