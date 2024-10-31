@@ -255,7 +255,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
             {
                 "relationshipRef": {
                     "removed": [
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId"
+                        "/properties/Configuration/ExecuteCommandConfiguration/KmsKeyId"
                     ]
                 },
                 "type": {
@@ -271,7 +271,7 @@ from rpdk.guard_rail.core.stateful import schema_diff
             {
                 "relationshipRef": {
                     "added": [
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId"
+                        "/properties/Configuration/ExecuteCommandConfiguration/KmsKeyId"
                     ]
                 },
                 "type": {
@@ -541,13 +541,13 @@ from rpdk.guard_rail.core.stateful import schema_diff
                 "properties": {
                     "added": [
                         "/properties/ECSEndpoint",
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/Logging",
+                        "/properties/Configuration/ExecuteCommandConfiguration/Logging",
                     ]
                 },
                 "relationshipRef": {
                     "added": [
                         "/properties/DefaultCapacityProviderStrategy/*/CapacityProvider",
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId",
+                        "/properties/Configuration/ExecuteCommandConfiguration/KmsKeyId",
                     ]
                 },
                 "insertionOrder": {"removed": ["/properties/ClusterSettings"]},
@@ -556,13 +556,13 @@ from rpdk.guard_rail.core.stateful import schema_diff
                 "properties": {
                     "removed": [
                         "/properties/ECSEndpoint",
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/Logging",
+                        "/properties/Configuration/ExecuteCommandConfiguration/Logging",
                     ]
                 },
                 "relationshipRef": {
                     "removed": [
                         "/properties/DefaultCapacityProviderStrategy/*/CapacityProvider",
-                        "/properties/Configuration/properties/ExecuteCommandConfiguration/properties/KmsKeyId",
+                        "/properties/Configuration/ExecuteCommandConfiguration/KmsKeyId",
                     ]
                 },
                 "insertionOrder": {"added": ["/properties/ClusterSettings"]},
