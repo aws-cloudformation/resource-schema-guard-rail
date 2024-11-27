@@ -291,6 +291,73 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                     "file:/"
                     + str(
                         Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-tag-property-createonly-updatable.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
+                        path="",
+                    ),
+                },
+            },
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG017",
+                        message="`tagProperty` MUST NOT be a part of `createOnlyProperties`",
+                        path="/tagging/tagProperty",
+                    ),
+                    GuardRuleResult(
+                        check_id="TAG018",
+                        message="`tagProperty` MUST NOT be a part of `createOnlyProperties` when `tagUpdatable` is true",
+                        path="/tagging/tagUpdatable",
+                    ),
+                },
+            },
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-tag-property-createonly.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG012",
+                        message="Resource MUST provide `permissions` if `tagging.taggable` is true",
+                        path="",
+                    ),
+                },
+            },
+            {
+                "ensure_property_tags_exists_v2": {
+                    GuardRuleResult(
+                        check_id="TAG017",
+                        message="`tagProperty` MUST NOT be a part of `createOnlyProperties`",
+                        path="/tagging/tagProperty",
+                    ),
+                },
+            },
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
                             "../data/schema-primary-id-writeonly.json"
                         )
                     )
@@ -499,7 +566,7 @@ def test_exec_compliance_stateless_tagging_permission_specified(
                 "ensure_property_tags_exists_v2": {
                     GuardRuleResult(
                         check_id="TAG016",
-                        message="`tagging.taggable` MUST be true when Taging Property is defined in the schema",
+                        message="`tagging.taggable` MUST be true when Tagging Property is defined in the schema",
                         path="/properties/StageDescription/Tags",
                     ),
                 }

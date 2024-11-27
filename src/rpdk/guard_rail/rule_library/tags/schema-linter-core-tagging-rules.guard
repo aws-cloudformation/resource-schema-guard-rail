@@ -144,6 +144,26 @@ rule ensure_property_tags_exists_v2 when tagging exists {
                 }
                 >>
             }
+            when createOnlyProperties exists {
+                tagging.tagProperty !IN createOnlyProperties
+                <<
+                {
+                    "result": "WARNING",
+                    "check_id": "TAG017",
+                    "message": "`tagProperty` MUST NOT be a part of `createOnlyProperties`"
+                }
+                >>
+
+                tagging.tagProperty !IN createOnlyProperties
+                tagging.tagUpdatable == false
+                <<
+                {
+                    "result": "WARNING",
+                    "check_id": "TAG018",
+                    "message": "`tagProperty` MUST NOT be a part of `createOnlyProperties` when `tagUpdatable` is true"
+                }
+                >>
+            }
         }
         tagging.permissions exists
         <<
@@ -161,7 +181,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
         {
             "result": "NON_COMPLIANT",
             "check_id": "TAG016",
-            "message": "`tagging.taggable` MUST be true when Taging Property is defined in the schema"
+            "message": "`tagging.taggable` MUST be true when Tagging Property is defined in the schema"
         }
         >>
     }
