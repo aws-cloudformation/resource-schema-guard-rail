@@ -153,16 +153,16 @@ rule ensure_property_tags_exists_v2 when tagging exists {
                     "message": "`tagProperty` MUST NOT be a part of `createOnlyProperties`"
                 }
                 >>
-
-                tagging.tagProperty !IN createOnlyProperties
-                tagging.tagUpdatable == false
-                <<
-                {
-                    "result": "WARNING",
-                    "check_id": "TAG018",
-                    "message": "`tagProperty` MUST NOT be a part of `createOnlyProperties` when `tagUpdatable` is true"
+                when tagging.tagProperty IN createOnlyProperties {
+                    tagging.tagUpdatable == false
+                    <<
+                    {
+                        "result": "WARNING",
+                        "check_id": "TAG018",
+                        "message": "`tagProperty` MUST NOT be a part of `createOnlyProperties` when `tagUpdatable` is true"
+                    }
+                    >>
                 }
-                >>
             }
         }
         tagging.permissions exists
