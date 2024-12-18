@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "Tags": {},
+        "Arn": {}
+    },
+    "createOnlyProperties": [
+        "/properties/Tags"
+    ],
+    "tagging": {
+        "taggable": true,
+        "tagOnCreate": true,
+        "tagUpdatable": false,
+        "cloudFormationSystemTags": false,
+        "tagProperty": "/properties/Tags"
+    }
+}
