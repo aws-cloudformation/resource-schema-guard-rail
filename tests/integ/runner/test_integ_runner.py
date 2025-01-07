@@ -375,6 +375,54 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             },
             {},
         ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-tag-property-system-tag-no-pattern.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {},
+            {
+                "ensure_aws_system_tags_blocked": {
+                    GuardRuleResult(
+                        check_id="TAG019",
+                        message="Tagging Property should have pattern specified to block aws: prefix tags"
+                        + " when Tagging Property is defined in the schema",
+                        path="/properties/Tags",
+                    ),
+                },
+            },
+        ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-tag-property-system-tag-incomplete-pattern.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {},
+            {
+                "ensure_aws_system_tags_blocked": {
+                    GuardRuleResult(
+                        check_id="TAG019",
+                        message="Tagging Property should have pattern specified to block aws: prefix tags"
+                        + " when Tagging Property is defined in the schema",
+                        path="/properties/Tags",
+                    ),
+                },
+            },
+        ),
     ],
 )
 def test_exec_compliance_stateless(

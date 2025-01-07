@@ -94,6 +94,9 @@ def __exec_rules__(schema: Dict):
                             if _check_id == "TAG016" and tag_path:
                                 _path = tag_path
 
+                            if _check_id == "TAG019" and tag_path:
+                                _path = tag_path
+
                             rule_result = GuardRuleResult(
                                 check_id=_check_id,
                                 message=_message_dict["message"],

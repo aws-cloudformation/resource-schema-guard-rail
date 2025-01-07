@@ -146,6 +146,7 @@ def add_paths_to_schema(schema: Dict):
     paths = _fetch_all_paths(schema)
     schema["paths"] = paths
     _add_tag_property(paths, schema)
+    _add_tagging_key(schema)
     return schema
 
 
@@ -155,3 +156,23 @@ def _add_tag_property(paths: List[str], schema: Dict):
         if "Tag" in property_name:
             schema["TaggingPath"] = path
             return
+
+
+def _add_tagging_key(schema: Dict):
+    tagging_path = schema.get("TaggingPath")
+
+    if tagging_path:
+        tags_schema = schema
+        for part in tagging_path.split("/")[1:]:
+            if part == "*":
+                tags_schema = tags_schema.get("items", {})
+            elif part in tags_schema:
+                tags_schema = tags_schema[part]
+            else:
+                tags_schema = tags_schema.get("properties", {}).get(part, {})
+
+        if tags_schema.get("type") == "array" and "items" in tags_schema:
+            items_schema = tags_schema["items"]
+            if "properties" in items_schema and "Key" in items_schema["properties"]:
+                schema["TaggingKey"] = items_schema["properties"]["Key"]
+                return
