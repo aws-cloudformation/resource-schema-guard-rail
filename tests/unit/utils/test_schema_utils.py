@@ -152,4 +152,6 @@ def test_add_tag_path(schema, result):
     )
     schema_with_paths = add_paths_to_schema(collected_schemas_to_resolve[0])
     assert "TaggingPath" in schema_with_paths
+    assert "TaggingKey" in schema_with_paths
     assert schema_with_paths["TaggingPath"] == "/properties/Description/Tags"
+    assert schema_with_paths["TaggingKey"] == {"type": "string"}

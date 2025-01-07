@@ -91,10 +91,7 @@ def __exec_rules__(schema: Dict):
                             _message_dict = literal_eval(check.message.strip())
                             _check_id = _message_dict["check_id"]
                             _path = check.path
-                            if _check_id == "TAG016" and tag_path:
-                                _path = tag_path
-
-                            if _check_id == "TAG019" and tag_path:
+                            if _check_id in ("TAG016", "TAG019") and tag_path:
                                 _path = tag_path
 
                             rule_result = GuardRuleResult(
