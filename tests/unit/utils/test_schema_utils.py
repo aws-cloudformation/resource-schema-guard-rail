@@ -152,6 +152,34 @@ def test_add_tag_path(schema, result):
     )
     schema_with_paths = add_paths_to_schema(collected_schemas_to_resolve[0])
     assert "TaggingPath" in schema_with_paths
-    assert "TaggingKey" in schema_with_paths
     assert schema_with_paths["TaggingPath"] == "/properties/Description/Tags"
-    assert schema_with_paths["TaggingKey"] == {"type": "string"}
+
+
+@pytest.mark.parametrize(
+    "schema,tagpath, tagkey",
+    [
+        (
+            "data/schemas-for-testing/schema-launch-template.json",
+            "/properties/Description/Tags",
+            {"type": "string"},
+        ),
+        (
+            "data/schemas-for-testing/schema-with-nonarrary-tags.json",
+            "/properties/Tags",
+            {"pattern": ".*"},
+        ),
+    ],
+)
+def test_add_tag_key(schema, tagpath, tagkey):
+    """Unit test to verify that schema has tag key definition"""
+    collected_schemas_to_resolve = collect_schemas(
+        schemas=[
+            "file:/"
+            + str(Path(os.path.dirname(os.path.realpath(__file__))).joinpath(schema))
+        ]
+    )
+    schema_with_paths = add_paths_to_schema(collected_schemas_to_resolve[0])
+    assert "TaggingPath" in schema_with_paths
+    assert schema_with_paths["TaggingPath"] == tagpath
+    assert "TaggingKey" in schema_with_paths
+    assert schema_with_paths["TaggingKey"] == tagkey

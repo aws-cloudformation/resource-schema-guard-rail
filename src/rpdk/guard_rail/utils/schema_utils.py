@@ -176,3 +176,15 @@ def _add_tagging_key(schema: Dict):
             if "properties" in items_schema and "Key" in items_schema["properties"]:
                 schema["TaggingKey"] = items_schema["properties"]["Key"]
                 return
+
+        if tags_schema.get("type") == "object":
+
+            def _get_first_pattern_key(schema: Dict) -> str:
+                pattern_properties = schema.get("patternProperties", {})
+                if pattern_properties:
+                    return next(iter(pattern_properties))
+                return None
+
+            if "patternProperties" in tags_schema:
+                schema["TaggingKey"] = {"pattern": _get_first_pattern_key(tags_schema)}
+                return
