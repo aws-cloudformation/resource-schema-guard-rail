@@ -192,7 +192,7 @@ rule verify_property_notation
 
 
 rule ensure_description_is_descriptive {
-    description != /^Resource Type definition for/
+    description == /^Resource Type definition for/
     <<
     {
         "result": "WARNING",
