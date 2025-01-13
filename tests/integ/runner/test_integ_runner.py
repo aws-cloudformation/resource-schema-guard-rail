@@ -147,6 +147,13 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="/taggable",
                     )
                 },
+                "ensure_description_is_descriptive": {
+                    GuardRuleResult(
+                        check_id="GN001",
+                        message="description should start with `Resource Type definition for ...`",
+                        path="/description",
+                    )
+                },
             },
         ),
         (
