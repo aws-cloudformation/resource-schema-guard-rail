@@ -34,8 +34,8 @@
 | | `COM006` | `"property array MUST NOT specify items via oneOf` |
 
 #### Tagging
-| Rule Name   |      Check Id      |  Message |
-|----------|-------------|------|
+| Rule Name   | Check Id |  Message |
+|----------|----------|------|
 | `check_if_taggable_is_used` | `TAG001` | `"'taggable' is deprecated, please used 'tagging' property"` |
 | `ensure_tagging_is_specified` | `TAG002` | `"'tagging' MUST be specified"` |
 | | `TAG015` | `"'tagging.taggable' MUST be True"` |
@@ -52,6 +52,8 @@
 | | `TAG013` | `"'tagProperty' MUST specify property defined in the schema"` |
 | | `TAG014` | `"'tagProperty' MUST NOT be a part of 'writeOnlyProperties'"` |
 | | `TAG016` | `"'tagging.taggable' MUST be true when Taging Property is defined in the schema"` |
+| | `TAG017` | `"'tagProperty' MUST NOT be a part of 'createOnlyProperties'"` |
+| | `TAG018` | `"'tagProperty' MUST NOT be a part of 'createOnlyProperties' when 'tagUpdatable' is true"` |
 
 #### Permissions
 | Rule Name   |      Check Id      |  Message |
