@@ -197,6 +197,7 @@ def _is_tag_key_pattern_match(tag_key: str):
     _AWS_PREFIX_TAG = "aws:"
     if "pattern" in tag_key:
         tag_key_pattern = tag_key["pattern"]
-        is_blocked = not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
-        return is_blocked
+        if isinstance(tag_key_pattern, str):
+            is_blocked = not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
+            return is_blocked
     return False
