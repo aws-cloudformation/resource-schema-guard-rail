@@ -1,0 +1,27 @@
+{
+    "definitions": {
+        "Tags": {
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "pattern": ""
+                },
+                "Value": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "properties": {
+        "Tags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Tags"
+            }
+        }
+    },
+    "tagging": {
+        "tagProperty": "/properties/Tags"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "definitions": {
+        "Description": {
+            "type": "object",
+            "properties": {
+                "Tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            }
+        },
+        "Tag": {
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "pattern": ""
+                },
+                "Value": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Value",
+                "Key"
+            ]
+        }
+    },
+    "properties": {
+        "Description": {
+            "$ref": "#/definitions/Description"
+        }
+    }
+}

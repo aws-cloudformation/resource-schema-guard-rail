@@ -1,4 +1,5 @@
 """Module to handle schema manipulations."""
+import re
 from copy import deepcopy
 from typing import Any, Dict, List, Sequence, Set, Tuple
 
@@ -146,6 +147,7 @@ def add_paths_to_schema(schema: Dict):
     paths = _fetch_all_paths(schema)
     schema["paths"] = paths
     _add_tag_property(paths, schema)
+    _add_tagging_key(schema)
     return schema
 
 
@@ -155,3 +157,51 @@ def _add_tag_property(paths: List[str], schema: Dict):
         if "Tag" in property_name:
             schema["TaggingPath"] = path
             return
+
+
+def _add_tagging_key(schema: Dict):
+    tagging_path = schema.get("TaggingPath")
+
+    if tagging_path:
+        tags_schema = schema
+        for part in tagging_path.split("/")[1:]:
+            if part == "*":
+                tags_schema = tags_schema.get("items", {})
+            elif part in tags_schema:
+                tags_schema = tags_schema[part]
+            else:
+                tags_schema = tags_schema.get("properties", {}).get(part, {})
+
+        if tags_schema.get("type") == "array" and "items" in tags_schema:
+            items_schema = tags_schema["items"]
+            if "properties" in items_schema and "Key" in items_schema["properties"]:
+                tag_key = items_schema["properties"]["Key"]
+                schema["TaggingKeyPattern"] = _is_tag_key_pattern_match(tag_key)
+                return
+
+        if tags_schema.get("type") == "object":
+
+            def _get_all_pattern_key(schema: Dict) -> str:
+                pattern_properties = schema.get("patternProperties", {})
+                if pattern_properties:
+                    return list(pattern_properties.keys())
+                return []
+
+            if "patternProperties" in tags_schema:
+                tag_key = {"pattern": _get_all_pattern_key(tags_schema)}
+                schema["TaggingKeyPattern"] = _is_tag_key_pattern_match(tag_key)
+                return
+
+
+def _is_tag_key_pattern_match(tag_key: Dict) -> bool:
+    _AWS_PREFIX_TAG = "aws:"
+
+    if "pattern" in tag_key:
+        tag_key_pattern = tag_key["pattern"]
+        if isinstance(tag_key_pattern, str):
+            return not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
+        if isinstance(tag_key_pattern, list):
+            return all(
+                not re.match(pattern, _AWS_PREFIX_TAG) for pattern in tag_key_pattern
+            )
+    return False
