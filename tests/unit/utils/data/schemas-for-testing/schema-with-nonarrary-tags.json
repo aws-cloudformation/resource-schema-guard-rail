@@ -25,7 +25,7 @@
             "description": "This resource type use map for Tags, suggest to use List of Tag",
             "additionalProperties": false,
             "patternProperties": {
-                ".*": {
+                "^[A-Za-z][A-Za-z0-9-]*$": {
                     "type": "string"
                 }
             }

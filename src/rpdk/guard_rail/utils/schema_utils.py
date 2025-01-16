@@ -1,4 +1,5 @@
 """Module to handle schema manipulations."""
+import re
 from copy import deepcopy
 from typing import Any, Dict, List, Sequence, Set, Tuple
 
@@ -174,7 +175,8 @@ def _add_tagging_key(schema: Dict):
         if tags_schema.get("type") == "array" and "items" in tags_schema:
             items_schema = tags_schema["items"]
             if "properties" in items_schema and "Key" in items_schema["properties"]:
-                schema["TaggingKey"] = items_schema["properties"]["Key"]
+                tag_key = items_schema["properties"]["Key"]
+                schema["TaggingKeyPattern"] = _is_tag_key_pattern_match(tag_key)
                 return
 
         if tags_schema.get("type") == "object":
@@ -186,5 +188,15 @@ def _add_tagging_key(schema: Dict):
                 return None
 
             if "patternProperties" in tags_schema:
-                schema["TaggingKey"] = {"pattern": _get_first_pattern_key(tags_schema)}
+                tag_key = {"pattern": _get_first_pattern_key(tags_schema)}
+                schema["TaggingKeyPattern"] = _is_tag_key_pattern_match(tag_key)
                 return
+
+
+def _is_tag_key_pattern_match(tag_key: str):
+    _AWS_PREFIX_TAG = "aws:"
+    if "pattern" in tag_key:
+        tag_key_pattern = tag_key["pattern"]
+        is_blocked = not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
+        return is_blocked
+    return False

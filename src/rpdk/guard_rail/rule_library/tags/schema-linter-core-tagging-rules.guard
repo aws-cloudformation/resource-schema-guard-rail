@@ -188,7 +188,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
 }
 
 rule ensure_aws_system_tags_blocked when TaggingPath exists {
-    TaggingKey exists
+    TaggingKeyPattern exists
     <<
     {
         "result": "WARNING",
@@ -197,8 +197,8 @@ rule ensure_aws_system_tags_blocked when TaggingPath exists {
     }
     >>
 
-    when TaggingKey exists {
-        TaggingKey.pattern exists
+    when TaggingKeyPattern exists {
+        TaggingKeyPattern == true
         <<
         {
             "result": "WARNING",
@@ -206,16 +206,5 @@ rule ensure_aws_system_tags_blocked when TaggingPath exists {
             "message": "Tagging Property should have pattern specified to block aws: prefix tags when Tagging Property is defined in the schema"
         }
         >>
-
-        when TaggingKey.pattern exists {
-            TaggingKey.pattern == "^(?i)(?!aws:).*$"
-            <<
-            {
-                "result": "WARNING",
-                "check_id": "TAG019",
-                "message": "Tagging Property should have pattern specified to block aws: prefix tags when Tagging Property is defined in the schema"
-            }
-            >>
-        }
     }
 }
