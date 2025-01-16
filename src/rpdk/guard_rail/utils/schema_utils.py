@@ -181,23 +181,27 @@ def _add_tagging_key(schema: Dict):
 
         if tags_schema.get("type") == "object":
 
-            def _get_first_pattern_key(schema: Dict) -> str:
+            def _get_all_pattern_key(schema: Dict) -> str:
                 pattern_properties = schema.get("patternProperties", {})
                 if pattern_properties:
-                    return next(iter(pattern_properties))
-                return None
+                    return list(pattern_properties.keys())
+                return []
 
             if "patternProperties" in tags_schema:
-                tag_key = {"pattern": _get_first_pattern_key(tags_schema)}
+                tag_key = {"pattern": _get_all_pattern_key(tags_schema)}
                 schema["TaggingKeyPattern"] = _is_tag_key_pattern_match(tag_key)
                 return
 
 
-def _is_tag_key_pattern_match(tag_key: str):
+def _is_tag_key_pattern_match(tag_key: Dict) -> bool:
     _AWS_PREFIX_TAG = "aws:"
+
     if "pattern" in tag_key:
         tag_key_pattern = tag_key["pattern"]
         if isinstance(tag_key_pattern, str):
-            is_blocked = not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
-            return is_blocked
+            return not re.match(tag_key_pattern, _AWS_PREFIX_TAG)
+        if isinstance(tag_key_pattern, list):
+            return all(
+                not re.match(pattern, _AWS_PREFIX_TAG) for pattern in tag_key_pattern
+            )
     return False
