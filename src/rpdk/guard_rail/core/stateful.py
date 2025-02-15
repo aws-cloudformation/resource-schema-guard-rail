@@ -93,7 +93,11 @@ native_constructs = {
 }
 
 
-def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
+def schema_diff(
+    previous_json: Dict[str, Any],
+    current_json: Dict[str, Any],
+    print_diff_to_console: bool = True,
+):
     """schema diff function to get formatted schema diff from deep diff"""
 
     previous_schema = resolve_schema(previous_json)
@@ -107,14 +111,15 @@ def schema_diff(previous_json: Dict[str, Any], current_json: Dict[str, Any]):
     )
 
     meta_diff = _translate_meta_diff(deep_diff.to_dict())
-    console.rule("[bold red][GENERATED DIFF BETWEEN SCHEMAS]")
-    console.print(
-        meta_diff,
-        style="link https://google.com",
-        highlight=True,
-        justify="left",
-        soft_wrap=True,
-    )
+    if print_diff_to_console:
+        console.rule("[bold red][GENERATED DIFF BETWEEN SCHEMAS]")
+        console.print(
+            meta_diff,
+            style="link https://google.com",
+            highlight=True,
+            justify="left",
+            soft_wrap=True,
+        )
     return meta_diff
 
 
