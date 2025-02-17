@@ -52,6 +52,7 @@ class Stateful:
     current_schema: Dict[str, Any]
     previous_schema: Dict[str, Any]
     rules: List[str] = field(default_factory=list)
+    print_diff_to_console: bool = field(default=True)
 
 
 @dataclass(unsafe_hash=True)

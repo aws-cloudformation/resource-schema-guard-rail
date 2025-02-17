@@ -184,7 +184,9 @@ def _(payload):
         return output
 
     schema_difference = schema_diff(
-        previous_json=payload.previous_schema, current_json=payload.current_schema
+        previous_json=payload.previous_schema,
+        current_json=payload.current_schema,
+        print_diff_to_console=payload.print_diff_to_console,
     )
 
     schema_to_execute = __exec_rules__(schema=schema_difference)
