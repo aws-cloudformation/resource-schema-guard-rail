@@ -184,10 +184,17 @@ def _add_item(
     """Appends values to existing/new meta diff values"""
     if result_key not in schema_meta_diff:
         schema_meta_diff[result_key] = {}
+
     if change_key in schema_meta_diff[result_key]:
-        schema_meta_diff[result_key][change_key].append(result_value)
+        if isinstance(result_value, (list, tuple)):
+            schema_meta_diff[result_key][change_key].extend(result_value)
+        else:
+            schema_meta_diff[result_key][change_key].append(result_value)
     else:
-        schema_meta_diff[result_key][change_key] = [result_value]
+        if isinstance(result_value, (list, tuple)):
+            schema_meta_diff[result_key][change_key] = list(result_value)
+        else:
+            schema_meta_diff[result_key][change_key] = [result_value]
 
 
 def _traverse_nested_properties(
@@ -330,11 +337,20 @@ def _translate_dict_change(
                         schema_meta_diff, diffkey, _get_path(path_list), value
                     )
             if _is_json_construct(path_list):
+                if path_list[-1] == "required":
+                    if isinstance(value, (list, tuple)):
+                        path_list_required = [
+                            _get_path(path_list[:-1] + [v]) for v in value
+                        ]
+                    else:
+                        path_list_required = _get_path(path_list[:-1] + [value])
+                else:
+                    path_list_required = _get_path(path_list[:-1])
                 _add_item(
                     schema_meta_diff,
                     path_list[-1],
                     diffkey,
-                    _get_path(path_list[:-1]),
+                    path_list_required,
                 )
             if _is_cfn_leaf_construct(path_list):
                 _add_item(
