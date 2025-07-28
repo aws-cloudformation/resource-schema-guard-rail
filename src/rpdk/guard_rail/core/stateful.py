@@ -337,6 +337,14 @@ def _translate_dict_change(
                         schema_meta_diff, diffkey, _get_path(path_list), value
                     )
             if _is_json_construct(path_list):
+                """
+                Handles JSON schema construct paths and their 'required' fields.
+                If the last element in path_list is "required":
+                - For list/tuple values: Creates a list of paths by combining each value with the parent path
+                - For single values: Creates a single path by combining the value with the parent path
+                Otherwise:
+                - Returns the parent path without the last element
+                """
                 if path_list[-1] == "required":
                     if isinstance(value, (list, tuple)):
                         path_list_required = [
