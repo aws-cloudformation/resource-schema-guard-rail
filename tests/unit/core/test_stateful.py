@@ -1,4 +1,5 @@
 # pylint: disable=C0301
+# pylint: disable=C0302
 """
 Unit test for stateful.py
 """
@@ -965,3 +966,126 @@ def test_schema_diff_complex_json_semantics_with_combiners_mutations(
             "Schemas with combiners are not yet supported for stateful evaluation"
             == str(e)
         )
+
+
+@pytest.mark.parametrize(
+    "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
+    [
+        (
+            {
+                "definitions": {
+                    "A": {
+                        "description": "Information about the automation configuration in numeric questions.",
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "X": {
+                                "description": "",
+                                "$ref": "#/definitions/B",
+                            }
+                        },
+                    },
+                    "B": {
+                        "description": "",
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "Y": {
+                                "description": "The type of the answer sourcr",
+                                "type": "string",
+                                "enum": ["CONTACT_LENS_DATA", "GEN_AI"],
+                            },
+                            "Z": {
+                                "description": "",
+                            },
+                        },
+                        "required": ["Y", "Z"],
+                    },
+                },
+                "properties": {
+                    "Items": {
+                        "description": "Items that are part of the evaluation form.",
+                        "type": "array",
+                        "insertionOrder": True,
+                        "minItems": 1,
+                        "maxItems": 200,
+                        "items": {"$ref": "#/definitions/A"},
+                    }
+                },
+            },
+            {
+                "definitions": {
+                    "A": {
+                        "description": "Information about the automation configuration in numeric questions.",
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "X": {
+                                "description": "",
+                            }
+                        },
+                    },
+                },
+                "properties": {
+                    "Items": {
+                        "description": "Items that are part of the evaluation form.",
+                        "type": "array",
+                        "insertionOrder": True,
+                        "minItems": 1,
+                        "maxItems": 200,
+                        "items": {"$ref": "#/definitions/A"},
+                    }
+                },
+            },
+            {
+                "type": {"added": ["/properties/Items/*/X"]},
+                "additionalProperties": {"added": ["/properties/Items/*/X"]},
+                "properties": {
+                    "added": [
+                        "/properties/Items/*/X/properties",
+                        "/properties/Items/*/X/properties/Y",
+                        "/properties/Items/*/X/properties/Z",
+                        "/properties/Items/*/X/properties/Z/description",
+                    ]
+                },
+                "required": {
+                    "added": [
+                        "/properties/Items/*/X/Y",
+                        "/properties/Items/*/X/Z",
+                    ]
+                },
+            },
+            {
+                "type": {"removed": ["/properties/Items/*/X"]},
+                "additionalProperties": {"removed": ["/properties/Items/*/X"]},
+                "properties": {
+                    "removed": [
+                        "/properties/Items/*/X/properties",
+                        "/properties/Items/*/X/properties/Y",
+                        "/properties/Items/*/X/properties/Z",
+                        "/properties/Items/*/X/properties/Z/description",
+                    ]
+                },
+                "required": {
+                    "removed": [
+                        "/properties/Items/*/X/Y",
+                        "/properties/Items/*/X/Z",
+                    ]
+                },
+            },
+        )
+    ],
+)
+def test_schema_diff_show_correct_required_source(
+    schema_variant1, schema_variant2, expected_diff, expected_diff_negative
+):
+    """
+
+    Args:
+        schema_variant1:
+        schema_variant2:
+        expected_diff:
+        expected_diff_negative:
+    """
+    assert expected_diff == schema_diff(schema_variant2, schema_variant1)
+    assert expected_diff_negative == schema_diff(schema_variant1, schema_variant2)
