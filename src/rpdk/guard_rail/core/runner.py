@@ -37,47 +37,49 @@ WARNING = "WARNING"
 READ_ONLY_CHECK_IDS = {
     "PID001",  # primaryIdentifier MUST exist
     "PID002",  # primaryIdentifier MUST contain values / cannot remove members
-    "PR005",   # primaryIdentifier MUST have properties defined in the schema
+    "PR005",  # primaryIdentifier MUST have properties defined in the schema
     "PER003",  # Resource MUST implement read handler
     "PER004",  # Resource MUST NOT specify wildcard permissions for read handler
-    "PR001",   # Resource properties MUST NOT be removed / primaryIdentifier cannot add more members
+    "PR001",  # Resource properties MUST NOT be removed / primaryIdentifier cannot add more members
 }
 
 
 @logdebug
 def filter_rules_for_read_only(rules_content: str) -> str:
     """Filter rules to only include read-only checks.
-    
+
     Args:
         rules_content: The full rules content as string
-        
+
     Returns:
         Filtered rules content containing only read-only checks
     """
-    lines = rules_content.split('\n')
+    lines = rules_content.split("\n")
     filtered_lines = []
     current_rule_lines = []
     in_rule = False
     include_current_rule = False
-    
+
     for line in lines:
-        if line.strip().startswith('rule '):
+        if line.strip().startswith("rule "):
             # Save previous rule if it should be included
             if in_rule and include_current_rule:
                 filtered_lines.extend(current_rule_lines)
-            
+
             # Start new rule
             current_rule_lines = [line]
             in_rule = True
             include_current_rule = False
-            
+
             # Check if this rule contains any read-only check IDs
             rule_name = line.strip().split()[1]
-            if rule_name in ['ensure_primary_identifier_exists_and_not_empty', 
-                           'verify_property_notation',
-                           'ensure_resource_read_handler_exists_and_have_permissions',
-                           'ensure_old_property_not_removed',
-                           'ensure_primary_identifier_not_changed']:
+            if rule_name in [
+                "ensure_primary_identifier_exists_and_not_empty",
+                "verify_property_notation",
+                "ensure_resource_read_handler_exists_and_have_permissions",
+                "ensure_old_property_not_removed",
+                "ensure_primary_identifier_not_changed",
+            ]:
                 include_current_rule = True
         elif in_rule:
             current_rule_lines.append(line)
@@ -90,12 +92,13 @@ def filter_rules_for_read_only(rules_content: str) -> str:
             # Lines outside rules (like variable definitions)
             if not in_rule:
                 filtered_lines.append(line)
-    
+
     # Don't forget the last rule
     if in_rule and include_current_rule:
         filtered_lines.extend(current_rule_lines)
-    
-    return '\n'.join(filtered_lines)
+
+    return "\n".join(filtered_lines)
+
 
 @logdebug
 def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
@@ -124,7 +127,9 @@ def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
             rules_content = pkg_resources.read_text(module, content)
             if is_read_only:
                 rules_content = filter_rules_for_read_only(rules_content)
-                if rules_content.strip():  # Only add if there are rules left after filtering
+                if (
+                    rules_content.strip()
+                ):  # Only add if there are rules left after filtering
                     rule_set.add(rules_content)
             else:
                 rule_set.add(rules_content)
@@ -248,7 +253,9 @@ def _(payload):
         GuardRuleSetResult: Rule Result
     """
     compliance_output = []
-    ruleset = prepare_ruleset("stateful", is_read_only=payload.is_read_only) | set(payload.rules)
+    ruleset = prepare_ruleset("stateful", is_read_only=payload.is_read_only) | set(
+        payload.rules
+    )
 
     def __execute__(schema_exec, ruleset):
         output = None
