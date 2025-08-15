@@ -33,10 +33,12 @@ class Stateless:
     Args:
         schemas (List[Dict[str, Any]]): Collection of Resource Provider Schemas
         rules (List[str]): Collection of Custom Compliance Rules
+        is_read_only (bool): Whether to run only read-only resource checks
     """
 
     schemas: List[Dict[str, Any]]
     rules: List[str] = field(default_factory=list)
+    is_read_only: bool = field(default=False)
 
 
 @dataclass
@@ -47,12 +49,14 @@ class Stateful:
     Args:
         current_schema (Dict[str, Any]): Current State of Resource Provider Schema
         previous_schema (Dict[str, Any]): Previous State of Resource Provider Schema
+        is_read_only (bool): Whether to run only read-only resource checks
     """
 
     current_schema: Dict[str, Any]
     previous_schema: Dict[str, Any]
     rules: List[str] = field(default_factory=list)
     print_diff_to_console: bool = field(default=True)
+    is_read_only: bool = field(default=False)
 
 
 @dataclass(unsafe_hash=True)

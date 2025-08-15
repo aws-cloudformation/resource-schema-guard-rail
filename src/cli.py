@@ -53,7 +53,11 @@ def main(args_in=None):
     compliance_result = None
 
     if not args.stateful:
-        payload: Stateless = Stateless(schemas=collected_schemas, rules=collected_rules)
+        payload: Stateless = Stateless(
+            schemas=collected_schemas, 
+            rules=collected_rules,
+            is_read_only=args.is_read_only
+        )
         compliance_result = invoke(payload)
     else:
         # should be index safe as argument validation should fail prematurely
@@ -61,6 +65,7 @@ def main(args_in=None):
             previous_schema=collected_schemas[0],
             current_schema=collected_schemas[1],
             rules=collected_rules,
+            is_read_only=args.is_read_only
         )
         compliance_result = invoke(payload)
 
