@@ -70,17 +70,6 @@ def filter_rules_for_read_only(rules_content: str) -> str:
             current_rule_lines = [line]
             in_rule = True
             include_current_rule = False
-
-            # Check if this rule contains any read-only check IDs
-            rule_name = line.strip().split()[1]
-            if rule_name in [
-                "ensure_primary_identifier_exists_and_not_empty",
-                "verify_property_notation",
-                "ensure_resource_read_handler_exists_and_have_permissions",
-                "ensure_old_property_not_removed",
-                "ensure_primary_identifier_not_changed",
-            ]:
-                include_current_rule = True
         elif in_rule:
             current_rule_lines.append(line)
             # Check if line contains any read-only check IDs
