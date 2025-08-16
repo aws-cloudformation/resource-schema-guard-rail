@@ -45,52 +45,53 @@ READ_ONLY_CHECK_IDS = {
 
 
 @logdebug
-def filter_rules_for_read_only(rules_content: str) -> str:
-    """Filter rules to only include read-only checks.
+def filter_results_for_read_only(result: GuardRuleSetResult) -> GuardRuleSetResult:
+    """Filter execution results to only include read-only checks.
 
     Args:
-        rules_content: The full rules content as string
+        result: The full execution result
 
     Returns:
-        Filtered rules content containing only read-only checks
+        Filtered result containing only read-only checks
     """
-    lines = rules_content.split("\n")
-    filtered_lines = []
-    current_rule_lines = []
-    in_rule = False
-    include_current_rule = False
+    filtered_compliant = []
+    filtered_non_compliant = {}
+    filtered_warning = {}
+    filtered_skipped = []
 
-    for line in lines:
-        if line.strip().startswith("rule "):
-            # Save previous rule if it should be included
-            if in_rule and include_current_rule:
-                filtered_lines.extend(current_rule_lines)
+    # Filter compliant rules (we don't have check IDs, so keep all)
+    filtered_compliant = result.compliant
 
-            # Start new rule
-            current_rule_lines = [line]
-            in_rule = True
-            include_current_rule = False
-        elif in_rule:
-            current_rule_lines.append(line)
-            # Check if line contains any read-only check IDs
-            for check_id in READ_ONLY_CHECK_IDS:
-                if f'"check_id": "{check_id}"' in line:
-                    include_current_rule = True
-                    break
-        else:
-            # Lines outside rules (like variable definitions)
-            if not in_rule:
-                filtered_lines.append(line)
+    # Filter non-compliant results by check ID
+    for rule_name, rule_results in result.non_compliant.items():
+        filtered_rule_results = [
+            r for r in rule_results if r.check_id in READ_ONLY_CHECK_IDS
+        ]
+        if filtered_rule_results:
+            filtered_non_compliant[rule_name] = filtered_rule_results
 
-    # Don't forget the last rule
-    if in_rule and include_current_rule:
-        filtered_lines.extend(current_rule_lines)
+    # Filter warning results by check ID
+    for rule_name, rule_results in result.warning.items():
+        filtered_rule_results = [
+            r for r in rule_results if r.check_id in READ_ONLY_CHECK_IDS
+        ]
+        if filtered_rule_results:
+            filtered_warning[rule_name] = filtered_rule_results
 
-    return "\n".join(filtered_lines)
+    # Keep skipped rules (we don't have check IDs, so keep all)
+    filtered_skipped = result.skipped
+
+    return GuardRuleSetResult(
+        compliant=filtered_compliant,
+        non_compliant=filtered_non_compliant,
+        warning=filtered_warning,
+        skipped=filtered_skipped,
+        schema_difference=result.schema_difference,
+    )
 
 
 @logdebug
-def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
+def prepare_ruleset(mode: str = "stateless"):
     """Fetches module level schema rules based on mode.
 
     Iterates over provided modules (core, combiners, permissions, tags) or (stateful)
@@ -99,7 +100,6 @@ def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
 
     Args:
         mode: The mode (stateless or stateful)
-        is_read_only: Whether to filter rules for read-only checks only
 
     Returns:
         Set[str]: set of rules in a string form
@@ -114,14 +114,7 @@ def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
             if not is_guard_rule(content):
                 continue
             rules_content = pkg_resources.read_text(module, content)
-            if is_read_only:
-                rules_content = filter_rules_for_read_only(rules_content)
-                if (
-                    rules_content.strip()
-                ):  # Only add if there are rules left after filtering
-                    rule_set.add(rules_content)
-            else:
-                rule_set.add(rules_content)
+            rule_set.add(rules_content)
     return rule_set
 
 
@@ -215,7 +208,7 @@ def _(payload):
     """
 
     compliance_output = []
-    ruleset = prepare_ruleset(is_read_only=payload.is_read_only) | set(payload.rules)
+    ruleset = prepare_ruleset() | set(payload.rules)
 
     def __execute_rules__(schema_exec, ruleset):
         output = None
@@ -227,6 +220,10 @@ def _(payload):
         schema_with_paths = add_paths_to_schema(schema=schema)
         schema_to_execute = __exec_rules__(schema=schema_with_paths)
         output = __execute_rules__(schema_exec=schema_to_execute, ruleset=ruleset)
+
+        if payload.is_read_only:
+            output = filter_results_for_read_only(output)
+
         compliance_output.append(output)
     return compliance_output
 
@@ -242,9 +239,7 @@ def _(payload):
         GuardRuleSetResult: Rule Result
     """
     compliance_output = []
-    ruleset = prepare_ruleset("stateful", is_read_only=payload.is_read_only) | set(
-        payload.rules
-    )
+    ruleset = prepare_ruleset("stateful") | set(payload.rules)
 
     def __execute__(schema_exec, ruleset):
         output = None
@@ -260,6 +255,10 @@ def _(payload):
 
     schema_to_execute = __exec_rules__(schema=schema_difference)
     output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+
+    if payload.is_read_only:
+        output = filter_results_for_read_only(output)
+
     output.schema_difference = schema_difference
     compliance_output.append(output)
 

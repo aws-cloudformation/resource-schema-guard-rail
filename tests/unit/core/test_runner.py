@@ -8,7 +8,7 @@ import pytest
 from rpdk.guard_rail.core.data_types import Stateful, Stateless
 from rpdk.guard_rail.core.runner import (
     exec_compliance,
-    filter_rules_for_read_only,
+    filter_results_for_read_only,
     prepare_ruleset,
 )
 
@@ -19,52 +19,37 @@ def test_prepare_ruleset():
     assert prepare_ruleset("stateful")
 
 
-def test_prepare_ruleset_read_only():
-    """Test rule set prepare with read-only flag"""
-    normal_rules = prepare_ruleset()
-    read_only_rules = prepare_ruleset(is_read_only=True)
+def test_filter_results_for_read_only():
+    """Test filtering results for read-only checks"""
+    from rpdk.guard_rail.core.data_types import GuardRuleResult, GuardRuleSetResult
 
-    # Read-only should have fewer rules
-    assert len(read_only_rules) <= len(normal_rules)
+    # Create test result with mixed check IDs
+    test_result = GuardRuleSetResult(
+        compliant=["some_rule"],
+        non_compliant={
+            "rule1": [GuardRuleResult(check_id="PID001", message="test", path="test")],
+            "rule2": [
+                GuardRuleResult(check_id="OTHER001", message="test", path="test")
+            ],
+        },
+        warning={
+            "rule3": [GuardRuleResult(check_id="PR005", message="test", path="test")]
+        },
+        skipped=["skipped_rule"],
+    )
 
+    filtered = filter_results_for_read_only(test_result)
 
-def test_filter_rules_for_read_only():
-    """Test filtering rules for read-only checks"""
-    test_rules = """
-rule ensure_primary_identifier_exists_and_not_empty
-{
-    primaryIdentifier exists
-    <<
-    {
-        "result": "NON_COMPLIANT",
-        "check_id": "PID001",
-        "message": "primaryIdentifier MUST exist"
-    }
-    >>
-}
+    # Should include read-only check IDs
+    assert "rule1" in filtered.non_compliant  # PID001
+    assert "rule3" in filtered.warning  # PR005
 
-rule some_other_rule
-{
-    someProperty exists
-    <<
-    {
-        "result": "NON_COMPLIANT",
-        "check_id": "OTHER001",
-        "message": "Some other check"
-    }
-    >>
-}
-"""
+    # Should exclude non-read-only check IDs
+    assert "rule2" not in filtered.non_compliant  # OTHER001
 
-    filtered = filter_rules_for_read_only(test_rules)
-
-    # Should include read-only rule
-    assert "ensure_primary_identifier_exists_and_not_empty" in filtered
-    assert "PID001" in filtered
-
-    # Should exclude non-read-only rule
-    assert "some_other_rule" not in filtered
-    assert "OTHER001" not in filtered
+    # Should keep compliant and skipped as-is
+    assert filtered.compliant == ["some_rule"]
+    assert filtered.skipped == ["skipped_rule"]
 
 
 @pytest.mark.parametrize(
