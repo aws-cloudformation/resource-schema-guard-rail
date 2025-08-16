@@ -48,19 +48,17 @@ READ_ONLY_CHECK_IDS = {
 def filter_results_for_read_only(result: GuardRuleSetResult) -> GuardRuleSetResult:
     """Filter execution results to only include read-only checks.
 
+    Only filters non_compliant and warning results by check ID since compliant
+    and skipped results don't contain check IDs (just rule names).
+
     Args:
         result: The full execution result
 
     Returns:
         Filtered result containing only read-only checks
     """
-    filtered_compliant = []
     filtered_non_compliant = {}
     filtered_warning = {}
-    filtered_skipped = []
-
-    # Filter compliant rules (we don't have check IDs, so keep all)
-    filtered_compliant = result.compliant
 
     # Filter non-compliant results by check ID
     for rule_name, rule_results in result.non_compliant.items():
@@ -78,14 +76,13 @@ def filter_results_for_read_only(result: GuardRuleSetResult) -> GuardRuleSetResu
         if filtered_rule_results:
             filtered_warning[rule_name] = filtered_rule_results
 
-    # Keep skipped rules (we don't have check IDs, so keep all)
-    filtered_skipped = result.skipped
-
+    # Keep all compliant and skipped rules since they don't have check IDs
+    # and don't represent failures that would block read-only resources
     return GuardRuleSetResult(
-        compliant=filtered_compliant,
+        compliant=result.compliant,
         non_compliant=filtered_non_compliant,
         warning=filtered_warning,
-        skipped=filtered_skipped,
+        skipped=result.skipped,
         schema_difference=result.schema_difference,
     )
 
