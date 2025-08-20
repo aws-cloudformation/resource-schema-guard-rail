@@ -1,0 +1,137 @@
+let wildcard_notation = /^[a-z0-9-]{0,20}:([a-zA-Z0-9]+)?\*$/
+
+
+
+rule ensure_resource_create_handler_exists_and_have_permissions {
+    handlers.create exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER001",
+        "message": "Resource MUST implement create handler"
+    }
+    >>
+
+    handlers.create.permissions exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER002",
+        "message": "Resource create handler MUST have permissions list specified"
+    }
+    >>
+
+    when handlers.create.permissions exists {
+        handlers.create.permissions !empty
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER002",
+            "message": "Resource create handler MUST have non-empty permissions"
+        }
+        >>
+    }
+
+    when handlers.create.permissions !empty {
+        handlers.create.permissions.* {
+            this != %wildcard_notation
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PER002",
+                "message": "Resource MUST NOT specify wildcard permissions for create handler"
+            }
+            >>
+        }
+    }
+}
+
+rule ensure_resource_update_handler_exists_and_have_permissions {
+    handlers.update exists
+    <<
+    {
+        "result": "WARNING",
+        "check_id": "PER005",
+        "message": "Resource SHOULD implement update handler"
+    }
+    >>
+
+    when handlers.update exists {
+        handlers.update.permissions exists
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER006",
+            "message": "Resource update handler MUST have permissions list specified"
+        }
+        >>
+
+        when handlers.update.permissions exists {
+            handlers.update.permissions !empty
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PER006",
+                "message": "Resource update handler MUST have non-empty permissions"
+            }
+            >>
+        }
+
+        when handlers.update.permissions !empty {
+            handlers.update.permissions.* {
+                this != %wildcard_notation
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "PER007",
+                    "message": "Resource MUST NOT specify wildcard permissions for update handler"
+                }
+                >>
+            }
+        }
+    }
+}
+
+rule ensure_resource_delete_handler_exists_and_have_permissions {
+    handlers.delete exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER008",
+        "message": "Resource MUST implement delete handler"
+    }
+    >>
+
+    handlers.delete.permissions exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER009",
+        "message": "Resource delete handler MUST have permissions list specified"
+    }
+    >>
+
+    when handlers.delete.permissions exists {
+        handlers.delete.permissions !empty
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER009",
+            "message": "Resource delete handler MUST have non-empty permissions"
+        }
+        >>
+    }
+
+    when handlers.delete.permissions !empty {
+        handlers.delete.permissions.* {
+            this != %wildcard_notation
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PER009",
+                "message": "Resource MUST NOT specify wildcard permissions for delete handler"
+            }
+            >>
+        }
+    }
+}

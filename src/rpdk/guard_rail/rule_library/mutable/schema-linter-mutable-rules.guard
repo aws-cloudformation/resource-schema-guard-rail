@@ -1,0 +1,29 @@
+rule verify_property_notation_for_mutable_properties
+{
+    let paths = paths
+    when createOnlyProperties exists {
+        createOnlyProperties[*] {
+            this IN %paths
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR006",
+                "message": "createOnlyProperties MUST have properties defined in the schema"
+            }
+            >>
+        }
+    }
+
+    when writeOnlyProperties exists {
+        writeOnlyProperties[*] {
+            this IN %paths
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PR008",
+                "message": "writeOnlyProperties MUST have properties defined in the schema"
+            }
+            >>
+        }
+    }
+}
