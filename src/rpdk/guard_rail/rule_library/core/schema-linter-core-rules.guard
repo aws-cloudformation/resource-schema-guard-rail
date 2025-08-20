@@ -133,7 +133,7 @@ rule ensure_write_and_read_only_intersection_is_empty
     }
 }
 
-rule verify_property_notation
+rule verify_property_notation_for_immutable_properties
 {
     let paths = paths
     when primaryIdentifier exists {
@@ -149,19 +149,6 @@ rule verify_property_notation
         }
     }
 
-    when createOnlyProperties exists {
-        createOnlyProperties[*] {
-            this IN %paths
-            <<
-            {
-                "result": "NON_COMPLIANT",
-                "check_id": "PR006",
-                "message": "createOnlyProperties MUST have properties defined in the schema"
-            }
-            >>
-        }
-    }
-
     when readOnlyProperties exists {
         readOnlyProperties[*] {
             this IN %paths
@@ -170,19 +157,6 @@ rule verify_property_notation
                 "result": "NON_COMPLIANT",
                 "check_id": "PR007",
                 "message": "readOnlyProperties MUST have properties defined in the schema"
-            }
-            >>
-        }
-    }
-
-    when writeOnlyProperties exists {
-        writeOnlyProperties[*] {
-            this IN %paths
-            <<
-            {
-                "result": "NON_COMPLIANT",
-                "check_id": "PR008",
-                "message": "writeOnlyProperties MUST have properties defined in the schema"
             }
             >>
         }

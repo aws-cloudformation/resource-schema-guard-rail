@@ -96,7 +96,7 @@ def setup_args():  # pylint: disable=C0116
     )
 
     parser.add_argument(
-        "--is-read",
+        "--is-read-only",
         dest="is_read_only",
         action="store_true",
         default=False,
