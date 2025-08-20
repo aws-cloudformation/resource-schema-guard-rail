@@ -27,7 +27,6 @@ from rpdk.guard_rail.core.data_types import (
 from rpdk.guard_rail.core.stateful import schema_diff
 from rpdk.guard_rail.rule_library import (
     combiners,
-    common,
     core,
     permissions,
     read,
@@ -58,13 +57,15 @@ def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
         Set[str]: set of rules in a string form
     """
     rule_modules = {
-        "stateless": [core, combiners, permissions, tags, common, read],
+        "stateless": [core, combiners, permissions, tags, read],
         "stateful": [stateful],
     }
     rule_set = set()
     for module in rule_modules[mode]:
         module_name = module.__name__.split(".")[-1]
-        if is_read_only and module_name in ["core", "permissions"]:
+        if is_read_only and module_name != "read":
+            continue
+        if not is_read_only and module_name == "read":
             continue
         for content in pkg_resources.contents(module):
             if not is_guard_rule(content):
