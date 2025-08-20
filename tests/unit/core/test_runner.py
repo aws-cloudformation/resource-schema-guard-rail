@@ -13,7 +13,6 @@ def test_prepare_ruleset():
     """Test rule set prepare"""
     assert prepare_ruleset()
     assert prepare_ruleset("stateful")
-    assert prepare_ruleset("readonly")
 
 
 @pytest.mark.parametrize(
@@ -38,12 +37,12 @@ def test_exec_compliance_stateless(collected_schemas, collected_rules):
 def test_exec_compliance_stateless_read_only(
     collected_schemas, collected_rules, is_read_only
 ):
-    """Test exec_compliance for stateless with readonly flag"""
+    """Test exec_compliance for stateless with read flag"""
     payload: Stateless = Stateless(
         schemas=collected_schemas, rules=collected_rules, is_read_only=is_read_only
     )
     compliance_result = exec_compliance(payload)
-    # Should return results using readonly ruleset
+    # Should return results using read ruleset
     assert compliance_result[0] is not None
 
 
@@ -79,7 +78,7 @@ def test_exec_compliance_stateful(
 
 
 def test_exec_compliance_readonly_with_mock_schema():
-    """Test exec_compliance with readonly flag using mock schema that should trigger readonly checks"""
+    """Test exec_compliance with read flag using mock schema that should trigger read checks"""
     mock_schema = {
         "typeName": "AWS::Test::Resource",
         "description": "Test resource",
@@ -95,17 +94,9 @@ def test_exec_compliance_readonly_with_mock_schema():
     payload = Stateless(schemas=[mock_schema], rules=[], is_read_only=True)
     compliance_result = exec_compliance(payload)
 
-    # Should return GuardRuleSetResult with readonly checks
+    # Should return GuardRuleSetResult with read checks
     assert compliance_result[0] is not None
     assert hasattr(compliance_result[0], "non_compliant")
     assert hasattr(compliance_result[0], "compliant")
     assert hasattr(compliance_result[0], "warning")
     assert hasattr(compliance_result[0], "skipped")
-
-
-def test_readonly_ruleset():
-    """Test that readonly ruleset contains expected rules"""
-    readonly_rules = prepare_ruleset("readonly")
-    assert readonly_rules
-    # Verify readonly rules are loaded
-    assert len(readonly_rules) > 0

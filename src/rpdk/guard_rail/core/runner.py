@@ -27,9 +27,10 @@ from rpdk.guard_rail.core.data_types import (
 from rpdk.guard_rail.core.stateful import schema_diff
 from rpdk.guard_rail.rule_library import (
     combiners,
+    common,
     core,
     permissions,
-    readonly,
+    read,
     stateful,
     tags,
 )
@@ -42,7 +43,7 @@ WARNING = "WARNING"
 
 
 @logdebug
-def prepare_ruleset(mode: str = "stateless"):
+def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
     """Fetches module level schema rules based on mode.
 
     Iterates over provided modules (core, combiners, permissions, tags) or (stateful)
@@ -50,23 +51,25 @@ def prepare_ruleset(mode: str = "stateless"):
     `to-run`
 
     Args:
+        is_read_only: whether the calling resource schema is read only or not
         mode: The mode (stateless or stateful)
 
     Returns:
         Set[str]: set of rules in a string form
     """
     rule_modules = {
-        "stateless": [core, combiners, permissions, tags],
+        "stateless": [core, combiners, permissions, tags, common, read],
         "stateful": [stateful],
-        "readonly": [readonly],
     }
     rule_set = set()
     for module in rule_modules[mode]:
+        module_name = module.__name__.split(".")[-1]
+        if is_read_only and module_name in ["core", "permissions"]:
+            continue
         for content in pkg_resources.contents(module):
             if not is_guard_rule(content):
                 continue
-            rules_content = pkg_resources.read_text(module, content)
-            rule_set.add(rules_content)
+            rule_set.add(pkg_resources.read_text(module, content))
     return rule_set
 
 
@@ -160,8 +163,7 @@ def _(payload):
     """
 
     compliance_output = []
-    mode = "readonly" if payload.is_read_only else "stateless"
-    ruleset = prepare_ruleset(mode) | set(payload.rules)
+    ruleset = prepare_ruleset(is_read_only=payload.is_read_only) | set(payload.rules)
 
     def __execute_rules__(schema_exec, ruleset):
         output = None
@@ -189,8 +191,7 @@ def _(payload):
         GuardRuleSetResult: Rule Result
     """
     compliance_output = []
-    mode = "readonly" if payload.is_read_only else "stateful"
-    ruleset = prepare_ruleset(mode) | set(payload.rules)
+    ruleset = prepare_ruleset("stateful") | set(payload.rules)
 
     def __execute__(schema_exec, ruleset):
         output = None

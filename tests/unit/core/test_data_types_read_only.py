@@ -1,5 +1,5 @@
 """
-Unit tests for data_types.py readonly functionality
+Unit tests for data_types.py read functionality
 """
 
 from rpdk.guard_rail.core.data_types import Stateless

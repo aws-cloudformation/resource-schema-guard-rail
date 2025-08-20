@@ -29,10 +29,13 @@ $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 -
 #### Read-Only Resource Checks
 For read-only resources, you can use the `--is-read-only` flag to run only the essential checks:
 ```bash
-$ guard-rail --schema file://path-to-schema --is-readonly
+$ guard-rail --schema file://path-to-schema --is-read
 ```
 
 When `--is-read-only` is specified, only the following checks are performed:
+- `ARN001`: arn related property MUST have pattern specified
+- `ARN002`: arn related property MUST have pattern specified
+- `COM001`: ensure_properties_do_not_support_multitype
 - `PID001`: primaryIdentifier MUST exist
 - `PID002`: primaryIdentifier MUST contain values
 - `PR005`: primaryIdentifier MUST have properties defined in the schema

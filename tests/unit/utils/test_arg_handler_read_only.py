@@ -1,21 +1,21 @@
 """
-Unit tests for arg_handler.py readonly functionality
+Unit tests for arg_handler.py read functionality
 """
 
 from rpdk.guard_rail.utils.arg_handler import setup_args
 
 
 def test_setup_args_includes_read_only_flag():
-    """Test that setup_args includes the --is-readonly flag"""
+    """Test that setup_args includes the --is-read flag"""
     parser = setup_args()
     # Parse with the new flag
-    args = parser.parse_args(["--schema", "file://test.json", "--is-readonly"])
+    args = parser.parse_args(["--schema", "file://test.json", "--is-read"])
     assert args.is_read_only is True
     assert args.schemas == ["file://test.json"]
 
 
 def test_setup_args_default_read_only_flag():
-    """Test that --is-readonly defaults to False"""
+    """Test that --is-read defaults to False"""
     parser = setup_args()
     # Parse without the flag
     args = parser.parse_args(["--schema", "file://test.json"])
@@ -24,7 +24,7 @@ def test_setup_args_default_read_only_flag():
 
 
 def test_setup_args_read_only_with_stateful():
-    """Test --is-readonly flag works with --stateful"""
+    """Test --is-read flag works with --stateful"""
     parser = setup_args()
     args = parser.parse_args(
         [
@@ -33,7 +33,7 @@ def test_setup_args_read_only_with_stateful():
             "--schema",
             "file://test2.json",
             "--stateful",
-            "--is-readonly",
+            "--is-read",
         ]
     )
     assert args.is_read_only is True
