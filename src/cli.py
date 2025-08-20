@@ -65,7 +65,6 @@ def main(args_in=None):
             previous_schema=collected_schemas[0],
             current_schema=collected_schemas[1],
             rules=collected_rules,
-            is_read_only=args.is_read_only,
         )
         compliance_result = invoke(payload)
 

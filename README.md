@@ -29,17 +29,18 @@ $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 -
 #### Read-Only Resource Checks
 For read-only resources, you can use the `--is-read-only` flag to run only the essential checks:
 ```bash
-$ guard-rail --schema file://path-to-schema --is-read-only
+$ guard-rail --schema file://path-to-schema --is-readonly
 ```
 
 When `--is-read-only` is specified, only the following checks are performed:
 - `PID001`: primaryIdentifier MUST exist
 - `PID002`: primaryIdentifier MUST contain values
 - `PR005`: primaryIdentifier MUST have properties defined in the schema
+- `PR007`: readOnlyProperties MUST have properties defined in the schema
 - `PER003`: Resource MUST implement read handler
 - `PER004`: Resource MUST NOT specify wildcard permissions for read handler
-- `PR001`: Resource properties MUST NOT be removed (stateful mode)
-- `PID001/PID002`: primaryIdentifier cannot add/remove members (stateful mode)
+- `PER010`: Resource MUST implement list handler
+- `PER011`: Resource MUST NOT specify wildcard permissions for list handler
 
 **[List of Linting Rules](docs/BASIC_LINTING.md)**
 
@@ -49,11 +50,6 @@ Along with basic linting, guard rail supports capability of breaking change eval
 In order to start using Breaking Change evaluation you need to run following command:
 ```bash
 $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 --rule ... --stateful
-```
-
-For read-only resources in stateful mode:
-```bash
-$ guard-rail --schema file://path-to-previous-schema --schema file://path-to-current-schema --stateful --is-read-only
 ```
 
 **[List of Breaking Change Rules](docs/BREAKING_CHANGE.md)**

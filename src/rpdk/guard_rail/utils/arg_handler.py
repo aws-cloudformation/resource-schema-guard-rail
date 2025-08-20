@@ -96,11 +96,11 @@ def setup_args():  # pylint: disable=C0116
     )
 
     parser.add_argument(
-        "--is-read-only",
+        "--is-readonly",
         dest="is_read_only",
         action="store_true",
         default=False,
-        help="If specified will run only read-only resource checks",
+        help="If specified will run only readonly resource checks",
     )
 
     return parser

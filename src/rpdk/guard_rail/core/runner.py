@@ -25,66 +25,20 @@ from rpdk.guard_rail.core.data_types import (
     Stateless,
 )
 from rpdk.guard_rail.core.stateful import schema_diff
-from rpdk.guard_rail.rule_library import combiners, core, permissions, stateful, tags
+from rpdk.guard_rail.rule_library import (
+    combiners,
+    core,
+    permissions,
+    readonly,
+    stateful,
+    tags,
+)
 from rpdk.guard_rail.utils.common import is_guard_rule
 from rpdk.guard_rail.utils.logger import LOG, logdebug
 from rpdk.guard_rail.utils.schema_utils import add_paths_to_schema
 
 NON_COMPLIANT = "NON_COMPLIANT"
 WARNING = "WARNING"
-
-# Read-only resource check IDs that should be included when is_read_only=True
-READ_ONLY_CHECK_IDS = {
-    "PID001",  # primaryIdentifier MUST exist
-    "PID002",  # primaryIdentifier MUST contain values / cannot remove members
-    "PR005",  # primaryIdentifier MUST have properties defined in the schema
-    "PER003",  # Resource MUST implement read handler
-    "PER004",  # Resource MUST NOT specify wildcard permissions for read handler
-    "PR001",  # Resource properties MUST NOT be removed / primaryIdentifier cannot add more members
-}
-
-
-@logdebug
-def filter_results_for_read_only(result: GuardRuleSetResult) -> GuardRuleSetResult:
-    """Filter execution results to only include read-only checks.
-
-    Only filters non_compliant and warning results by check ID since compliant
-    and skipped results don't contain check IDs (just rule names).
-
-    Args:
-        result: The full execution result
-
-    Returns:
-        Filtered result containing only read-only checks
-    """
-    filtered_non_compliant = {}
-    filtered_warning = {}
-
-    # Filter non-compliant results by check ID
-    for rule_name, rule_results in result.non_compliant.items():
-        filtered_rule_results = [
-            r for r in rule_results if r.check_id in READ_ONLY_CHECK_IDS
-        ]
-        if filtered_rule_results:
-            filtered_non_compliant[rule_name] = filtered_rule_results
-
-    # Filter warning results by check ID
-    for rule_name, rule_results in result.warning.items():
-        filtered_rule_results = [
-            r for r in rule_results if r.check_id in READ_ONLY_CHECK_IDS
-        ]
-        if filtered_rule_results:
-            filtered_warning[rule_name] = filtered_rule_results
-
-    # Keep all compliant and skipped rules since they don't have check IDs
-    # and don't represent failures that would block read-only resources
-    return GuardRuleSetResult(
-        compliant=result.compliant,
-        non_compliant=filtered_non_compliant,
-        warning=filtered_warning,
-        skipped=result.skipped,
-        schema_difference=result.schema_difference,
-    )
 
 
 @logdebug
@@ -104,6 +58,7 @@ def prepare_ruleset(mode: str = "stateless"):
     rule_modules = {
         "stateless": [core, combiners, permissions, tags],
         "stateful": [stateful],
+        "readonly": [readonly],
     }
     rule_set = set()
     for module in rule_modules[mode]:
@@ -205,7 +160,8 @@ def _(payload):
     """
 
     compliance_output = []
-    ruleset = prepare_ruleset() | set(payload.rules)
+    mode = "readonly" if payload.is_read_only else "stateless"
+    ruleset = prepare_ruleset(mode) | set(payload.rules)
 
     def __execute_rules__(schema_exec, ruleset):
         output = None
@@ -217,9 +173,6 @@ def _(payload):
         schema_with_paths = add_paths_to_schema(schema=schema)
         schema_to_execute = __exec_rules__(schema=schema_with_paths)
         output = __execute_rules__(schema_exec=schema_to_execute, ruleset=ruleset)
-
-        if payload.is_read_only:
-            output = filter_results_for_read_only(output)
 
         compliance_output.append(output)
     return compliance_output
@@ -236,7 +189,8 @@ def _(payload):
         GuardRuleSetResult: Rule Result
     """
     compliance_output = []
-    ruleset = prepare_ruleset("stateful") | set(payload.rules)
+    mode = "readonly" if payload.is_read_only else "stateful"
+    ruleset = prepare_ruleset(mode) | set(payload.rules)
 
     def __execute__(schema_exec, ruleset):
         output = None
@@ -252,9 +206,6 @@ def _(payload):
 
     schema_to_execute = __exec_rules__(schema=schema_difference)
     output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
-
-    if payload.is_read_only:
-        output = filter_results_for_read_only(output)
 
     output.schema_difference = schema_difference
     compliance_output.append(output)
