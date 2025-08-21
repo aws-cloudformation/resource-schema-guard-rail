@@ -35,21 +35,23 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
                         path="/primaryIdentifier/2",
                     )
                 },
-                "verify_property_notation": {
+                "verify_property_notation_for_immutable_properties": {
                     GuardRuleResult(
                         check_id="PR005",
                         message="primaryIdentifier MUST have properties defined in the schema",
                         path="/primaryIdentifier/2",
                     ),
                     GuardRuleResult(
-                        check_id="PR006",
-                        message="createOnlyProperties MUST have properties defined in the schema",
-                        path="/createOnlyProperties/1",
-                    ),
-                    GuardRuleResult(
                         check_id="PR007",
                         message="readOnlyProperties MUST have properties defined in the schema",
                         path="/readOnlyProperties/2",
+                    ),
+                },
+                "verify_property_notation_for_mutable_properties": {
+                    GuardRuleResult(
+                        check_id="PR006",
+                        message="createOnlyProperties MUST have properties defined in the schema",
+                        path="/createOnlyProperties/1",
                     ),
                     GuardRuleResult(
                         check_id="PR008",
@@ -460,7 +462,7 @@ def test_exec_compliance_stateless_createOnly_pid_fail(
             ),
             [],
             {
-                "verify_property_notation": {
+                "verify_property_notation_for_mutable_properties": {
                     GuardRuleResult(
                         check_id="PR008",
                         message="writeOnlyProperties MUST have properties defined in the schema",

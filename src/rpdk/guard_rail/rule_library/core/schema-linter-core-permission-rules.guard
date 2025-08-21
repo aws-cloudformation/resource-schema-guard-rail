@@ -1,0 +1,91 @@
+let wildcard_notation = /^[a-z0-9-]{0,20}:([a-zA-Z0-9]+)?\*$/
+
+
+
+rule ensure_resource_read_handler_exists_and_have_permissions {
+    handlers.read exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER003",
+        "message": "Resource MUST implement read handler"
+    }
+    >>
+
+    handlers.read.permissions exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER004",
+        "message": "Resource read handler MUST have permissions list specified"
+    }
+    >>
+
+    when handlers.read.permissions exists {
+        handlers.read.permissions !empty
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER004",
+            "message": "Resource read handler MUST have non-empty permissions"
+        }
+        >>
+    }
+
+    when handlers.read.permissions !empty {
+        handlers.read.permissions.* {
+            this != %wildcard_notation
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PER004",
+                "message": "Resource MUST NOT specify wildcard permissions for read handler"
+            }
+            >>
+        }
+    }
+}
+
+rule ensure_resource_list_handler_exists_and_have_permissions {
+    handlers.list exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER010",
+        "message": "Resource MUST implement list handler"
+    }
+    >>
+
+    handlers.list.permissions exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "PER011",
+        "message": "Resource list handler MUST have permissions list specified"
+    }
+    >>
+
+    when handlers.list.permissions exists {
+        handlers.list.permissions !empty
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PER011",
+            "message": "Resource list handler MUST have non-empty permissions"
+        }
+        >>
+    }
+
+    when handlers.list.permissions !empty {
+        handlers.list.permissions.* {
+            this != %wildcard_notation
+            <<
+            {
+                "result": "NON_COMPLIANT",
+                "check_id": "PER011",
+                "message": "Resource MUST NOT specify wildcard permissions for list handler"
+            }
+            >>
+        }
+    }
+}

@@ -25,7 +25,7 @@ from rpdk.guard_rail.core.data_types import (
     Stateless,
 )
 from rpdk.guard_rail.core.stateful import schema_diff
-from rpdk.guard_rail.rule_library import combiners, core, permissions, stateful, tags
+from rpdk.guard_rail.rule_library import combiners, core, mutable, stateful, tags
 from rpdk.guard_rail.utils.common import is_guard_rule
 from rpdk.guard_rail.utils.logger import LOG, logdebug
 from rpdk.guard_rail.utils.schema_utils import add_paths_to_schema
@@ -35,22 +35,29 @@ WARNING = "WARNING"
 
 
 @logdebug
-def prepare_ruleset(mode: str = "stateless"):
+def prepare_ruleset(mode: str = "stateless", is_read_only: bool = False):
     """Fetches module level schema rules based on mode.
 
     Iterates over provided modules (core, combiners, permissions, tags) or (stateful)
     and checks if content is a guard rule-set, ten adds it to the list
     `to-run`
 
+    Args:
+        is_read_only: whether the calling resource schema is read only or not
+        mode: The mode (stateless or stateful)
+
     Returns:
         Set[str]: set of rules in a string form
     """
     rule_modules = {
-        "stateless": [core, combiners, permissions, tags],
+        "stateless": [core, mutable, combiners, tags],
         "stateful": [stateful],
     }
     rule_set = set()
     for module in rule_modules[mode]:
+        module_name = module.__name__.split(".")[-1]
+        if is_read_only and module_name == "mutable":
+            continue
         for content in pkg_resources.contents(module):
             if not is_guard_rule(content):
                 continue
@@ -148,7 +155,7 @@ def _(payload):
     """
 
     compliance_output = []
-    ruleset = prepare_ruleset() | set(payload.rules)
+    ruleset = prepare_ruleset(is_read_only=payload.is_read_only) | set(payload.rules)
 
     def __execute_rules__(schema_exec, ruleset):
         output = None
@@ -160,6 +167,7 @@ def _(payload):
         schema_with_paths = add_paths_to_schema(schema=schema)
         schema_to_execute = __exec_rules__(schema=schema_with_paths)
         output = __execute_rules__(schema_exec=schema_to_execute, ruleset=ruleset)
+
         compliance_output.append(output)
     return compliance_output
 
@@ -191,6 +199,7 @@ def _(payload):
 
     schema_to_execute = __exec_rules__(schema=schema_difference)
     output = __execute__(schema_exec=schema_to_execute, ruleset=ruleset)
+
     output.schema_difference = schema_difference
     compliance_output.append(output)
 

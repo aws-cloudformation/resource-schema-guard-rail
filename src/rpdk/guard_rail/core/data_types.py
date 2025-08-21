@@ -33,10 +33,12 @@ class Stateless:
     Args:
         schemas (List[Dict[str, Any]]): Collection of Resource Provider Schemas
         rules (List[str]): Collection of Custom Compliance Rules
+        is_read_only (bool): Whether to run only read resource checks
     """
 
     schemas: List[Dict[str, Any]]
     rules: List[str] = field(default_factory=list)
+    is_read_only: bool = field(default=False)
 
 
 @dataclass

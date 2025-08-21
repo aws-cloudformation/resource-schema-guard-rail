@@ -95,6 +95,14 @@ def setup_args():  # pylint: disable=C0116
         help="Should specify additional rules for compliance evaluation (path of `.guard` file)",
     )
 
+    parser.add_argument(
+        "--is-read-only",
+        dest="is_read_only",
+        action="store_true",
+        default=False,
+        help="If specified will run only read resource checks",
+    )
+
     return parser
 
 

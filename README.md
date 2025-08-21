@@ -26,12 +26,31 @@ In order to start using Basic Linting you need to run following command:
 $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 --rule file://path-to-custom-ruleset1 --rule file://path-to-custom-ruleset2
 ```
 
+#### Read-Only Resource Checks
+For read-only resources, you can use the `--is-read-only` flag to run only the essential checks:
+```bash
+$ guard-rail --schema file://path-to-schema --is-read
+```
+
+When `--is-read-only` is specified, only the following checks are performed:
+- `ARN001`: arn related property MUST have pattern specified
+- `ARN002`: arn related property MUST have pattern specified
+- `COM001`: ensure_properties_do_not_support_multitype
+- `PID001`: primaryIdentifier MUST exist
+- `PID002`: primaryIdentifier MUST contain values
+- `PR005`: primaryIdentifier MUST have properties defined in the schema
+- `PR007`: readOnlyProperties MUST have properties defined in the schema
+- `PER003`: Resource MUST implement read handler
+- `PER004`: Resource MUST NOT specify wildcard permissions for read handler
+- `PER010`: Resource MUST implement list handler
+- `PER011`: Resource MUST NOT specify wildcard permissions for list handler
+
 **[List of Linting Rules](docs/BASIC_LINTING.md)**
 
 #### Breaking Change (Stateful)
 Along with basic linting, guard rail supports capability of breaking change evaluation. Provider developer must provider two json objects - previous & current versions of the same resource schema. CloudFormation authored rules will be run and evaluation current version of the schema whether it is compliant or not.
 
-In order to start using Basic Linting you need to run following command:
+In order to start using Breaking Change evaluation you need to run following command:
 ```bash
 $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 --rule ... --stateful
 ```
