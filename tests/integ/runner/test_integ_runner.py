@@ -653,6 +653,49 @@ def test_exec_compliance_stateless_not_taggable_with_tags(
             {},
             [],
         ),
+        (
+            {
+                "typeName": "AWS::Test:TypeName",
+                "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-connect",
+                "required": ["infos"],
+                "properties": {
+                    "infos": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/info"},
+                        "insertionOrder": False,
+                    }
+                },
+                "definitions": {
+                    "level": {"type": "number", "minimum": 1.0, "maximum": 5.0},
+                    "info": {
+                        "type": "object",
+                        "properties": {"Level": {"$ref": "#/definitions/level"}},
+                    },
+                },
+            },
+            {
+                "typeName": "AWS::Test:TypeName",
+                "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-connect",
+                "required": ["infos"],
+                "properties": {
+                    "infos": {
+                        "type": "array",
+                        "items": {"$ref": "#/definitions/info"},
+                        "insertionOrder": False,
+                    }
+                },
+                "definitions": {
+                    "level": {"type": "number", "minimum": 1, "maximum": 5},
+                    "info": {
+                        "type": "object",
+                        "properties": {"Level": {"$ref": "#/definitions/level"}},
+                    },
+                },
+            },
+            [],
+            {},
+            [],
+        ),
     ],
 )
 def test_exec_compliance_stateful(
