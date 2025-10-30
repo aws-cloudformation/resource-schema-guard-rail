@@ -108,6 +108,7 @@ def schema_diff(
         current_schema,
         ignore_order_func=lambda level: "primaryIdentifier" not in level.path(),
         verbose_level=2,
+        ignore_type_in_groups=DeepDiff.numbers,
     )
 
     meta_diff = _translate_meta_diff(deep_diff.to_dict())
