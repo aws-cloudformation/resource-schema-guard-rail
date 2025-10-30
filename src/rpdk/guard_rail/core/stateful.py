@@ -72,6 +72,11 @@ cfn_leaf_level_constructs = {
     "arrayType",
 }
 
+# Top-level object constructs that need special tracking
+cfn_object_constructs = {
+    "tagging",
+}
+
 native_constructs = {
     "type",
     "description",
@@ -160,6 +165,16 @@ def _is_json_construct(path_list):
 def _is_cfn_leaf_construct(path_list):
     """This method defines json constructs"""
     return len(path_list) > 0 and path_list[-1] in cfn_leaf_level_constructs
+
+
+def _is_cfn_object_construct(path_list):
+    """This method defines cfn object constructs like tagging"""
+    return len(path_list) == 1 and path_list[0] in cfn_object_constructs
+
+
+def _is_tagging_property(path_list):
+    """This method checks if path is a tagging nested property"""
+    return len(path_list) == 2 and path_list[0] == "tagging"
 
 
 def _get_path(path_list):
@@ -327,10 +342,32 @@ def _translate_dict_change(
     def __translate_dict_diff(diffkey, schema_meta_diff, diff_value):
         for key, value in diff_value.items():
             path_list = _cast_path(key)
+
             if _is_combiner_property(path_list):
                 raise NotImplementedError(
                     "Schemas with combiners are not yet supported for stateful evaluation"
                 )
+            if _is_cfn_object_construct(path_list):
+
+                _add_item(schema_meta_diff, path_list[0], diffkey, True)
+            if _is_tagging_property(path_list):
+                # Track nested tagging properties in flat structure
+                # For removed/added: tagging: {removed: ['/tagging/taggable', ...]}
+                # For changed: tagging: {changed: [{property: '/tagging/taggable', old_value: ..., new_value: ...}]}
+                if len(path_list) == 2:  # e.g., ['tagging', 'taggable']
+                    parent_key = path_list[0]  # 'tagging'
+
+                    if parent_key not in schema_meta_diff:
+                        schema_meta_diff[parent_key] = {}
+
+                    # Create the property path
+                    property_path = _get_path(path_list)
+
+                    # For added/removed, just add the path string
+                    # (changed is handled separately in _translate_values_changed_diff_)
+                    if diffkey not in schema_meta_diff[parent_key]:
+                        schema_meta_diff[parent_key][diffkey] = []
+                    schema_meta_diff[parent_key][diffkey].append(property_path)
             if _is_resource_property(path_list):
                 _add_item(schema_meta_diff, PROPERTIES, diffkey, _get_path(path_list))
                 if isinstance(value, dict):
@@ -405,6 +442,24 @@ def _translate_values_changed_diff_(schema_meta_diff, diff_value):
                 DIFFKEYS.ADDED,
                 value[DIFFKEYS.NEW_VALUE],
             )
+        if _is_tagging_property(path_list):
+            # Track changes to nested tagging properties in flat structure
+            # Create structure like: tagging: {changed: [{property: '/tagging/taggable', ...}]}
+            if len(path_list) == 2:  # e.g., ['tagging', 'taggable']
+                parent_key = path_list[0]  # 'tagging'
+
+                if parent_key not in schema_meta_diff:
+                    schema_meta_diff[parent_key] = {}
+
+                change_value = {
+                    DIFFKEYS.PROPERTY: "/" + "/".join(path_list),
+                    DIFFKEYS.OLD_VALUE: value[DIFFKEYS.OLD_VALUE],
+                    DIFFKEYS.NEW_VALUE: value[DIFFKEYS.NEW_VALUE],
+                }
+
+                if DIFFKEYS.CHANGED not in schema_meta_diff[parent_key]:
+                    schema_meta_diff[parent_key][DIFFKEYS.CHANGED] = []
+                schema_meta_diff[parent_key][DIFFKEYS.CHANGED].append(change_value)
         if _is_json_construct(path_list):
             _add_item(
                 schema_meta_diff,

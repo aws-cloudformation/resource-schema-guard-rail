@@ -723,6 +723,34 @@ def test_exec_compliance_stateful(
         assert "Stateful evaluation is not supported yet" == str(e)
 
 
+def test_exec_compliance_stateful2():
+    """Test exec_compliance for stateful"""
+    try:
+        new = {
+            "tagging": {
+                "taggable": True,
+                "tagOnCreate": True,
+                "tagUpdatable": True,
+                "cloudFormationSystemTags": False,
+                "tagProperty": "/properties/Tags",
+                "permissions": [
+                    "test:TagResource",
+                    "test:UntagResource",
+                    "test:ListTagsForResource",
+                ],
+            }
+        }
+        old = {}
+        payload: Stateful = Stateful(
+            previous_schema=old,
+            current_schema=new,
+        )
+        compliance_result = exec_compliance(payload)[0]
+        assert compliance_result.compliant == ["ensure_tagging_properties_not_removed"]
+    except NotImplementedError as e:
+        assert "Stateful evaluation is not supported yet" == str(e)
+
+
 @pytest.mark.parametrize(
     "previous_schema, current_schema, collected_rules,non_compliant_rules,warning_rules",
     [
@@ -1285,3 +1313,188 @@ def test_exec_compliance_stateful_default_value_breaking_change(
         assert (
             non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
         )
+
+
+@pytest.mark.parametrize(
+    "previous_schema,current_schema,collected_rules,non_compliant_rules,warning_rules",
+    [
+        # Test Case: TAG100 - Tagging section removal
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagUpdatable": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+            },
+            [],
+            {
+                "ensure_tagging_properties_not_removed": {
+                    GuardRuleResult(
+                        check_id="TAG100",
+                        message="tagging properties MUST NOT be removed from schema",
+                        path="/tagging/removed",
+                    )
+                }
+            },
+            [],
+        ),
+        # Test Case: TAG101 - Taggable changed from true to false
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": False,
+                    "tagOnCreate": False,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            [],
+            {
+                "ensure_taggable_not_changed": {
+                    GuardRuleResult(
+                        check_id="TAG101",
+                        message="tagging.taggable MUST NOT change from true to false",
+                        path="/tagging/changed/0/new_value",
+                    ),
+                    GuardRuleResult(
+                        check_id="TAG102",
+                        message="tagging.tagOnCreate MUST NOT change from true to false",
+                        path="/tagging/changed/1/new_value",
+                    ),
+                },
+            },
+            [],
+        ),
+        # Test Case: TAG100 - Taggable property removal
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"tagProperty": "/properties/Tags"},
+            },
+            [],
+            {
+                "ensure_tagging_properties_not_removed": {
+                    GuardRuleResult(
+                        check_id="TAG100",
+                        message="tagging properties MUST NOT be removed from schema",
+                        path="/tagging/removed",
+                    )
+                }
+            },
+            [],
+        ),
+        # Test Case: TAG102 - TagProperty path changed
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/TagList"},
+            },
+            [],
+            {
+                "ensure_taggable_not_changed": {
+                    GuardRuleResult(
+                        check_id="TAG104",
+                        message="tagging.tagProperty MUST NOT change",
+                        path="/tagging/changed/0/old_value",
+                    )
+                }
+            },
+            [],
+        ),
+        # Test Case: TAG100 - TagProperty removal
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True},
+            },
+            [],
+            {
+                "ensure_tagging_properties_not_removed": {
+                    GuardRuleResult(
+                        check_id="TAG100",
+                        message="tagging properties MUST NOT be removed from schema",
+                        path="/tagging/removed",
+                    )
+                }
+            },
+            [],
+        ),
+        # Test Case: Adding tagging metadata (should be compliant)
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            [],
+            {},
+            [],
+        ),
+    ],
+)
+def test_exec_compliance_stateful_tagging_backward_compatibility(
+    previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
+):
+    """Test tagging backward compatibility guard rules (TAG100-TAG104)"""
+    payload: Stateful = Stateful(
+        previous_schema=previous_schema,
+        current_schema=current_schema,
+        rules=collected_rules,
+        print_diff_to_console=False,
+    )
+    compliance_result = exec_compliance(payload)[0]
+
+    # If no violations expected, assert non_compliant is empty
+    if not non_compliant_rules:
+        assert (
+            not compliance_result.non_compliant
+        ), f"Expected no violations but got: {compliance_result.non_compliant}"
+
+    # Check each expected violation
+    for non_compliant_rule, non_compliant_result in non_compliant_rules.items():
+        assert (
+            non_compliant_rule in compliance_result.non_compliant
+        ), f"Expected rule '{non_compliant_rule}' not found in violations"
+        assert (
+            non_compliant_result == compliance_result.non_compliant[non_compliant_rule]
+        ), f"Mismatch in violations for rule '{non_compliant_rule}'"
