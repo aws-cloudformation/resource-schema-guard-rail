@@ -109,6 +109,35 @@ class GuardRuleSetResult:
             **self.warning,
             **guard_ruleset_result.warning,
         }
+    
+    @property
+    def json(self):
+        return {
+            "compliant": self.compliant,
+            "non_compliant": {
+                rule_name: [
+                    {
+                        "check_id": result.check_id,
+                        "message": result.message,
+                        "path": result.path
+                    }
+                    for result in rule_results
+                ]
+                for rule_name, rule_results in self.non_compliant.items()
+            },
+            "warning": {
+                rule_name: [
+                    {
+                        "check_id": result.check_id,
+                        "message": result.message,
+                        "path": result.path
+                    }
+                    for result in rule_results
+                ]
+                for rule_name, rule_results in self.warning.items()
+            },
+            "skipped": self.skipped
+        }
 
     def display(self):
         """Displays a table with compliance results."""

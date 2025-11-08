@@ -58,7 +58,7 @@ def argument_validation(
 def setup_args():  # pylint: disable=C0116
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument("--version", action="version", version="v0.1alpha")
+    parser.add_argument("--version", action="version", version="v0.1alpha3")
 
     parser.add_argument(
         "--schema",
@@ -84,6 +84,14 @@ def setup_args():  # pylint: disable=C0116
         action="store_true",
         default=False,
         help="Should specify schema for CFN compliance evaluation (path or plain value)",
+    )
+    
+    parser.add_argument(
+        "--json",
+        dest="json",
+        action="store_true",
+        default=False,
+        help="Should output json format",
     )
 
     parser.add_argument(

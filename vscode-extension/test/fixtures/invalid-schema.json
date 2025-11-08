@@ -1,0 +1,45 @@
+{
+  "typeName": "AWS::Example::InvalidResource",
+  "description": "An invalid example resource schema with known violations",
+  "sourceUrl": "https://github.com/example/resource",
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "The name of the resource"
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string"
+          },
+          "Value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Name"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "example:CreateResource"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "example:GetResource"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "example:DeleteResource"
+      ]
+    }
+  }
+}
