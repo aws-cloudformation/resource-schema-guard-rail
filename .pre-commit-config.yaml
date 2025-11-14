@@ -34,6 +34,18 @@ repos:
   - id: black
     additional_dependencies: ['click==8.0.4']
 
+- repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v8.56.0
+  hooks:
+  - id: eslint
+    args: [--fix]
+    types: []
+    files: ^vscode-extension/.*\.(js|ts)$
+    additional_dependencies:
+      - eslint@8.56.0
+      - '@typescript-eslint/parser@6.21.0'
+      - '@typescript-eslint/eslint-plugin@6.21.0'
+
 - repo: https://github.com/pycqa/pylint
   rev: v2.15.10
   hooks:
@@ -81,3 +93,19 @@ repos:
     language: system
     pass_filenames: false
     always_run: true
+  - id: vscode-extension-install
+    name: vscode-extension-install
+    description: Install VS Code extension dependencies
+    entry: npm --prefix vscode-extension install
+    language: system
+    pass_filenames: false
+    always_run: true
+    files: ^vscode-extension/(package\.json|package-lock\.json)
+  - id: vscode-extension-tests
+    name: vscode-extension-tests
+    description: Run VS Code extension unit tests with coverage (includes compilation)
+    entry: npm --prefix vscode-extension run test:coverage
+    language: system
+    pass_filenames: false
+    always_run: true
+    files: ^vscode-extension/

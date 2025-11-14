@@ -68,6 +68,9 @@ def main(args_in=None):
         )
         compliance_result = invoke(payload)
 
+    if args.json:
+        print([rule_results.json for rule_results in compliance_result])
+
     if args.format:
         display(compliance_result)
     else:
