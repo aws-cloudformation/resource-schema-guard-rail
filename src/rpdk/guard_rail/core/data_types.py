@@ -109,9 +109,10 @@ class GuardRuleSetResult:
             **self.warning,
             **guard_ruleset_result.warning,
         }
-    
+
     @property
     def json(self):
+        """Translates raw output into JSON document"""
         return {
             "compliant": self.compliant,
             "non_compliant": {
@@ -119,7 +120,7 @@ class GuardRuleSetResult:
                     {
                         "check_id": result.check_id,
                         "message": result.message,
-                        "path": result.path
+                        "path": result.path,
                     }
                     for result in rule_results
                 ]
@@ -130,13 +131,13 @@ class GuardRuleSetResult:
                     {
                         "check_id": result.check_id,
                         "message": result.message,
-                        "path": result.path
+                        "path": result.path,
                     }
                     for result in rule_results
                 ]
                 for rule_name, rule_results in self.warning.items()
             },
-            "skipped": self.skipped
+            "skipped": self.skipped,
         }
 
     def display(self):

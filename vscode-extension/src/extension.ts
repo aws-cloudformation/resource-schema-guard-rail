@@ -10,18 +10,12 @@ import { registerCommands } from './commands';
 let diagnosticProvider: GuardRailDiagnosticProvider | undefined;
 let outputChannel: vscode.OutputChannel | undefined;
 
-/**
- * Extension activation entry point
- * Called when the extension is activated (when a JSON file is opened)
- */
 export function activate(context: vscode.ExtensionContext) {
-  // Create output channel for logging
   outputChannel = vscode.window.createOutputChannel('Resource Schema Guard Rail');
   outputChannel.appendLine('Resource Schema Guard Rail extension is now active');
 
-  // Get workspace root
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-  
+
   if (!workspaceRoot) {
     vscode.window.showErrorMessage(
       'Guard Rail requires a workspace to be opened. Please open a folder.'
@@ -36,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerCommands(context, diagnosticProvider, outputChannel);
 
   // Set up document event listeners
-  
+
   // onDidOpen: Validate when a document is opened
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument((document) => {
@@ -56,6 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // onDidChange: Validate when a document changes (with debouncing)
+  // delay validation until author stops typing
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
       const document = event.document;
@@ -84,10 +79,6 @@ export function activate(context: vscode.ExtensionContext) {
   outputChannel.appendLine('Guard Rail extension initialization complete');
 }
 
-/**
- * Extension deactivation entry point
- * Called when the extension is deactivated
- */
 export function deactivate() {
   // Clean up diagnostic collection, status bar item, and cancel pending validations
   if (diagnosticProvider) {

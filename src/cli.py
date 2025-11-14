@@ -67,19 +67,10 @@ def main(args_in=None):
             rules=collected_rules,
         )
         compliance_result = invoke(payload)
-    
+
     if args.json:
-        import json
-        import sys
-        json_output = [rule_results.json for rule_results in compliance_result]
-        sys.stderr.write(f"DEBUG: json_output type: {type(json_output)}\n")
-        sys.stderr.write(f"DEBUG: json_output: {json_output}\n")
-        json_string = json.dumps(json_output)
-        sys.stderr.write(f"DEBUG: json_string type: {type(json_string)}\n")
-        print(json_string)
-        sys.stderr.write("DEBUG: After print\n")
-        return
-    
+        print([rule_results.json for rule_results in compliance_result])
+
     if args.format:
         display(compliance_result)
     else:

@@ -7,7 +7,7 @@ import { spawn } from 'child_process';
 import { GuardRailResult } from './types';
 
 /**
- * Executes the Guard Rail CLI tool and parses results
+ * Executes the resource-schema-guard-rail cli and parses results
  */
 export class GuardRailExecutor {
   private workspaceRoot: string;
@@ -84,7 +84,7 @@ export class GuardRailExecutor {
       // Set up 30-second timeout
       const timeout = setTimeout(() => {
         isTimedOut = true;
-        this.logError(`Process timed out after 30 seconds (PID: ${childProcess.pid})`);
+        this.logError(`Process timed out after 10 seconds (PID: ${childProcess.pid})`);
 
         // Try graceful termination first
         childProcess.kill('SIGTERM');
@@ -98,10 +98,10 @@ export class GuardRailExecutor {
         }, 2000);
 
         reject(new Error(
-          'Guard Rail CLI execution timed out after 30 seconds. ' +
+          'Guard Rail CLI execution timed out after 10 seconds. ' +
           'The schema file may be too large or complex to validate.'
         ));
-      }, 30000);
+      }, 10000);
 
       // Collect stdout with streaming
       childProcess.stdout.on('data', (data: Buffer) => {
@@ -149,62 +149,32 @@ export class GuardRailExecutor {
         }
 
         // Parse JSON output
-        // Note: The CLI outputs JSON to stderr when using --json flag
+        let trimmedOutput = stdout.trim();
+
+        // If stdout is empty, try stderr (CLI outputs JSON to stderr)
+        if (!trimmedOutput) {
+          this.log('stdout is empty, checking stderr for JSON output');
+          trimmedOutput = stderr.trim();
+        }
+
+        this.log(`Received output (${trimmedOutput.length} characters)`);
+
+        if (!trimmedOutput) {
+          this.logError('CLI produced no output');
+          reject(new Error(
+            'Guard Rail CLI produced no output. ' +
+            'Please ensure the guard-rail package is installed (pip install resource-schema-guard-rail).'
+          ));
+          return;
+        }
+
         try {
-          let trimmedOutput = stdout.trim();
-          
-          // If stdout is empty, try stderr (CLI outputs JSON to stderr)
-          if (!trimmedOutput) {
-            this.log('stdout is empty, checking stderr for JSON output');
-            trimmedOutput = stderr.trim();
-          }
-          
-          this.log(`Received output (${trimmedOutput.length} characters)`);
+          // Convert Python dictionary format to JSON (single quotes to double quotes)
+          const jsonOutput = trimmedOutput
+            .replace(/'/g, '"')
 
-          if (!trimmedOutput) {
-            this.logError('CLI produced no output');
-            reject(new Error(
-              'Guard Rail CLI produced no output. ' +
-              'Please ensure the guard-rail package is installed (pip install resource-schema-guard-rail).'
-            ));
-            return;
-          }
-
-          // Attempt to parse JSON
-          let results: GuardRailResult[];
-          try {
-            // Try parsing as-is first
-            results = JSON.parse(trimmedOutput) as GuardRailResult[];
-            this.log('Successfully parsed JSON output');
-          } catch (firstError) {
-            // If that fails, try converting Python dict syntax to JSON
-            // Replace single quotes with double quotes (but not inside strings)
-            this.log('First parse failed, attempting Python dict conversion');
-            try {
-              const jsonified = trimmedOutput
-                .replace(/'/g, '"')
-                .replace(/True/g, 'true')
-                .replace(/False/g, 'false')
-                .replace(/None/g, 'null');
-              
-              results = JSON.parse(jsonified) as GuardRailResult[];
-              this.log('Successfully parsed after Python dict conversion');
-            } catch (secondError) {
-              // Both parsing attempts failed
-              const preview = trimmedOutput.substring(0, 200);
-              const hasMore = trimmedOutput.length > 200 ? '...' : '';
-              this.logError('Failed to parse JSON output after conversion', secondError as Error);
-              this.log(`Output preview: ${preview}${hasMore}`);
-
-              reject(new Error(
-                `Failed to parse Guard Rail output as JSON. ` +
-                `The CLI may have produced invalid output.\n` +
-                `Parse error: ${secondError instanceof Error ? secondError.message : 'Unknown error'}\n` +
-                `Output preview: ${preview}${hasMore}`
-              ));
-              return;
-            }
-          }
+          const results = JSON.parse(jsonOutput) as GuardRailResult[];
+          this.log('Successfully parsed JSON output');
 
           // Validate the parsed structure
           if (!Array.isArray(results)) {
@@ -219,10 +189,16 @@ export class GuardRailExecutor {
           this.log(`Validation completed successfully with ${results.length} result(s)`);
           resolve(results);
         } catch (error) {
-          this.logError('Unexpected error processing output', error as Error);
+          const preview = trimmedOutput.substring(0, 200);
+          const hasMore = trimmedOutput.length > 200 ? '...' : '';
+          this.logError('Failed to parse JSON output', error as Error);
+          this.log(`Output preview: ${preview}${hasMore}`);
+
           reject(new Error(
-            `Unexpected error processing Guard Rail output: ` +
-            `${error instanceof Error ? error.message : 'Unknown error'}`
+            `Failed to parse Guard Rail output as JSON. ` +
+            `The CLI may have produced invalid output.\n` +
+            `Parse error: ${error instanceof Error ? error.message : 'Unknown error'}\n` +
+            `Output preview: ${preview}${hasMore}`
           ));
         }
       });

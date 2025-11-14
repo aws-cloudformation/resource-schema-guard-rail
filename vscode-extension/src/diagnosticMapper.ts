@@ -1,9 +1,11 @@
 /**
  * Diagnostic Mapper
  * Converts Guard Rail validation results to VS Code diagnostics
+ * Imports: need to import json-parser to provide better highlihgting accuracy
  */
 
 import * as vscode from 'vscode';
+import * as jsonc from 'jsonc-parser';
 import { GuardRailResult, GuardRuleResult } from './types';
 
 /**
@@ -16,9 +18,7 @@ export class DiagnosticMapper {
     this.outputChannel = outputChannel;
   }
 
-  /**
-   * Logs a message to the output channel if available
-   */
+
   private log(message: string): void {
     if (this.outputChannel) {
       this.outputChannel.appendLine(`[DiagnosticMapper] ${message}`);
@@ -37,44 +37,24 @@ export class DiagnosticMapper {
 
     for (const result of results) {
       // Process non-compliant rules (errors)
-      const nonCompliantCount = Object.keys(result.non_compliant).length;
-      if (nonCompliantCount > 0) {
-        this.log(`Processing ${nonCompliantCount} non-compliant rule(s)`);
-      }
-      
-      for (const [ruleName, ruleResults] of Object.entries(result.non_compliant)) {
-        for (const ruleResult of ruleResults) {
-          const lineNumber = this.extractLineNumber(ruleResult.path, document);
-          this.log(`  Error: ${ruleName} at line ${lineNumber + 1} (path: ${ruleResult.path})`);
-          const diagnostic = this.createDiagnostic(
-            ruleName,
-            ruleResult,
-            lineNumber,
-            vscode.DiagnosticSeverity.Error
-          );
-          diagnostics.push(diagnostic);
-        }
-      }
+      this.processRuleResults(
+        result.non_compliant,
+        document,
+        diagnostics,
+        vscode.DiagnosticSeverity.Error,
+        'non-compliant',
+        'Error'
+      );
 
       // Process warning rules (warnings)
-      const warningCount = Object.keys(result.warning).length;
-      if (warningCount > 0) {
-        this.log(`Processing ${warningCount} warning rule(s)`);
-      }
-      
-      for (const [ruleName, ruleResults] of Object.entries(result.warning)) {
-        for (const ruleResult of ruleResults) {
-          const lineNumber = this.extractLineNumber(ruleResult.path, document);
-          this.log(`  Warning: ${ruleName} at line ${lineNumber + 1} (path: ${ruleResult.path})`);
-          const diagnostic = this.createDiagnostic(
-            ruleName,
-            ruleResult,
-            lineNumber,
-            vscode.DiagnosticSeverity.Warning
-          );
-          diagnostics.push(diagnostic);
-        }
-      }
+      this.processRuleResults(
+        result.warning,
+        document,
+        diagnostics,
+        vscode.DiagnosticSeverity.Warning,
+        'warning',
+        'Warning'
+      );
     }
 
     this.log(`Created ${diagnostics.length} diagnostic(s)`);
@@ -82,76 +62,143 @@ export class DiagnosticMapper {
   }
 
   /**
-   * Extracts line number from a JSON path by searching the document
-   * @param path JSON path string (e.g., "/properties/Tags" or "/handlers/create/permissions[0]")
+   * Processes rule results and adds diagnostics to the array
+   * @param rules Object containing rule results
+   * @param document The text document being validated
+   * @param diagnostics Array to add diagnostics to
+   * @param severity Diagnostic severity level
+   * @param resultType Type of result (e.g., 'non-compliant', 'warning')
+   * @param logLabel Label for logging (e.g., 'Error', 'Warning')
+   */
+  private processRuleResults(
+    rules: Record<string, GuardRuleResult[]>,
+    document: vscode.TextDocument,
+    diagnostics: vscode.Diagnostic[],
+    severity: vscode.DiagnosticSeverity,
+    resultType: string,
+    logLabel: string
+  ): void {
+    const ruleCount = Object.keys(rules).length;
+    if (ruleCount > 0) {
+      this.log(`Processing ${ruleCount} ${resultType} rule(s)`);
+    }
+
+    for (const [ruleName, ruleResults] of Object.entries(rules)) {
+      for (const ruleResult of ruleResults) {
+        const lineNumber = this.extractLineNumber(ruleResult.path, document);
+        this.log(`  ${logLabel}: ${ruleName} at line ${lineNumber + 1} (path: ${ruleResult.path})`);
+        const diagnostic = this.createDiagnostic(
+          ruleName,
+          ruleResult,
+          lineNumber,
+          severity
+        );
+        diagnostics.push(diagnostic);
+      }
+    }
+  }
+
+  /**
+   * Extracts line number from a JSON path using proper JSON parsing with $ref resolution
+   * @param path JSON path string (e.g., "/properties/Tags" or "/properties/StageDescription/Tags")
    * @param document The text document to search
    * @returns Line number (0-indexed) where the property is found, or 0 if not found
    */
   extractLineNumber(path: string, document: vscode.TextDocument): number {
-    // Handle empty paths - default to line 0 (schema-level issues)
-    if (!path || path.trim() === '') {
+    if (!path?.trim()) {
       return 0;
     }
 
-    // Remove leading slash and split into path segments
-    const normalizedPath = path.startsWith('/') ? path.substring(1) : path;
-    
-    if (!normalizedPath) {
+    const text = document.getText();
+    // Remove leading slash and split into segments, converting numeric strings to numbers
+    const pathSegments: (string | number)[] = path
+      .replace(/^\//, '')
+      .split('/')
+      .filter((segment) => segment !== '')
+      .map((segment) => {
+        const numericValue = parseInt(segment, 10);
+        return !isNaN(numericValue) && segment === numericValue.toString()
+          ? numericValue
+          : segment;
+      });
+
+    if (pathSegments.length === 0) {
       return 0;
     }
 
-    // Split path into segments, handling array indices
-    // Example: "properties/Tags" or "handlers/create/permissions[0]"
-    const segments = normalizedPath.split('/');
-    
-    if (segments.length === 0) {
-      return 0;
-    }
+    try {
+      // need to parse document as json as we can do more precise traversal
+      // path gives us segments to retrieve
+      // jsonc lets us get line numbers from a document
+      const rootDocument = jsonc.parseTree(text);
 
-    // Get the last segment as the property to search for
-    // Remove array indices like [0] from the segment
-    let lastSegment = segments[segments.length - 1];
-    lastSegment = lastSegment.replace(/\[\d+\]$/, '');
-
-    if (!lastSegment) {
-      return 0;
-    }
-
-    // Search for the property in the document
-    // Look for patterns like: "propertyName": or "propertyName" :
-    const documentText = document.getText();
-    const lines = documentText.split('\n');
-
-    // Try to find the property with quotes
-    const quotedPattern = new RegExp(`"${this.escapeRegex(lastSegment)}"\\s*:`);
-    
-    for (let i = 0; i < lines.length; i++) {
-      if (quotedPattern.test(lines[i])) {
-        return i;
-      }
-    }
-
-    // If not found with the last segment, try searching for intermediate segments
-    // This helps with nested paths
-    for (let segmentIndex = segments.length - 1; segmentIndex >= 0; segmentIndex--) {
-      let segment = segments[segmentIndex];
-      segment = segment.replace(/\[\d+\]$/, '');
-      
-      if (!segment) {
-        continue;
+      if (!rootDocument) {
+        this.log('Failed to parse JSON document');
+        return 0;
       }
 
-      const pattern = new RegExp(`"${this.escapeRegex(segment)}"\\s*:`);
-      
-      for (let i = 0; i < lines.length; i++) {
-        if (pattern.test(lines[i])) {
-          return i;
+      // Navigate through path, resolving $refs as we encounter them
+      const node = this.findSubschema(rootDocument, pathSegments);
+
+      if (node) {
+        const position = document.positionAt(node.offset);
+        this.log(`Found path "${path}" at line ${position.line + 1}`);
+        return position.line;
+      }
+
+      this.log(`Path "${path}" not found in document`);
+    } catch (error) {
+      this.log(`Error parsing JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return 0;
+  }
+
+  /**
+   * Navigates through path segments, resolving $ref references as encountered
+   * @param root The parsed JSON tree root
+   * @param pathSegments Array of path segments to navigate
+   * @returns The final node if found, null otherwise
+   */
+  private findSubschema(
+    root: jsonc.Node,
+    pathSegments: (string | number)[]
+  ): jsonc.Node | null {
+    let currentNode: jsonc.Node | undefined = root;
+    const currentPath: (string | number)[] = [];
+
+    for (const segment of pathSegments) {
+      currentPath.push(segment);
+
+      // Try to find the next node directly
+      currentNode = jsonc.findNodeAtLocation(currentNode, [segment]);
+      if (!currentNode) return null;
+
+      // Check if this node has a $ref and if so grab subschema and return its definition
+      const refNode = jsonc.findNodeAtLocation(currentNode, ['$ref']);
+      if (refNode?.value) {
+        const refValue = refNode.value as string;
+
+        // Handle internal references like "#/definitions/Description"
+        if (refValue.startsWith('#/')) {
+          const refPath = refValue.substring(2);
+          const refSegments = refPath.split('/');
+
+          this.log(`Resolving $ref at ${currentPath.join('/')}: ${refValue}`);
+
+          // Resolve the reference - this gives us the schema definition
+          const refTarget = jsonc.findNodeAtLocation(root, refSegments);
+          if (!refTarget) return null;
+
+          // If the ref target is a schema object with properties, navigate into properties
+          // This handles cases like {"type": "object", "properties": {...}}
+          const propertiesNode = jsonc.findNodeAtLocation(refTarget, ['properties']);
+          currentNode = propertiesNode || refTarget;
         }
       }
     }
 
-    // Fallback to line 0 if property not found
-    return 0;
+    return currentNode || null;
   }
 
   /**
@@ -181,11 +228,7 @@ export class DiagnosticMapper {
     const message = `(${result.check_id}) ${result.message}`;
 
     // Create the diagnostic
-    const diagnostic = new vscode.Diagnostic(
-      range,
-      message,
-      severity
-    );
+    const diagnostic = new vscode.Diagnostic(range, message, severity);
 
     // Set the source to identify this as a Guard Rail diagnostic
     diagnostic.source = 'guard-rail';
@@ -194,14 +237,5 @@ export class DiagnosticMapper {
     diagnostic.code = ruleName;
 
     return diagnostic;
-  }
-
-  /**
-   * Escapes special regex characters in a string
-   * @param str String to escape
-   * @returns Escaped string safe for use in RegExp
-   */
-  private escapeRegex(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }

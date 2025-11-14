@@ -207,8 +207,8 @@ describe('DiagnosticProvider', () => {
       const fileSize = 500 * 1024; // 500KB
       const fileSizeLimit = 1024 * 1024; // 1MB
 
-      const shouldSkip = document.isUntitled || 
-                        document.uri.scheme !== 'file' || 
+      const shouldSkip = document.isUntitled ||
+                        document.uri.scheme !== 'file' ||
                         fileSize > fileSizeLimit;
       assert.strictEqual(shouldSkip, false);
     });
@@ -227,7 +227,7 @@ function it(name: string, fn: (done?: () => void) => void) {
     // Async test with done callback
     let completed = false;
     const done = () => { completed = true; };
-    
+
     try {
       fn(done);
       // Wait a bit for async operations

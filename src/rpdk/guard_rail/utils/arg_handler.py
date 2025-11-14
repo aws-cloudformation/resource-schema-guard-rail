@@ -85,7 +85,7 @@ def setup_args():  # pylint: disable=C0116
         default=False,
         help="Should specify schema for CFN compliance evaluation (path or plain value)",
     )
-    
+
     parser.add_argument(
         "--json",
         dest="json",

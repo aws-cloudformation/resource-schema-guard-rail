@@ -1,6 +1,7 @@
 /**
  * Command Handlers
  * Registers and implements VS Code commands for Guard Rail
+ * > Guard Rail: Validate Schema
  */
 
 import * as vscode from 'vscode';
@@ -18,13 +19,13 @@ export function registerCommands(
   outputChannel: vscode.OutputChannel
 ): void {
   outputChannel.appendLine('[Commands] Registering commands');
-  
+
   // Register "guard-rail.validateSchema" command
   const validateCommand = vscode.commands.registerCommand(
     'guard-rail.validateSchema',
     async () => {
       outputChannel.appendLine('[Commands] Validate Schema command triggered');
-      
+
       // Get the active text editor window
       const editor = vscode.window.activeTextEditor;
 
