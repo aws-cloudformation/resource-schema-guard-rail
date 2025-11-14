@@ -30,10 +30,10 @@ async function runTests() {
     try {
       // Clear the module cache to ensure fresh test execution
       delete require.cache[testFile];
-      
+
       // Require the test file which will execute the tests
       require(testFile);
-      
+
       // Check if any test failed
       if (process.exitCode === 1) {
         hasFailures = true;

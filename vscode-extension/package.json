@@ -33,6 +33,7 @@
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile",
         "test": "node ./out/test/runTest.js",
+        "pretest:coverage": "npm run compile",
         "test:coverage": "c8 --reporter=text --reporter=lcov --reporter=html --exclude='out/test/**' --check-coverage --lines 65 --functions 90 --branches 80 node ./out/test/runTest.js"
     },
     "dependencies": {
