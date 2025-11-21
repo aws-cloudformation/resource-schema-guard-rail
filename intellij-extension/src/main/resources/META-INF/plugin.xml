@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+  <id>com.amazon.guardrail.intellij</id>
+  <name>Resource Schema Guard Rail</name>
+  <version>1.0.0</version>
+  <vendor>Amazon</vendor>
+  
+  <description>
+    <![CDATA[
+    Real-time validation for CloudFormation resource schema files using the Resource Schema Guard Rail CLI tool.
+    
+    This plugin provides automatic validation of JSON schema files with inline diagnostics,
+    status bar indicators, and integration with IntelliJ's inspection system.
+    ]]>
+  </description>
+  
+  <!-- Plugin dependencies -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.json</depends>
+  
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- External Annotator for JSON files -->
+    <externalAnnotator
+        language="JSON"
+        implementationClass="com.amazon.guardrail.GuardRailAnnotator"/>
+    
+    <!-- Status Bar Widget Factory -->
+    <statusBarWidgetFactory
+        id="GuardRailStatusWidget"
+        implementation="com.amazon.guardrail.GuardRailStatusWidgetFactory"/>
+    
+    <!-- Tool Window for Guard Rail Output -->
+    <toolWindow
+        id="GuardRail Output"
+        anchor="bottom"
+        factoryClass="com.amazon.guardrail.GuardRailOutputToolWindowFactory"/>
+    
+    <!-- Line Marker Provider for gutter icons -->
+    <codeInsight.lineMarkerProvider
+        language="JSON"
+        implementationClass="com.amazon.guardrail.GuardRailGutterIconProvider"/>
+  </extensions>
+  
+  <actions>
+    <!-- Manual Validation Action -->
+    <action
+        id="GuardRail.ValidateSchema"
+        class="com.amazon.guardrail.ValidateSchemaAction"
+        text="Validate Schema with Guard Rail"
+        description="Run Guard Rail validation on the current JSON schema file">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+    </action>
+  </actions>
+</idea-plugin>
