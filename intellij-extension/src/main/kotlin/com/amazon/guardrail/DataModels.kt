@@ -1,8 +1,6 @@
 package com.amazon.guardrail
 
 import com.google.gson.annotations.SerializedName
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.Alarm
 
 /**
  * Represents a single rule violation from Guard Rail validation.
