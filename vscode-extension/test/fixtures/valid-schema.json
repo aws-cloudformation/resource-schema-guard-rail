@@ -1,0 +1,52 @@
+{
+    "typeName": "AWS::Example::Resource",
+    "description": "A valid example resource schema",
+    "sourceUrl": "https://github.com/example/resource",
+    "properties": {
+        "Name": {
+            "type": "string",
+            "description": "The name of the resource"
+        },
+        "Tags": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Key": {
+                        "type": "string"
+                    },
+                    "Value": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "primaryIdentifier": [
+        "/properties/Name"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "example:CreateResource",
+                "example:TagResource"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "example:GetResource"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "example:UpdateResource",
+                "example:TagResource"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "example:DeleteResource"
+            ]
+        }
+    }
+}

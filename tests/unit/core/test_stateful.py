@@ -649,6 +649,44 @@ def test_schema_diff_complex_property_mutations(
 
 
 @pytest.mark.parametrize(
+    "schema_variant1, schema_variant2",
+    [
+        (
+            {
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagUpdatable": True,
+                    "cloudFormationSystemTags": False,
+                    "tagProperty": "/properties/Tags",
+                    "permissions": [
+                        "test:TagResource",
+                        "test:UntagResource",
+                        "test:ListTagsForResource",
+                    ],
+                }
+            },
+            {},
+        ),
+    ],
+)
+def test_schema_diff_complex_property_mutations2(schema_variant1, schema_variant2):
+    """
+    Test that tagging removal is now tracked (updated for tagging backward compatibility feature)
+
+    Args:
+        schema_variant1:
+        schema_variant2:
+        expected_diff:
+        expected_diff_negative:
+    """
+    results = schema_diff(schema_variant1, schema_variant2)
+    print(results)
+    # Tagging removal should now be tracked
+    assert results == {"tagging": {"removed": [True]}}
+
+
+@pytest.mark.parametrize(
     "schema_variant1, schema_variant2, expected_diff, expected_diff_negative",
     [
         # Test Case #1: Type changed inside nested variable
@@ -1089,3 +1127,135 @@ def test_schema_diff_show_correct_required_source(
     """
     assert expected_diff == schema_diff(schema_variant2, schema_variant1)
     assert expected_diff_negative == schema_diff(schema_variant1, schema_variant2)
+
+
+@pytest.mark.parametrize(
+    "schema_variant1, schema_variant2, expected_diff",
+    [
+        # Test Case: Tagging section removal (entire object removed)
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagUpdatable": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+            },
+            {"tagging": {"removed": [True]}},
+        ),
+        # Test Case: Taggable property changed from true to false
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": False,
+                    "tagOnCreate": False,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "tagging": {
+                    "changed": [
+                        {
+                            "property": "/tagging/taggable",
+                            "old_value": True,
+                            "new_value": False,
+                        },
+                        {
+                            "property": "/tagging/tagOnCreate",
+                            "old_value": True,
+                            "new_value": False,
+                        },
+                    ]
+                }
+            },
+        ),
+        # Test Case: TagProperty path changed
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/TagList"},
+            },
+            {
+                "tagging": {
+                    "changed": [
+                        {
+                            "property": "/tagging/tagProperty",
+                            "old_value": "/properties/Tags",
+                            "new_value": "/properties/TagList",
+                        }
+                    ]
+                }
+            },
+        ),
+        # Test Case: Individual tagging properties removed (tagging becomes empty)
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {},
+            },
+            {"tagging": {"removed": ["/tagging/taggable", "/tagging/tagProperty"]}},
+        ),
+        # Test Case: Tagging addition (entire object added)
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": True, "tagProperty": "/properties/Tags"},
+            },
+            {"tagging": {"added": [True]}},
+        ),
+    ],
+)
+def test_schema_diff_tagging_metadata_changes(
+    schema_variant1, schema_variant2, expected_diff
+):
+    """
+    Test that tagging metadata changes are correctly tracked in schema diffs.
+
+    Args:
+        schema_variant1: Previous schema state
+        schema_variant2: Current schema state
+        expected_diff: Expected diff output
+    """
+    actual_diff = schema_diff(
+        schema_variant1, schema_variant2, print_diff_to_console=False
+    )
+
+    # Check that all expected keys are present in actual diff
+    for key in expected_diff:
+        assert key in actual_diff, f"Expected key '{key}' not found in diff"
+        assert actual_diff[key] == expected_diff[key], f"Mismatch for key '{key}'"

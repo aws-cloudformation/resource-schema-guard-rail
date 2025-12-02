@@ -520,3 +520,68 @@ rule ensure_maximum_not_contracted when maximum exists
         >>
     }
 }
+
+# Tagging Backward Compatibility Rules
+
+rule ensure_tagging_properties_not_removed when tagging exists
+{
+    tagging.removed !exists
+    <<
+    {
+        "result": "NON_COMPLIANT",
+        "check_id": "TAG100",
+        "message": "tagging properties MUST NOT be removed from schema"
+    }
+    >>
+}
+
+rule ensure_taggable_not_changed when tagging exists
+{
+    when tagging.changed exists {
+        tagging.changed[*] {
+            when this.property == "/tagging/taggable" {
+                this.old_value == true
+                this.new_value != false
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "TAG101",
+                    "message": "tagging.taggable MUST NOT change from true to false"
+                }
+                >>
+            }
+            when this.property == "/tagging/tagOnCreate" {
+                this.old_value == true
+                this.new_value != false
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "TAG102",
+                    "message": "tagging.tagOnCreate MUST NOT change from true to false"
+                }
+                >>
+            }
+            when this.property == "/tagging/cloudFormationSystemTags" {
+                this.old_value == true
+                this.new_value != false
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "TAG103",
+                    "message": "tagging.cloudFormationSystemTags MUST NOT change from true to false"
+                }
+                >>
+            }
+            when this.property == "/tagging/tagProperty" {
+                this.old_value == this.new_value
+                <<
+                {
+                    "result": "NON_COMPLIANT",
+                    "check_id": "TAG104",
+                    "message": "tagging.tagProperty MUST NOT change"
+                }
+                >>
+            }
+        }
+    }
+}

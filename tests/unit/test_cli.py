@@ -66,6 +66,13 @@ COMPLIANCE_RESULT = GuardRuleSetResult(
                 "--stateful",
             ]
         ),
+        (
+            [
+                "--schema",
+                "file://path1",
+                "--json",
+            ]
+        ),
     ],
 )
 def test_main_cli(
