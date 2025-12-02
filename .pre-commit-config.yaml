@@ -109,3 +109,17 @@ repos:
     pass_filenames: false
     always_run: true
     files: ^vscode-extension/
+  - id: intellij-plugin-format
+    name: intellij-plugin-format
+    description: Format IntelliJ plugin test code with ktlint
+    entry: bash -c 'cd intellij-extension && ./gradlew ktlintTestSourceSetFormat'
+    language: system
+    pass_filenames: false
+    files: ^intellij-extension/src/test/.*\.kt$
+  - id: intellij-plugin-build
+    name: intellij-plugin-build
+    description: Build IntelliJ plugin (includes tests, validation, and creates distribution)
+    entry: bash -c 'cd intellij-extension && ./gradlew clean build'
+    language: system
+    pass_filenames: false
+    files: ^intellij-extension/.*\.(kt|kts)$
