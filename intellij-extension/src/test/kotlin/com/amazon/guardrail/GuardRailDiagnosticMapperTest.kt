@@ -4,19 +4,19 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.json.psi.JsonFile
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiFile
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
+import org.testng.Assert.assertEquals
+import org.testng.Assert.assertTrue
+import org.testng.annotations.BeforeMethod
+import org.testng.annotations.Test
 
 class GuardRailDiagnosticMapperTest {
 
     private lateinit var mapper: GuardRailDiagnosticMapper
     private lateinit var mockFile: PsiFile
 
-    @Before
+    @BeforeMethod
     fun setup() {
         mapper = GuardRailDiagnosticMapper()
         mockFile = mock(PsiFile::class.java)
@@ -50,11 +50,11 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(1, result.size)
-        assertEquals("[R001] Test error", result[0].description)
-        assertEquals(ProblemHighlightType.ERROR, result[0].highlightType)
-        assertEquals("TestRule", result[0].ruleName)
-        assertEquals("/properties/test", result[0].violation.path)
+        assertEquals(result.size, 1)
+        assertEquals(result[0].description, "[R001] Test error")
+        assertEquals(result[0].highlightType, ProblemHighlightType.ERROR)
+        assertEquals(result[0].ruleName, "TestRule")
+        assertEquals(result[0].violation.path, "/properties/test")
     }
 
     @Test
@@ -72,10 +72,10 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(1, result.size)
-        assertEquals("[W001] Test warning", result[0].description)
-        assertEquals(ProblemHighlightType.WARNING, result[0].highlightType)
-        assertEquals("WarningRule", result[0].ruleName)
+        assertEquals(result.size, 1)
+        assertEquals(result[0].description, "[W001] Test warning")
+        assertEquals(result[0].highlightType, ProblemHighlightType.WARNING)
+        assertEquals(result[0].ruleName, "WarningRule")
     }
 
     @Test
@@ -92,9 +92,9 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(2, result.size)
-        assertEquals("[E001] Error 1", result[0].description)
-        assertEquals("[E002] Error 2", result[1].description)
+        assertEquals(result.size, 2)
+        assertEquals(result[0].description, "[E001] Error 1")
+        assertEquals(result[1].description, "[E002] Error 2")
     }
 
     @Test
@@ -109,7 +109,7 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(2, result.size)
+        assertEquals(result.size, 2)
         assertTrue(result.any { it.ruleName == "Rule1" })
         assertTrue(result.any { it.ruleName == "Rule2" })
     }
@@ -127,11 +127,11 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(2, result.size)
+        assertEquals(result.size, 2)
         val errors = result.filter { it.highlightType == ProblemHighlightType.ERROR }
         val warnings = result.filter { it.highlightType == ProblemHighlightType.WARNING }
-        assertEquals(1, errors.size)
-        assertEquals(1, warnings.size)
+        assertEquals(errors.size, 1)
+        assertEquals(warnings.size, 1)
     }
 
     @Test
@@ -145,20 +145,20 @@ class GuardRailDiagnosticMapperTest {
 
         val result = mapper.mapResults(cliOutput, mockFile)
 
-        assertEquals(1, result.size)
-        assertEquals("[E001] ", result[0].description)
+        assertEquals(result.size, 1)
+        assertEquals(result[0].description, "[E001] ")
     }
 
     @Test
     fun `extractLineNumber returns 0 for non-JsonFile`() {
         val lineNumber = mapper.extractLineNumber("/properties/test", mockFile)
-        assertEquals(0, lineNumber)
+        assertEquals(lineNumber, 0)
     }
 
     @Test
     fun `extractLineNumber returns 0 for empty path`() {
         val lineNumber = mapper.extractLineNumber("", mockFile)
-        assertEquals(0, lineNumber)
+        assertEquals(lineNumber, 0)
     }
 
     @Test
@@ -170,6 +170,6 @@ class GuardRailDiagnosticMapperTest {
         whenever(mockViewProvider.document).thenReturn(null)
 
         val lineNumber = mapper.extractLineNumber("/properties/test", mockJsonFile)
-        assertEquals(0, lineNumber)
+        assertEquals(lineNumber, 0)
     }
 }

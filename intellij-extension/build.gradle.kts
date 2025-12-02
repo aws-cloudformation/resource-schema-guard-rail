@@ -22,7 +22,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(platform("software.amazon.awssdk:bom:2.20.0"))
     implementation("software.amazon.awssdk:cloudformation")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.testng:testng:7.4.0")
     testImplementation("org.mockito:mockito-core:5.3.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
 }
@@ -37,5 +37,9 @@ tasks {
     patchPluginXml {
         sinceBuild.set("231")
         untilBuild.set("243.*")
+    }
+
+    test {
+        useTestNG()
     }
 }
