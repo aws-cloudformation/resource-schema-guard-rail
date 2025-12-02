@@ -1,0 +1,48 @@
+{
+    "name": "guard-rail-vscode",
+    "displayName": "Resource Schema Guard Rail",
+    "description": "Resource schema validation for VS Code",
+    "version": "0.1.0",
+    "publisher": "guard-rail",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aws-cloudformation/resource-schema-guard-rail.git"
+    },
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Linters"
+    ],
+    "activationEvents": [
+        "onLanguage:json"
+    ],
+    "main": "./out/src/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "guard-rail.validateSchema",
+                "title": "Validate Schema",
+                "category": "Guard Rail"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile",
+        "test": "node ./out/test/runTest.js",
+        "pretest:coverage": "npm run compile",
+        "test:coverage": "c8 --reporter=text --reporter=lcov --reporter=html --exclude='out/test/**' --check-coverage --lines 65 --functions 90 --branches 80 node ./out/test/runTest.js"
+    },
+    "dependencies": {
+        "jsonc-parser": "^3.2.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0",
+        "@types/vscode": "^1.80.0",
+        "c8": "^8.0.0",
+        "typescript": "^5.0.0"
+    }
+}
