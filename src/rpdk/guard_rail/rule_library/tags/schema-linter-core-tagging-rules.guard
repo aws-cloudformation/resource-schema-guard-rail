@@ -137,7 +137,7 @@ rule ensure_property_tags_exists_v2 when tagging exists {
             tagging.tagProperty != /.*\*.*/
             <<
             {
-                "result": "NON_COMPLIANT",
+                "result": "WARNING",
                 "check_id": "TAG019",
                 "message": "`tagProperty` MUST NOT contain wildcards (*) in the path"
             }
