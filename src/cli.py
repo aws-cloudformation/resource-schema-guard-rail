@@ -70,8 +70,7 @@ def main(args_in=None):
 
     if args.json:
         print([rule_results.json for rule_results in compliance_result])
-
-    if args.format:
+    elif args.format:
         display(compliance_result)
     else:
         print(compliance_result)
