@@ -20,7 +20,7 @@ jobs:
         pip install --upgrade wheel twine
     - name: Package project
       run: |
-        python setup.py sdist bdist_wheel
+        python -m build
     - name: Publish distribution 📦 to PyPI (If triggered from release)
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
