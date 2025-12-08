@@ -17,7 +17,8 @@ jobs:
         cache: 'pip'
     - name: Install dependencies
       run: |
-        pip install --upgrade wheel twine
+        pip install --upgrade pip
+        pip install --upgrade wheel twine build
     - name: Package project
       run: |
         python -m build
