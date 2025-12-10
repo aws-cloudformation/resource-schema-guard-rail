@@ -14,9 +14,7 @@
 | |  `PID002` | `"primaryIdentifier MUST contain values"` |
 | `ensure_primary_identifier_is_read_or_create_only` |  `PID003` | `"primaryIdentifier MUST be either readOnly or createOnly"` |
 | `ensure_create_and_read_only_intersection_is_empty` |  `PR001` | `"read/createOnlyProperties MUST NOT have common properties"` |
-| |  `PR002` | `"create/readOnlyProperties MUST NOT have common properties"` |
-| `ensure_write_and_read_only_intersection_is_empty` |  `PR003` | `"read/writeOnlyProperties MUST NOT have common properties"` |
-| |  `PR004` | `"write/readOnlyProperties MUST NOT have common properties"` |
+| `ensure_write_and_read_only_intersection_is_empty` |  `PR004` | `"write/readOnlyProperties MUST NOT have common properties"` |
 | `verify_property_notation` |  `PR005` | `"primaryIdentifier MUST have properties defined in the schema"` |
 | |  `PR006` | `"createOnlyProperties MUST have properties defined in the schema"` |
 | |  `PR007` | `"readOnlyProperties MUST have properties defined in the schema"` |
@@ -54,6 +52,7 @@
 | | `TAG016` | `"'tagging.taggable' MUST be true when Taging Property is defined in the schema"` |
 | | `TAG017` | `"'tagProperty' MUST NOT be a part of 'createOnlyProperties'"` |
 | | `TAG018` | `"'tagProperty' MUST NOT be a part of 'createOnlyProperties' when 'tagUpdatable' is true"` |
+| | `TAG019` | `"\tagProperty\ MUST NOT contain wildcards (*) in the path"` |
 
 #### Permissions
 | Rule Name   |      Check Id      |  Message |
