@@ -60,6 +60,24 @@ $ guard-rail --schema file://path-to-schema-1 --schema file://path-to-schema-2 -
 
 *Additionally, you can specify `format` argument, which will produce a nicely formatted output.
 
+## IDE Experience
+
+Guard Rail provides IDE extensions for real-time validation of CloudFormation resource schema files directly in your development environment. Get instant feedback with inline diagnostics, error highlighting, and validation status as you write your schemas.
+
+### Supported IDEs
+
+#### ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000.svg?style=flat&logo=intellij-idea&logoColor=white) IntelliJ IDEA Plugin
+Real-time validation for IntelliJ IDEA with automatic validation on file open, edit, and save. Features include inline diagnostics, status bar widget, and integration with IntelliJ's Problems tool window.
+
+**[View IntelliJ Extension Documentation →](intellij-extension/README.md)**
+
+#### ![VS Code](https://img.shields.io/badge/Visual_Studio_Code-0078D4.svg?style=flat&logo=visual-studio-code&logoColor=white) VS Code Extension
+Real-time validation for Visual Studio Code with smart debouncing and inline diagnostics. Features include automatic validation, status bar integration, and manual validation commands.
+
+**[View VS Code Extension Documentation →](vscode-extension/README.md)**
+
+Both extensions require the Guard Rail CLI tool to be installed (`pip install resource-schema-guard-rail`).
+
 ### How to install it locally?
 
 Use following commands

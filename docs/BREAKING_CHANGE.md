@@ -17,6 +17,7 @@
 |----------|------------|------|
 |`ensure_primary_identifier_not_changed`|`PID001`|`"primaryIdentifier cannot add more members"`|
 ||`PID002`|`"primaryIdentifier cannot remove members"`|
+||`PID004`|`"primaryIdentifier MUST NOT be part of writeOnlyProperties"`|
 
 ***
 #### Required
@@ -59,6 +60,16 @@
 ||`MI011`|`"only NEWLY ADDED properties can have additional maximum constraint"`|
 ||`MI012`|`"new maximum value cannot be less than the old value"`|
 
+
+***
+#### Tagging Backward Compatibility Rules
+| Rule Name   |      Check Id      |  Message |
+|----------|-------------|------|
+| `ensure_tagging_properties_not_removed` | `TAG100` | `"tagging properties MUST NOT be removed from schema"` |
+| `ensure_taggable_not_changed` | `TAG101` | `"tagging.taggable MUST NOT change from true to false"` |
+| | `TAG102` | `"tagging.tagOnCreate MUST NOT change from true to false"` |
+| | `TAG103` | `"tagging.cloudFormationSystemTags MUST NOT change from true to false"` |
+| | `TAG104` | `"tagging.tagProperty MUST NOT change"` |
 
 ***
 #### Non CFN Enforced Rules
