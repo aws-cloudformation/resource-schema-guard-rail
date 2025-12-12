@@ -11,7 +11,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.ui.JBColor
-import com.intellij.util.IconUtil
+import com.intellij.util.ui.ColorizeProxyIcon
 import java.awt.Color
 import java.awt.Component
 import java.awt.Graphics
@@ -30,8 +30,7 @@ class GuardRailGutterIconProvider : LineMarkerProvider {
     private val orangeIcon: Icon by lazy {
         val baseIcon = AllIcons.RunConfigurations.TestState.Run // type of the icon
         val orangeColor = JBColor(Color(255, 140, 0), Color(255, 165, 0))
-
-        val coloredIcon = IconUtil.colorize(baseIcon, orangeColor)
+        val coloredIcon = ColorizeProxyIcon.Simple(baseIcon, orangeColor)
 
         object : Icon {
             private val text = "Run Checks"
