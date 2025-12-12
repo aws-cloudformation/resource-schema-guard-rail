@@ -21,6 +21,11 @@ repos:
     verbose: true
   - id: no-commit-to-branch
 
+- repo: https://github.com/awslabs/git-secrets
+  rev: master
+  hooks:
+  - id: git-secrets
+
 - repo: https://github.com/pycqa/isort
   rev: 5.12.0
   hooks:
