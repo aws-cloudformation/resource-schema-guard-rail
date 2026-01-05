@@ -4,9 +4,6 @@
 [![PyPI](https://img.shields.io/pypi/v/resource-schema-guard-rail?label=pypi)](https://badge.fury.io/py/resource-schema-guard-rail)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/resource-schema-guard-rail?label=python)](https://pypi.org/project/resource-schema-guard-rail/)
 
-### Notes
-This is not a stable version (Beta), it's still under development
-
 ## Overview
 AWS CloudFormation Resource Schema Guard Rail is an open-source tool, which uses [CloudFormation Guard](https://github.com/aws-cloudformation/cloudformation-guard/) policy-as-code evaluation engine to assess resource schema compliance. It validates json resource schemas against the AWS CloudFormation modeling best practices.
 
