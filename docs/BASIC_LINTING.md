@@ -75,4 +75,4 @@
 |----------|-------------|------|
 | `ensure_description_is_descriptive` | `GN001` | `"description should start with 'Resource Type definition for ...'"` |
 | `ensure_sourceUrl_uses_https` | `GN002` | `"sourceUrl should use https protocol"` |
-| `ensure_default_replacementStrategy` | `GN003` | `"replacement strategy should not implement create_then_delete"` |
+| `ensure_default_replacementStrategy` | `GN003` | `"replacement strategy should not implement delete_then_create"` |
