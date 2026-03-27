@@ -13,6 +13,7 @@
 | `ensure_primary_identifier_exists_and_not_empty` |  `PID001` | `"primaryIdentifier MUST exist"` |
 | |  `PID002` | `"primaryIdentifier MUST contain values"` |
 | `ensure_primary_identifier_is_read_or_create_only` |  `PID003` | `"primaryIdentifier MUST be either readOnly or createOnly"` |
+| `ensure_primary_identifier_is_not_nested` |  `PID005` | `"primaryIdentifier MUST NOT be a nested property path"` |
 | `ensure_create_and_read_only_intersection_is_empty` |  `PR001` | `"read/createOnlyProperties MUST NOT have common properties"` |
 | `ensure_write_and_read_only_intersection_is_empty` |  `PR004` | `"write/readOnlyProperties MUST NOT have common properties"` |
 | `verify_property_notation` |  `PR005` | `"primaryIdentifier MUST have properties defined in the schema"` |

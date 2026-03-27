@@ -384,6 +384,29 @@ from rpdk.guard_rail.utils.arg_handler import collect_schemas
             },
             {},
         ),
+        (
+            collect_schemas(
+                schemas=[
+                    "file:/"
+                    + str(
+                        Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+                            "../data/schema-primary-id-nested.json"
+                        )
+                    )
+                ]
+            ),
+            [],
+            {
+                "ensure_primary_identifier_is_not_nested": {
+                    GuardRuleResult(
+                        check_id="PID005",
+                        message="primaryIdentifier MUST NOT be a nested property path",
+                        path="/primaryIdentifier/0",
+                    )
+                },
+            },
+            {},
+        ),
     ],
 )
 def test_exec_compliance_stateless(
