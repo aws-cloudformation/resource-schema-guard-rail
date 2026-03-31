@@ -95,6 +95,20 @@ rule ensure_primary_identifier_is_read_or_create_only when ensure_primary_identi
 
 
 
+rule ensure_primary_identifier_is_not_nested when ensure_primary_identifier_exists_and_not_empty
+{
+    primaryIdentifier[*] {
+        this == /^\/properties\/[^\/]+$/
+        <<
+        {
+            "result": "NON_COMPLIANT",
+            "check_id": "PID005",
+            "message": "primaryIdentifier MUST NOT be a nested property path"
+        }
+        >>
+    }
+}
+
 rule ensure_create_and_read_only_intersection_is_empty
 {
     when readOnlyProperties exists {
