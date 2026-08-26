@@ -70,6 +70,7 @@
 | | `TAG102` | `"tagging.tagOnCreate MUST NOT change from true to false"` |
 | | `TAG103` | `"tagging.cloudFormationSystemTags MUST NOT change from true to false"` |
 | | `TAG104` | `"tagging.tagProperty MUST NOT change"` |
+| | `TAG105` | `"tagging.taggable MUST NOT change from false to true"` |
 
 ***
 #### Non CFN Enforced Rules
