@@ -50,6 +50,9 @@ repos:
       - eslint@8.56.0
       - '@typescript-eslint/parser@6.21.0'
       - '@typescript-eslint/eslint-plugin@6.21.0'
+      # typescript is an optional peer of the eslint plugin, so it is not
+      # reliably installed in the hook env - but ts-api-utils requires it.
+      - typescript@5.3.3
 
 - repo: https://github.com/pycqa/pylint
   rev: v2.15.10

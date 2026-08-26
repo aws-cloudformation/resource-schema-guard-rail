@@ -540,15 +540,26 @@ rule ensure_taggable_not_changed when tagging exists
     when tagging.changed exists {
         tagging.changed[*] {
             when this.property == "/tagging/taggable" {
-                this.old_value == true
-                this.new_value != false
-                <<
-                {
-                    "result": "NON_COMPLIANT",
-                    "check_id": "TAG101",
-                    "message": "tagging.taggable MUST NOT change from true to false"
+                when this.old_value == true {
+                    this.new_value != false
+                    <<
+                    {
+                        "result": "NON_COMPLIANT",
+                        "check_id": "TAG101",
+                        "message": "tagging.taggable MUST NOT change from true to false"
+                    }
+                    >>
                 }
-                >>
+                when this.old_value == false {
+                    this.new_value != true
+                    <<
+                    {
+                        "result": "NON_COMPLIANT",
+                        "check_id": "TAG105",
+                        "message": "tagging.taggable MUST NOT change from false to true"
+                    }
+                    >>
+                }
             }
             when this.property == "/tagging/tagOnCreate" {
                 this.old_value == true

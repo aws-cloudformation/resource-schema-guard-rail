@@ -1406,6 +1406,67 @@ def test_exec_compliance_stateful_default_value_breaking_change(
             },
             [],
         ),
+        # Test Case: TAG105 - Taggable changed from false to true
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": False,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            [],
+            {
+                "ensure_taggable_not_changed": {
+                    GuardRuleResult(
+                        check_id="TAG105",
+                        message="tagging.taggable MUST NOT change from false to true",
+                        path="/tagging/changed/0/new_value",
+                    ),
+                },
+            },
+            [],
+        ),
+        # Test Case: TAG105 - Taggable turned on alongside the rest of the
+        # tagging metadata a taggable resource is required to declare
+        (
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {"taggable": False},
+            },
+            {
+                "typeName": "AWS::Test::Resource",
+                "properties": {"Id": {"type": "string"}},
+                "tagging": {
+                    "taggable": True,
+                    "tagOnCreate": True,
+                    "tagUpdatable": True,
+                    "cloudFormationSystemTags": True,
+                    "tagProperty": "/properties/Tags",
+                },
+            },
+            [],
+            {
+                "ensure_taggable_not_changed": {
+                    GuardRuleResult(
+                        check_id="TAG105",
+                        message="tagging.taggable MUST NOT change from false to true",
+                        path="/tagging/changed/0/new_value",
+                    ),
+                },
+            },
+            [],
+        ),
         # Test Case: TAG100 - Taggable property removal
         (
             {
@@ -1498,7 +1559,7 @@ def test_exec_compliance_stateful_default_value_breaking_change(
 def test_exec_compliance_stateful_tagging_backward_compatibility(
     previous_schema, current_schema, collected_rules, non_compliant_rules, warning_rules
 ):
-    """Test tagging backward compatibility guard rules (TAG100-TAG104)"""
+    """Test tagging backward compatibility guard rules (TAG100-TAG105)"""
     payload: Stateful = Stateful(
         previous_schema=previous_schema,
         current_schema=current_schema,
