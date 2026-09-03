@@ -1,6 +1,6 @@
 cfn_guard_rs==0.1.2
 coverage>=4.5.4
-deepdiff==5.8.0
+deepdiff==8.6.1
 jsonschema>=3.0.1,<4.0
 pip>=23.3
 pre-commit>=2.21.0
